@@ -17,7 +17,8 @@
 */
 import PRFTableList from "views/PRFTableList.jsx";
 import POTableList from "views/POTableList.jsx";
-import Login from "./components/Login/login.component";
+import Login from "./components/Login/login.component.js";
+import NewPRF from "views/NewPRF.jsx";
 
 const dashboardRoutes = [
   {
@@ -35,13 +36,22 @@ const dashboardRoutes = [
     layout: "/employee"
   },
   {
-    upgrade: true,
-    path: "/Login",
+    NewPRF: true,
+    path: "/New-PRF",
+    name: "New PRF ",
+    icon: "pe-7s-plus",
+    component: NewPRF,
+    layout: "/employee"
+  },
+  {
+    logout: true,
+    path: "/",
     name: "Logout",
     icon: "pe-7s-attention",
-    component: Login,
-    layout: "/login"
-  }
+    component: Login, 
+    layout:""
+  },
+  
 ];
 
 export default dashboardRoutes;

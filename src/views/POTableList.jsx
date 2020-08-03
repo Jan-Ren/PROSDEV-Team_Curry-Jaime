@@ -49,7 +49,11 @@ class POTableList extends Component {
                             {prop.map((prop, key) => {
                               return <td key={key}>{prop}</td>;
                             })}
-                            <td><Button variant="outline-primary">New PO</Button>{' '}<Button variant="outline-secondary">View</Button></td>
+                            <td>
+                            <Button variant="outline-primary"><i className="pe-7s-trash"/></Button>{' '}
+                            <></>
+                            <Button variant="outline-primary" href="/employee/New-PO"><i className="pe-7s-news-paper" /> New PO</Button>{' '}
+                            <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button></td>
                           </tr>
                         );
                       })}

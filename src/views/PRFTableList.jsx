@@ -23,6 +23,8 @@ import { prfHArray, prfDArray } from "variables/Variables.jsx";
 
 import DateInput from "components/DatePicker/DatePicker.jsx"
 
+
+
 class PRFTableList extends Component {
 
   render() {
@@ -56,7 +58,9 @@ class PRFTableList extends Component {
                               return <td key={key}>{prop}</td>;
                             })}
                             <td>
-                                <Button variant="outline-primary"><i className="pe-7s-news-paper" /> New PO</Button>{' '}
+                                <Button variant="outline-primary"><i className="pe-7s-trash"/></Button>{' '}
+                                <></>
+                                <Button variant="outline-primary" href="/employee/New-PO"><i className="pe-7s-news-paper" /> New PO</Button>{' '}
                                 <></>
                                 <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>
                             </td>

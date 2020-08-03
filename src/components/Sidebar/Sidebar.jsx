@@ -18,9 +18,8 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 
-import AdminNavbarLinks from "../Navbars/AdminNavbarLinks.jsx";
+import EmployeeNavbarLinks from "../Navbars/EmployeeNavbarLinks.jsx";
 
-import logo from "assets/img/reactlogo.png";
 
 class Sidebar extends Component {
   constructor(props) {
@@ -57,13 +56,13 @@ class Sidebar extends Component {
           )}
         <div className="sidebar-wrapper">
           <ul className="nav">
-            {this.state.width <= 991 ? <AdminNavbarLinks /> : null}
+            {this.state.width <= 991 ? <EmployeeNavbarLinks /> : null}
             {this.props.routes.map((prop, key) => {
               if (!prop.redirect)
                 return (
                   <li
                     className={
-                      prop.upgrade
+                      prop.logout
                         ? "active active-pro"
                         : this.activeRoute(prop.layout + prop.path)
                     }
