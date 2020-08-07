@@ -25,6 +25,7 @@ import Sidebar from "components/Sidebar/Sidebar";
 import { style } from "variables/Variables.jsx";
 
 import routes from "routes.js";
+import NewPO from "views/NewPO.jsx";
 
 class Employee extends Component {
   constructor(props) {
@@ -172,7 +173,10 @@ class Employee extends Component {
             {...this.props}
             brandText={this.getBrandText(this.props.location.pathname)}
           />
-          <Switch>{this.getRoutes(routes)}</Switch>
+          <Switch>
+            {this.getRoutes(routes)}
+            <Route path="/employee/New-PO" component={NewPO} />
+          </Switch>
         </div>
       </div>
     );
