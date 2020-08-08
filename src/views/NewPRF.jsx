@@ -28,14 +28,25 @@ import {
 import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
-
+import api from '../api'
 
 class UserProfile extends Component {
+  constructor(props) {
+    super(props)
 
-  state = {
-    firstNames:[],
-    lastNames:[]
+    this.state = {
+        name: 'Sample Name',
+        rating: '9.0',
+        time: '24:00',
+        firstNames:[],
+        lastNames:[]
+    }
   }
+
+  // state = {
+  //   firstNames:[],
+  //   lastNames:[]
+  // }
 
   addName(){
     this.setState({firstNames: [...this.state.firstNames, ""]})
@@ -53,6 +64,20 @@ class UserProfile extends Component {
     this.state.lastNames.splice(index,1)
     this.setState({lastNames: this.state.lastNames})
   }
+  handleSave = async () => {
+    const { name, rating, time } = this.state
+    const arrayTime = time.split('/')
+    const payload = { name, rating, time: arrayTime }
+
+    await api.insertPRF(payload).then(res => {
+        window.alert(`Movie inserted successfully`)
+        this.setState({
+            name: '',
+            rating: '',
+            time: '',
+        })
+    })
+  }
   render() {
     return (
       <div className="content">
@@ -62,7 +87,7 @@ class UserProfile extends Component {
               <Card
                 title="New PRF"
                 content={
-                  <form>
+                  <form onSubmit={this.handleSave}>
                     <FormInputs
                       ncols={["col-md-3","col-md-5",  "col-md-3"]}
                       properties={[

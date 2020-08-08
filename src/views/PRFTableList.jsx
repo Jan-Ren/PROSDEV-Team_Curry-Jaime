@@ -22,10 +22,85 @@ import Card from "components/Card/Card.jsx";
 import { prfHArray, prfDArray } from "variables/Variables.jsx";
 
 import DateInput from "components/DatePicker/DatePicker.jsx"
-
+import api from '../api'
 
 
 class PRFTableList extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+        PRF: [],
+        columns: [],
+        isLoading: false,
+    }    
+  }
+  
+  componentDidMount = async () => {
+    this.setState({ isLoading: true })
+    
+    await api.getAllPRF().then(PRF => {
+        this.setState({
+            PRF: PRF.data.data,
+            isLoading: false,
+        })
+    })
+    
+    // to check if na-receive yung data
+    setTimeout(() => {
+      window.alert(this.state.PRF)
+      window.alert(this.state.PRF)
+      console.log(this.state.PRF)
+    }, 3000)
+  }
+
+//   render() {
+//     const { PRF, isLoading } = this.state
+//     console.log('TCL: PRFTableList -> render -> PRF', PRF)
+
+//     const columns = [
+//         {
+//             Header: 'ID',
+//             accessor: '_id',
+//             filterable: true,
+//         },
+//         {
+//             Header: 'Name',
+//             accessor: 'name',
+//             filterable: true,
+//         },
+//         {
+//             Header: 'Rating',
+//             accessor: 'rating',
+//             filterable: true,
+//         },
+//         {
+//             Header: 'Time',
+//             accessor: 'time',
+//             Cell: props => <span>{props.value.join(' / ')}</span>,
+//         },
+//     ]
+
+//     let showTable = true
+//     if (!PRF.length) {
+//         showTable = false
+//     }
+
+//     return (
+//         <Wrapper>
+//             {showTable && (
+//                 <ReactTable
+//                     data={PRF}
+//                     columns={columns}
+//                     loading={isLoading}
+//                     defaultPageSize={10}
+//                     showPageSizeOptions={true}
+//                     minRows={0}
+//                 />
+//             )}
+//         </Wrapper>
+//     )
+// }
 
   render() {
     return (
