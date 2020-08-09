@@ -30,28 +30,22 @@ import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 
 
-class UserProfile extends Component {
+class NewPO extends Component {
 
   state = {
-    firstNames:[],
-    lastNames:[]
+    PAXNames:[],
   }
 
   addName(){
-    this.setState({firstNames: [...this.state.firstNames, ""]})
-    this.setState({lastNames: [...this.state.lastNames, ""]})
+    this.setState({PAXNames: [...this.state.PAXNames, ""]})
   }
   handleChange(e, index){
-    this.state.firstNames[index] = e.target.value
-    this.setState({firstNames:this.state.firstNames})
-    this.state.lastNames[index] = e.target.value
-    this.setState({lastNames:this.state.lastNames})
+    this.state.PAXNames[index] = e.target.value
+    this.setState({PAXNames:this.state.PAXNames})
   }
   handleRemove(index){
-    this.state.firstNames.splice(index,1)
-    this.setState({firstNames: this.state.firstNames})
-    this.state.lastNames.splice(index,1)
-    this.setState({lastNames: this.state.lastNames})
+    this.state.PAXNames.splice(index,1)
+    this.setState({PAXNames: this.state.PAXNames})
   }
   render() {
     return (
@@ -64,7 +58,7 @@ class UserProfile extends Component {
                 content={
                   <form>
                     <FormInputs
-                      ncols={["col-md-3","col-md-3"]}
+                      ncols={["col-md-2","col-md-2","col-md-5","col-md-3"]}
                       properties={[
                         {
                           label: "PRF#",
@@ -72,6 +66,7 @@ class UserProfile extends Component {
                           bsClass: "form-control",
                           placeholder: "PRF#",
                           defaultValue: "",
+                          readOnly: true
                         },
                         {
                           label: "PO#",
@@ -79,12 +74,8 @@ class UserProfile extends Component {
                           bsClass: "form-control",
                           placeholder: "PO#",
                           defaultValue: "",
-                        }
-                      ]}
-                    />
-                    <FormInputs
-                      ncols={["col-md-5",  "col-md-3"]}
-                      properties={[
+                          readOnly: true
+                        },
                         {
                           label: "To",
                           type: "text",
@@ -102,74 +93,42 @@ class UserProfile extends Component {
                     />
                     <h5>Pax Name/s</h5>
                     <FormInputs
-                      ncols={["col-md-6", "col-md-6"]}
+                      ncols={["col-md-6"]}
                       properties={[
                         {
-                          label: "First name",
+                          label: "Enter Name/s",
                           type: "text",
                           bsClass: "form-control",
-                          placeholder: "First name",
-                          defaultValue: "Mike"
-                        },
-                        {
-                          label: "Last name",
-                          type: "text",
-                          bsClass: "form-control",
-                          placeholder: "Last name",
-                          defaultValue: "Andrew"
+                          placeholder: "",
+                          defaultValue: ""
                         }
                       ]}
+
                     />
-                    {/* <Button variant="outline-secondary" onClick={(e)=>this.addName(e)}>+</Button>
+                    <Button variant="outline-secondary" onClick={(e)=>this.addName(e)}>+</Button>
                     {
-                      this.state.firstNames.map((firstName, lastName, index)=>{
+                      this.state.PAXNames.map((PAXNames, index)=>{
                         return(
                           <div key={index}>
                             <FormInputs
-                            ncols={["col-md-4"]}
+                            ncols={["col-md-6"]}
                             properties={[
                               {
                                 type: "text",
                                 bsClass: "form-control",
-                                placeholder: "First Name",
+                                placeholder: "Enter Name",
                                 defaultValue: ""
                               }
                             ]}
                             onChange={(e)=>this.handleChange(e,index)}
-                            value={firstName}
-                          />
-                          <FormInputs
-                            ncols={["col-md-4"]}
-                            properties={[
-                              {
-                                type: "text",
-                                bsClass: "form-control",
-                                placeholder: "Last Name",
-                                defaultValue: ""
-                              }
-                            ]}
-                            onChange={(e)=>this.handleChange(e,index)}
-                            value={lastName}
-                          />
+                            value={PAXNames}
+                          /> 
                           <Button variant="outline-secondary" onClick={(e)=>this.handleRemove(e)}>-</Button>
                           </div>
                         )
                       })
-                    } */}
-                    <Row>
-                      <Col md={6}>
-                        <FormGroup controlId="formControlsTextarea">
-                          <ControlLabel>Route</ControlLabel>
-                          <FormControl
-                            rows="5"
-                            componentClass="textarea"
-                            bsClass="form-control"
-                            placeholder="Input Particulars"
-                            defaultValue=""
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={6}>
+                    } 
+                    <Col md={12}>
                         <FormGroup controlId="formControlsTextarea">
                           <ControlLabel>Particulars</ControlLabel>
                           <FormControl
@@ -181,40 +140,16 @@ class UserProfile extends Component {
                           />
                         </FormGroup>
                       </Col>
-                    </Row>
-                    
-                    <FormInputs
-                      ncols={["col-md-5", "col-md-5"]}
-                      properties={[
-                        {
-                          label: "Travel Tax",
-                          type: "number",
-                          bsClass: "form-control",
-                          placeholder: "Input Amount"
-                        },
-                        {
-                          label: "Airfare",
-                          type: "number",
-                          bsClass: "form-control",
-                          placeholder: "Input Amount"
-                        }
-                      ]}
-                    />
-                    <Col md={12}>
-                        <FormGroup controlId="formControlsTextarea">
-                          <ControlLabel>Documentation</ControlLabel>
-                          <FormControl
-                            rows="5"
-                            componentClass="textarea"
-                            bsClass="form-control"
-                            placeholder="Input Documentation"
-                            defaultValue=""
-                          />
-                        </FormGroup>
-                      </Col>
                       <FormInputs
-                      ncols={["col-md-4","col-md-4","col-md-4"]}
+                      ncols={["col-md-3","col-md-3","col-md-3","col-md-3"]}
                       properties={[
+                        {
+                          label: "US$ to PHP",
+                          type: "number",
+                          bsClass: "form-control",
+                          placeholder: "Input Amount",
+                          defaultValue:""
+                        },
                         {
                           label: "US$",
                           type: "number",
@@ -278,4 +213,4 @@ class UserProfile extends Component {
   }
 }
 
-export default UserProfile;
+export default NewPO;
