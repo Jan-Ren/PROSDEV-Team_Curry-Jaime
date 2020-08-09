@@ -57,6 +57,8 @@ updatePRF = async (req, res) => {
         prf.paid_date = body.paid_date
         prf.particulars = body.particulars
         prf.php = body.php
+        prf.usd = body.usd
+        prf.total = body.total
         prf.prepared_by = body.prepared_by
         prf.approved_by = body.approved_by
         prf.received_by = body.received_by
