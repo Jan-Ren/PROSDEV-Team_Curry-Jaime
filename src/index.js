@@ -29,6 +29,7 @@ import "./assets/css/App.css";
 
 import AdminLayout from "layouts/Admin.jsx";
 import EmployeeLayout from "layouts/Employee.jsx";
+import PRFLayout from "layouts/PRF.jsx";
 import Login from "./components/Login/login.component";
 
 
@@ -38,6 +39,7 @@ ReactDOM.render(
     <Switch>
       <Route exact path='/' component={Login} />
       <Route path="/Employee" render={props => <EmployeeLayout {...props} />} />
+      <Route path="/Employee/New-PRF" render={props => <PRFLayout {...props} />} />
       <Redirect from="/" to="/employee/PRF-List" />
     </Switch>
   </BrowserRouter>,
