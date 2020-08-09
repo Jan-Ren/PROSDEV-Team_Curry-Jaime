@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const key = require('./index').secretOrKey
 
 module.exports = auth = (req, res, next) => {
-  const token = req.header('x-auth-token')
+  const token = req.header('tite')
 
   if (!token) 
     res.status(401).json({ msg: "No token, authorization denied" });

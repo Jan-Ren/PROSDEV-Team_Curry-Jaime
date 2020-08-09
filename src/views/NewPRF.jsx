@@ -35,12 +35,24 @@ class UserProfile extends Component {
     super(props)
 
     this.state = {
-        name: 'Sample Name',
-        rating: '9.0',
-        time: '24:00',
-        firstNames:[],
-        lastNames:[]
+        // name: 'Sample Name',
+        // rating: '9.0',
+        // time: '24:00',
+        // firstNames:[],
+        // lastNames:[]
+        prf_number: '',
+        pax: '',
+        recepient: '',
+        paid_date: '',
+        particulars: '',
+        php: '',
+        usd: '',
+        total: '',
+        prepared_by: '',
+        approved_by: '',
+        received_by: ''
     }
+    this.handleChange = this.handleChange.bind(this)
   }
 
   // state = {
@@ -52,11 +64,16 @@ class UserProfile extends Component {
     this.setState({firstNames: [...this.state.firstNames, ""]})
     this.setState({lastNames: [...this.state.lastNames, ""]})
   }
-  handleChange(e, index){
-    this.state.firstNames[index] = e.target.value
-    this.setState({firstNames:this.state.firstNames})
-    this.state.lastNames[index] = e.target.value
-    this.setState({lastNames:this.state.lastNames})
+  handleChange(e){
+    e.preventDefault()
+    // console.log(e.target.name)
+    const {name, value} = e.target
+    // alert(this.state['approved_by'])
+    // alert(name)
+    this.setState( {
+      [name]: value
+    }, () => { console.log(this.state[name]) })
+    
   }
   handleRemove(index){
     this.state.firstNames.splice(index,1)
@@ -65,18 +82,47 @@ class UserProfile extends Component {
     this.setState({lastNames: this.state.lastNames})
   }
   handleSave = async () => {
-    const { name, rating, time } = this.state
-    const arrayTime = time.split('/')
-    const payload = { name, rating, time: arrayTime }
 
-    await api.insertPRF(payload).then(res => {
-        window.alert(`Movie inserted successfully`)
+    // const { name, rating, time } = this.state
+    // const arrayTime = time.split('/')
+    // const payload = { name, rating, time: arrayTime }    
+
+    // await api.insertPRF(payload).then(res => {
+    //     window.alert(`Movie inserted successfully`)
+    //     this.setState({
+    //         name: '',
+    //         rating: '',
+    //         time: '',
+    //     })
+    // })
+    // console.log(this.state)
+
+    const { prf_number, pax, recepient, paid_date, particulars, php, usd, total, prepared_by, approved_by, received_by } = this.state
+    const payload = { prf_number, pax, recepient, paid_date, particulars, php, usd, total, prepared_by, approved_by, received_by }
+    alert('here')
+    try {
+      await api.insertPRF(payload).then(res => {   
+        window.alert(res.message)
         this.setState({
-            name: '',
-            rating: '',
-            time: '',
+          prf_number: '',
+          pax: '',
+          recepient: '',
+          paid_date: '',
+          particulars: '',
+          php: '',
+          usd: '',
+          total: '',
+          prepared_by: '',
+          approved_by: '',
+          received_by: ''
         })
-    })
+      })
+    } catch (error) {
+      console.log(error)
+      alert(error)
+    }
+    
+    
   }
   render() {
     return (
@@ -97,22 +143,59 @@ class UserProfile extends Component {
                           bsClass: "form-control",
                           placeholder: "PRF#",
                           defaultValue: "",
+                          name:"prf_number",
+                          onChange: this.handleChange
                         },
                         {
                           label: "To",
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Recepient",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name:"recepient",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Date",
                           type: "date",
                           bsClass: "form-control",
-                          placeholder: "Email"
+                          placeholder: "Email",
+                          name:"paid_date",
+                          onChange: this.handleChange
                         }
                       ]}
-                    />
+                                            
+                      // value={this.state.prf_number}
+                      />
+                      {/* <FormInputs
+                      ncols={["col-md-3","col-md-5",  "col-md-3"]}
+                      properties={[
+                        {
+                          label: "To",
+                          type: "text",
+                          bsClass: "form-control",
+                          placeholder: "Recepient",
+                          defaultValue: "",
+                        },
+                      ]}
+                      name="PRF_number"
+                      onChange={(e)=>this.handleChange(e)}
+                      value={this.state.prf_number}
+                      />
+                      <FormInputs
+                      ncols={["col-md-3","col-md-5",  "col-md-3"]}
+                      properties={[
+                        {
+                          label: "Date",
+                          type: "date",
+                          bsClass: "form-control",
+                          placeholder: "Email",
+                        }
+                      ]}
+                      name="PRF_number"
+                      onChange={(e)=>this.handleChange(e)}
+                      value={this.state.prf_number}
+                      /> */}
                     <h5>Pax Name/s</h5>
                     <FormInputs
                       ncols={["col-md-6", "col-md-6"]}
@@ -122,16 +205,22 @@ class UserProfile extends Component {
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "First name",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "pax",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Last name",
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Last name",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "last_name",
+                          getValue: this.handleChange
                         }
                       ]}
+                      // onChange={(e)=>this.handleChange(e)}
+                      
                     />
                     
                     {/* Adding Pax Names */}
@@ -195,6 +284,8 @@ class UserProfile extends Component {
                             bsClass="form-control"
                             placeholder="Input Particulars"
                             defaultValue=""
+                            name="particulars"
+                            onChange={this.handleChange}
                           />
                         </FormGroup>
                       </Col>
@@ -225,7 +316,7 @@ class UserProfile extends Component {
                             componentClass="textarea"
                             bsClass="form-control"
                             placeholder="Input Documentation"
-                            defaultValue=""
+                            defaultValue=""                            
                           />
                         </FormGroup>
                       </Col>
@@ -237,21 +328,27 @@ class UserProfile extends Component {
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "Input Amount",
-                          defaultValue:""
+                          defaultValue:"",
+                          name: "usd",
+                          onChange: this.handleChange                        
                         },
                         {
                           label: "PHP",
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "Input Amount",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "php",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Total",
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "TOTAL AMOUNT",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "total",
+                          onChange: this.handleChange
                         }
                       ]}
                     />
@@ -263,21 +360,27 @@ class UserProfile extends Component {
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Enter Name",
-                          defaultValue:""
+                          defaultValue:"",
+                          name:"prepared_by",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Approved By:",
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Enter Name",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "approved_by",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Received By:",
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Enter Name",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "received_by",
+                          onChange: this.handleChange
                         }
                       ]}
                     />

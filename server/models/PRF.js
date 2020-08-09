@@ -35,11 +35,11 @@ const PRF = new Schema({
         required:true
     },
     // po_number: Number,
-    pax: [{
+    pax: {
         type: String,
         require:true
-    }],
-    receipient: String,
+    },
+    recepient: String,
     date_created: {
         type: Date,
         default: Date.now
