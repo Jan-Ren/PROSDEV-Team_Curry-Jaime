@@ -50,9 +50,7 @@ class POTableList extends Component {
                               return <td key={key}>{prop}</td>;
                             })}
                             <td>
-                            <Button variant="outline-primary"><i className="pe-7s-trash"/></Button>{' '}
-                            <></>
-                            <Button variant="outline-primary" href="/employee/New-PO"><i className="pe-7s-news-paper" /> New PO</Button>{' '}
+                            <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
                             <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button></td>
                           </tr>
                         );

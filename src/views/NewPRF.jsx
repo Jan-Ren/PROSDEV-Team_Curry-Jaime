@@ -100,7 +100,7 @@ class NewPRF extends Component {
                       ]}
                     />
                     
-                    <Button variant="outline-secondary" onClick={(e)=>this.addName(e)}>+</Button>
+                    <Button variant="outline-secondary" bsStyle="primary" fill onClick={(e)=>this.addName(e)}>+</Button>
                     {
                       this.state.PAXNames.map((PAXNames, index)=>{
                         return(
@@ -118,7 +118,7 @@ class NewPRF extends Component {
                             onChange={(e)=>this.handleChange(e,index)}
                             value={PAXNames}
                           />
-                          <Button variant="outline-secondary" onClick={(e)=>this.handleRemove(e)}>-</Button>
+                          <Button variant="outline-secondary" bsStyle="danger"  onClick={(e)=>this.handleRemove(e)}>-</Button>
                           </div>
                         )
                       })
