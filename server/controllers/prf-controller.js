@@ -50,9 +50,17 @@ updatePRF = async (req, res) => {
                 message: 'PRF not found!',
             })
         }
-        prf.name = body.name
-        prf.time = body.time
-        prf.rating = body.rating
+        prf.pax = body.pax
+        prf.receipient = body.receipient
+        prf.date_created = body.date_created
+        prf.last_modified = body.last_modified
+        prf.paid_date = body.paid_date
+        prf.particulars = body.particulars
+        prf.php = body.php
+        prf.prepared_by = body.prepared_by
+        prf.approved_by = body.approved_by
+        prf.received_by = body.received_by
+        
         prf
             .save()
             .then(() => {
