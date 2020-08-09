@@ -46,7 +46,6 @@
     "jest": "24.7.1"
   },
   "scripts": {
-    "start": "set PORT=8000 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --coverage",
     "eject": "react-scripts eject",
