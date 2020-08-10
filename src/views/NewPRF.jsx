@@ -235,6 +235,7 @@ class NewPRF extends Component {
                       
                     /> */}
                                         
+
                     {
                       this.state.pax.map((pax, index)=>{
                         return(
@@ -254,7 +255,7 @@ class NewPRF extends Component {
                           />
                           {
                             index==0 ? <Button variant="outline-secondary" onClick={(e)=>this.addName(e)}>+</Button> 
-                            : <Button variant="outline-secondary" onClick={(e)=>this.handleRemove(e)}>-</Button>
+                            : <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.handleRemove(e)}>-</Button>
                           }                          
                           </div>
                         )
