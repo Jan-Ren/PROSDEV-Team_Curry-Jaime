@@ -30,6 +30,7 @@ import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
 
+
 class UserProfile extends Component {
   constructor(props) {
     super(props)
@@ -50,7 +51,8 @@ class UserProfile extends Component {
         total: '',
         prepared_by: '',
         approved_by: '',
-        received_by: ''
+        received_by: '',
+        PAXNames:[]
     }
     this.handleChange = this.handleChange.bind(this)
   }
@@ -61,25 +63,29 @@ class UserProfile extends Component {
   // }
 
   addName(){
-    this.setState({firstNames: [...this.state.firstNames, ""]})
-    this.setState({lastNames: [...this.state.lastNames, ""]})
+    this.setState({PAXNames: [...this.state.PAXNames, ""]})
   }
-  handleChange(e){
+
+  handleChange(e, index){
     e.preventDefault()
     // console.log(e.target.name)
     const {name, value} = e.target
     // alert(this.state['approved_by'])
     // alert(name)
-    this.setState( {
-      [name]: value
-    }, () => { console.log(this.state[name]) })
+    if (name === 'PAXNames') {
+      this.state.PAXNames[index] = e.target.value
+      this.setState({PAXNames:this.state.PAXNames})
+    } else {
+       this.setState( {
+        [name]: value
+       }, () => { console.log(this.state[name]) }) 
+    }    
     
   }
   handleRemove(index){
-    this.state.firstNames.splice(index,1)
-    this.setState({firstNames: this.state.firstNames})
-    this.state.lastNames.splice(index,1)
-    this.setState({lastNames: this.state.lastNames})
+    this.state.PAXNames.splice(index,1)
+    this.setState({PAXNames: this.state.PAXNames})
+
   }
   handleSave = async () => {
 
@@ -139,12 +145,14 @@ class UserProfile extends Component {
                       properties={[
                         {
                           label: "PRF#",
-                          type: "text",
+                          type: "disabled",
                           bsClass: "form-control",
-                          placeholder: "PRF#",
+                          placeholder: "800033",
                           defaultValue: "",
                           name:"prf_number",
                           onChange: this.handleChange
+                          plaintext: true,
+                          readOnly: true
                         },
                         {
                           label: "To",
@@ -198,84 +206,47 @@ class UserProfile extends Component {
                       /> */}
                     <h5>Pax Name/s</h5>
                     <FormInputs
-                      ncols={["col-md-6", "col-md-6"]}
+                      ncols={["col-md-6"]}
                       properties={[
                         {
-                          label: "First name",
+                          label: "",
                           type: "text",
                           bsClass: "form-control",
-                          placeholder: "First name",
+                          placeholder: "Input Name",
                           defaultValue: "",
                           name: "pax",
                           onChange: this.handleChange
-                        },
-                        {
-                          label: "Last name",
-                          type: "text",
-                          bsClass: "form-control",
-                          placeholder: "Last name",
-                          defaultValue: "",
-                          name: "last_name",
-                          getValue: this.handleChange
                         }
                       ]}
                       // onChange={(e)=>this.handleChange(e)}
                       
                     />
                     
-                    {/* Adding Pax Names */}
-
-                    {/* <Button variant="outline-secondary" onClick={(e)=>this.addName(e)}>+</Button>
+                    <Button variant="outline-secondary" onClick={(e)=>this.addName(e)}>+</Button>
                     {
-                      this.state.firstNames.map((firstName, lastName, index)=>{
+                      this.state.PAXNames.map((PAXNames, index)=>{
                         return(
                           <div key={index}>
                             <FormInputs
-                            ncols={["col-md-4"]}
+                            ncols={["col-md-6"]}
                             properties={[
                               {
                                 type: "text",
                                 bsClass: "form-control",
-                                placeholder: "First Name",
+                                placeholder: "Input Name",
                                 defaultValue: ""
                               }
                             ]}
                             onChange={(e)=>this.handleChange(e,index)}
-                            value={firstName}
-                          />
-                          <FormInputs
-                            ncols={["col-md-4"]}
-                            properties={[
-                              {
-                                type: "text",
-                                bsClass: "form-control",
-                                placeholder: "Last Name",
-                                defaultValue: ""
-                              }
-                            ]}
-                            onChange={(e)=>this.handleChange(e,index)}
-                            value={lastName}
+                            value={PAXNames}
                           />
                           <Button variant="outline-secondary" onClick={(e)=>this.handleRemove(e)}>-</Button>
                           </div>
                         )
                       })
-                    } */}
+                    }
 
-                    <Row>
-                      <Col md={5}>
-                        <FormGroup controlId="formControlsTextarea">
-                          <ControlLabel>Route</ControlLabel>
-                          <FormControl
-                            rows="5"
-                            componentClass="textarea"
-                            bsClass="form-control"
-                            placeholder="Input Particulars"
-                            defaultValue=""
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={5}>
+                    <Col md={12}>
                         <FormGroup controlId="formControlsTextarea">
                           <ControlLabel>Particulars</ControlLabel>
                           <FormControl
@@ -288,55 +259,32 @@ class UserProfile extends Component {
                             onChange={this.handleChange}
                           />
                         </FormGroup>
-                      </Col>
-                    </Row>
-                    
-                    <FormInputs
-                      ncols={["col-md-5", "col-md-5"]}
-                      properties={[
-                        {
-                          label: "Travel Tax",
-                          type: "number",
-                          bsClass: "form-control",
-                          placeholder: "Input Amount"
-                        },
-                        {
-                          label: "Airfare",
-                          type: "number",
-                          bsClass: "form-control",
-                          placeholder: "Input Amount"
-                        }
-                      ]}
-                    />
-                    <Col md={12}>
-                        <FormGroup controlId="formControlsTextarea">
-                          <ControlLabel>Documentation</ControlLabel>
-                          <FormControl
-                            rows="5"
-                            componentClass="textarea"
-                            bsClass="form-control"
-                            placeholder="Input Documentation"
-                            defaultValue=""                            
-                          />
-                        </FormGroup>
-                      </Col>
+                    </Col>
+
                       <FormInputs
-                      ncols={["col-md-4","col-md-4","col-md-4"]}
+                      ncols={["col-md-3","col-md-3","col-md-3", "col-md-3"]}
                       properties={[
                         {
-                          label: "US$",
+                          label: "US$ to PHP",
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "Input Amount",
-                          defaultValue:"",
+                          defaultValue:""
+                        },
+                        {
+                          label: "US $",
+                          type: "number",
+                          bsClass: "form-control",
+                          placeholder: "Input Amount",
+                          defaultValue: "",
                           name: "usd",
-                          onChange: this.handleChange                        
+                          onChange: this.handleChange
                         },
                         {
                           label: "PHP",
                           type: "number",
                           bsClass: "form-control",
-                          placeholder: "Input Amount",
+                          placeholder: "TOTAL AMOUNT",
                           defaultValue: "",
                           name: "php",
                           onChange: this.handleChange
@@ -399,4 +347,4 @@ class UserProfile extends Component {
   }
 }
 
-export default UserProfile;
+export default NewPRF;

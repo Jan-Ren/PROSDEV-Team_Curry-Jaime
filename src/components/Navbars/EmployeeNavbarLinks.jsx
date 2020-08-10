@@ -16,7 +16,7 @@
 
 */
 import React, { Component } from "react";
-import {  Nav,  MenuItem, Form, FormControl, Button } from "react-bootstrap";
+import {  Nav, Form, FormControl, Button } from "react-bootstrap";
 
 class EmployeeNavbarLinks extends Component {
   render() {
