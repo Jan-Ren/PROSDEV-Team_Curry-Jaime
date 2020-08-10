@@ -31,7 +31,7 @@ import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
 
 
-class UserProfile extends Component {
+class NewPRF extends Component {
   constructor(props) {
     super(props)
 
@@ -41,8 +41,8 @@ class UserProfile extends Component {
         // time: '24:00',
         // firstNames:[],
         // lastNames:[]
-        prf_number: '',
-        pax: '',
+        prf_number: 800033,
+        pax:[''],
         recepient: '',
         paid_date: '',
         particulars: '',
@@ -52,7 +52,6 @@ class UserProfile extends Component {
         prepared_by: '',
         approved_by: '',
         received_by: '',
-        PAXNames:[]
     }
     this.handleChange = this.handleChange.bind(this)
   }
@@ -63,28 +62,40 @@ class UserProfile extends Component {
   // }
 
   addName(){
-    this.setState({PAXNames: [...this.state.PAXNames, ""]})
+    this.setState({pax: [...this.state.pax, ""]})
   }
 
-  handleChange(e, index){
+  handleChange(e){
     e.preventDefault()
-    // console.log(e.target.name)
     const {name, value} = e.target
-    // alert(this.state['approved_by'])
-    // alert(name)
-    if (name === 'PAXNames') {
-      this.state.PAXNames[index] = e.target.value
-      this.setState({PAXNames:this.state.PAXNames})
+
+    if (name.includes('pax')) {
+      const index = name.replace("pax", "")
+      const pax = [...this.state.pax]
+      pax[index] = value
+      this.setState({
+        pax: pax
+      }, () => { console.log(this.state.pax[index])})
     } else {
+      console.log(`${name}`)
        this.setState( {
         [name]: value
        }, () => { console.log(this.state[name]) }) 
-    }    
+
+       if (name === 'usd' || name === 'php') {
+        const { usd, php, conversion_rate } = this.state
+        console.log(`${usd} and ${php} and ${conversion_rate}`)
+        if (usd !== '' && php !== '' && conversion_rate !== '') {
+          const total = usd*conversion_rate + php
+          this.setState({ total })
+        }    
+      }
+    }
     
   }
   handleRemove(index){
-    this.state.PAXNames.splice(index,1)
-    this.setState({PAXNames: this.state.PAXNames})
+    this.state.pax.splice(index,1)
+    this.setState({pax: this.state.pax})
 
   }
   handleSave = async () => {
@@ -103,18 +114,20 @@ class UserProfile extends Component {
     // })
     // console.log(this.state)
 
-    const { prf_number, pax, recepient, paid_date, particulars, php, usd, total, prepared_by, approved_by, received_by } = this.state
-    const payload = { prf_number, pax, recepient, paid_date, particulars, php, usd, total, prepared_by, approved_by, received_by }
+    const { prf_number, pax, recepient, paid_date, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by } = this.state
+    const payload = { prf_number, pax, recepient, paid_date, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by }
     alert('here')
+    console.log(this.state)
     try {
       await api.insertPRF(payload).then(res => {   
         window.alert(res.message)
         this.setState({
           prf_number: '',
-          pax: '',
+          pax: [''],
           recepient: '',
           paid_date: '',
           particulars: '',
+          conversion_rate: '',
           php: '',
           usd: '',
           total: '',
@@ -124,8 +137,8 @@ class UserProfile extends Component {
         })
       })
     } catch (error) {
-      console.log(error)
-      alert(error)
+      console.log(error.message)
+      alert(error.message)
     }
     
     
@@ -150,7 +163,7 @@ class UserProfile extends Component {
                           placeholder: "800033",
                           defaultValue: "",
                           name:"prf_number",
-                          onChange: this.handleChange
+                          onChange: this.handleChange,
                           plaintext: true,
                           readOnly: true
                         },
@@ -205,7 +218,7 @@ class UserProfile extends Component {
                       value={this.state.prf_number}
                       /> */}
                     <h5>Pax Name/s</h5>
-                    <FormInputs
+                    {/* <FormInputs
                       ncols={["col-md-6"]}
                       properties={[
                         {
@@ -214,17 +227,17 @@ class UserProfile extends Component {
                           bsClass: "form-control",
                           placeholder: "Input Name",
                           defaultValue: "",
-                          name: "pax",
+                          name: "pax0",
                           onChange: this.handleChange
                         }
                       ]}
                       // onChange={(e)=>this.handleChange(e)}
                       
-                    />
-                    
-                    <Button variant="outline-secondary" bsStyle="primary" fill onClick={(e)=>this.addName(e)}>+</Button>
+                    /> */}
+                                        
+
                     {
-                      this.state.PAXNames.map((PAXNames, index)=>{
+                      this.state.pax.map((pax, index)=>{
                         return(
                           <div key={index}>
                             <FormInputs
@@ -234,17 +247,21 @@ class UserProfile extends Component {
                                 type: "text",
                                 bsClass: "form-control",
                                 placeholder: "Input Name",
-                                defaultValue: ""
+                                defaultValue: ``,
+                                name:`pax${index}`,
+                                onChange: this.handleChange
                               }
                             ]}
-                            onChange={(e)=>this.handleChange(e,index)}
-                            value={PAXNames}
                           />
-                          <Button variant="outline-secondary" bsStyle="danger"  onClick={(e)=>this.handleRemove(e)}>-</Button>
+                          {
+                            index==0 ? <Button variant="outline-secondary" onClick={(e)=>this.addName(e)}>+</Button> 
+                            : <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.handleRemove(e)}>-</Button>
+                          }                          
                           </div>
                         )
                       })
                     }
+                    
 
                     <Col md={12}>
                         <FormGroup controlId="formControlsTextarea">
@@ -269,7 +286,10 @@ class UserProfile extends Component {
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "Input Amount",
-                          defaultValue:""
+                          defaultValue:"",
+                          step:"0.01",
+                          name: "conversion_rate",
+                          onChange: this.handleChange
                         },
                         {
                           label: "US $",
@@ -278,6 +298,7 @@ class UserProfile extends Component {
                           placeholder: "Input Amount",
                           defaultValue: "",
                           name: "usd",
+                          step: "0.01",
                           onChange: this.handleChange
                         },
                         {
@@ -287,6 +308,7 @@ class UserProfile extends Component {
                           placeholder: "TOTAL AMOUNT",
                           defaultValue: "",
                           name: "php",
+                          step: "0.01",
                           onChange: this.handleChange
                         },
                         {
@@ -295,7 +317,9 @@ class UserProfile extends Component {
                           bsClass: "form-control",
                           placeholder: "TOTAL AMOUNT",
                           defaultValue: "",
+                          value: this.state.total,
                           name: "total",
+                          step: "0.01",
                           onChange: this.handleChange
                         }
                       ]}
