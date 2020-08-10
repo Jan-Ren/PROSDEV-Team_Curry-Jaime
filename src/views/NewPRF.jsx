@@ -28,25 +28,107 @@ import {
 import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
+import api from '../api'
 
 
-class NewPRF extends Component {
+class UserProfile extends Component {
+  constructor(props) {
+    super(props)
 
-  state = {
-    PAXNames:[]
+    this.state = {
+        // name: 'Sample Name',
+        // rating: '9.0',
+        // time: '24:00',
+        // firstNames:[],
+        // lastNames:[]
+        prf_number: '',
+        pax: '',
+        recepient: '',
+        paid_date: '',
+        particulars: '',
+        php: '',
+        usd: '',
+        total: '',
+        prepared_by: '',
+        approved_by: '',
+        received_by: '',
+        PAXNames:[]
+    }
+    this.handleChange = this.handleChange.bind(this)
   }
+
+  // state = {
+  //   firstNames:[],
+  //   lastNames:[]
+  // }
 
   addName(){
     this.setState({PAXNames: [...this.state.PAXNames, ""]})
   }
+
   handleChange(e, index){
-    this.state.PAXNames[index] = e.target.value
-    this.setState({PAXNames:this.state.PAXNames})
+    e.preventDefault()
+    // console.log(e.target.name)
+    const {name, value} = e.target
+    // alert(this.state['approved_by'])
+    // alert(name)
+    if (name === 'PAXNames') {
+      this.state.PAXNames[index] = e.target.value
+      this.setState({PAXNames:this.state.PAXNames})
+    } else {
+       this.setState( {
+        [name]: value
+       }, () => { console.log(this.state[name]) }) 
+    }    
+    
   }
   handleRemove(index){
     this.state.PAXNames.splice(index,1)
     this.setState({PAXNames: this.state.PAXNames})
 
+  }
+  handleSave = async () => {
+
+    // const { name, rating, time } = this.state
+    // const arrayTime = time.split('/')
+    // const payload = { name, rating, time: arrayTime }    
+
+    // await api.insertPRF(payload).then(res => {
+    //     window.alert(`Movie inserted successfully`)
+    //     this.setState({
+    //         name: '',
+    //         rating: '',
+    //         time: '',
+    //     })
+    // })
+    // console.log(this.state)
+
+    const { prf_number, pax, recepient, paid_date, particulars, php, usd, total, prepared_by, approved_by, received_by } = this.state
+    const payload = { prf_number, pax, recepient, paid_date, particulars, php, usd, total, prepared_by, approved_by, received_by }
+    alert('here')
+    try {
+      await api.insertPRF(payload).then(res => {   
+        window.alert(res.message)
+        this.setState({
+          prf_number: '',
+          pax: '',
+          recepient: '',
+          paid_date: '',
+          particulars: '',
+          php: '',
+          usd: '',
+          total: '',
+          prepared_by: '',
+          approved_by: '',
+          received_by: ''
+        })
+      })
+    } catch (error) {
+      console.log(error)
+      alert(error)
+    }
+    
+    
   }
   render() {
     return (
@@ -57,8 +139,7 @@ class NewPRF extends Component {
               <Card
                 title="New PRF"
                 content={
-                  <form>
-                    
+                  <form onSubmit={this.handleSave}>
                     <FormInputs
                       ncols={["col-md-3","col-md-5",  "col-md-3"]}
                       properties={[
@@ -68,6 +149,8 @@ class NewPRF extends Component {
                           bsClass: "form-control",
                           placeholder: "800033",
                           defaultValue: "",
+                          name:"prf_number",
+                          onChange: this.handleChange
                           plaintext: true,
                           readOnly: true
                         },
@@ -76,16 +159,51 @@ class NewPRF extends Component {
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Recepient",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name:"recepient",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Date",
                           type: "date",
                           bsClass: "form-control",
-                          placeholder: "Email"
+                          placeholder: "Email",
+                          name:"paid_date",
+                          onChange: this.handleChange
                         }
                       ]}
-                    />
+                                            
+                      // value={this.state.prf_number}
+                      />
+                      {/* <FormInputs
+                      ncols={["col-md-3","col-md-5",  "col-md-3"]}
+                      properties={[
+                        {
+                          label: "To",
+                          type: "text",
+                          bsClass: "form-control",
+                          placeholder: "Recepient",
+                          defaultValue: "",
+                        },
+                      ]}
+                      name="PRF_number"
+                      onChange={(e)=>this.handleChange(e)}
+                      value={this.state.prf_number}
+                      />
+                      <FormInputs
+                      ncols={["col-md-3","col-md-5",  "col-md-3"]}
+                      properties={[
+                        {
+                          label: "Date",
+                          type: "date",
+                          bsClass: "form-control",
+                          placeholder: "Email",
+                        }
+                      ]}
+                      name="PRF_number"
+                      onChange={(e)=>this.handleChange(e)}
+                      value={this.state.prf_number}
+                      /> */}
                     <h5>Pax Name/s</h5>
                     <FormInputs
                       ncols={["col-md-6"]}
@@ -95,9 +213,13 @@ class NewPRF extends Component {
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Input Name",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "pax",
+                          onChange: this.handleChange
                         }
                       ]}
+                      // onChange={(e)=>this.handleChange(e)}
+                      
                     />
                     
                     <Button variant="outline-secondary" onClick={(e)=>this.addName(e)}>+</Button>
@@ -133,6 +255,8 @@ class NewPRF extends Component {
                             bsClass="form-control"
                             placeholder="Input Particulars"
                             defaultValue=""
+                            name="particulars"
+                            onChange={this.handleChange}
                           />
                         </FormGroup>
                     </Col>
@@ -152,21 +276,27 @@ class NewPRF extends Component {
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "Input Amount",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "usd",
+                          onChange: this.handleChange
                         },
                         {
                           label: "PHP",
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "TOTAL AMOUNT",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "php",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Total",
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "TOTAL AMOUNT",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "total",
+                          onChange: this.handleChange
                         }
                       ]}
                     />
@@ -178,21 +308,27 @@ class NewPRF extends Component {
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Enter Name",
-                          defaultValue:""
+                          defaultValue:"",
+                          name:"prepared_by",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Approved By:",
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Enter Name",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "approved_by",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Received By:",
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Enter Name",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "received_by",
+                          onChange: this.handleChange
                         }
                       ]}
                     />
