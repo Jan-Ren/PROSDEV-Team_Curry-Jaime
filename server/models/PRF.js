@@ -34,7 +34,7 @@ const PRF = new Schema({
         type: Number, 
         required:true
     },
-    // po_number: Number,
+    po : [{type : Schema.Types.ObjectId, ref : 'po'}],
     pax: [{
         type: String,
         require:true
