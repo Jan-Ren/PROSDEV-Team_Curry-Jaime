@@ -50,6 +50,7 @@ const PRF = new Schema({
     },
     paid_date: Date,
     particulars: String,
+    conversion_rate: Number,
     php: Number,
     usd: Number,
     total: Number,
