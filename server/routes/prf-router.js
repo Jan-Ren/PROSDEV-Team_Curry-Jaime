@@ -8,6 +8,6 @@ router.post('/PRF', PRFCntrl.createPRF)
 router.put('/PRF/:id', jwtValidator, PRFCntrl.updatePRF)
 router.delete('/PRF/:id', jwtValidator, PRFCntrl.deletePRF)
 router.get('/PRF/:id', jwtValidator, PRFCntrl.getPRFById)
-router.get('/All-PRF', jwtValidator, PRFCntrl.getAllPRF)
+router.get('/All-PRF', PRFCntrl.getAllPRF)
 
 module.exports = router
