@@ -35,10 +35,10 @@ const PRF = new Schema({
         required:true
     },
     // po_number: Number,
-    pax: {
+    pax: [{
         type: String,
         require:true
-    },
+    }],
     recepient: String,
     date_created: {
         type: Date,
@@ -50,6 +50,7 @@ const PRF = new Schema({
     },
     paid_date: Date,
     particulars: String,
+    conversion_rate: Number,
     php: Number,
     usd: Number,
     total: Number,
