@@ -67,26 +67,30 @@ class NewPRF extends Component {
 
   handleChange(e){
     e.preventDefault()
-    // console.log(e.target.name)
     const {name, value} = e.target
-    // alert(this.state['approved_by'])
-    // alert(name)
+
     if (name.includes('pax')) {
-      // const index
-      // this.state.pax[index] = e.target.value
-      // this.setState({pax:this.state.pax})
       const index = name.replace("pax", "")
-      // alert(index)
       const pax = [...this.state.pax]
       pax[index] = value
       this.setState({
         pax: pax
       }, () => { console.log(this.state.pax[index])})
     } else {
+      console.log(`${name}`)
        this.setState( {
         [name]: value
        }, () => { console.log(this.state[name]) }) 
-    }    
+
+       if (name === 'usd' || name === 'php') {
+        const { usd, php, conversion_rate } = this.state
+        console.log(`${usd} and ${php} and ${conversion_rate}`)
+        if (usd !== '' && php !== '' && conversion_rate !== '') {
+          const total = usd*conversion_rate + php
+          this.setState({ total })
+        }    
+      }
+    }
     
   }
   handleRemove(index){
@@ -293,6 +297,7 @@ class NewPRF extends Component {
                           placeholder: "Input Amount",
                           defaultValue: "",
                           name: "usd",
+                          step: "0.01",
                           onChange: this.handleChange
                         },
                         {
@@ -302,6 +307,7 @@ class NewPRF extends Component {
                           placeholder: "TOTAL AMOUNT",
                           defaultValue: "",
                           name: "php",
+                          step: "0.01",
                           onChange: this.handleChange
                         },
                         {
@@ -310,7 +316,9 @@ class NewPRF extends Component {
                           bsClass: "form-control",
                           placeholder: "TOTAL AMOUNT",
                           defaultValue: "",
+                          value: this.state.total,
                           name: "total",
+                          step: "0.01",
                           onChange: this.handleChange
                         }
                       ]}
