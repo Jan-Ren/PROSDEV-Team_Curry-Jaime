@@ -34,11 +34,11 @@ const PRF = new Schema({
         type: Number, 
         required:true
     },
-    // po_number: Number,
-    pax: {
+    po : [{type : Schema.Types.ObjectId, ref : 'po'}],
+    pax: [{
         type: String,
         require:true
-    },
+    }],
     recepient: String,
     date_created: {
         type: Date,

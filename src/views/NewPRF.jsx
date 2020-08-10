@@ -31,7 +31,7 @@ import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
 
 
-class UserProfile extends Component {
+class NewPRF extends Component {
   constructor(props) {
     super(props)
 
@@ -150,7 +150,7 @@ class UserProfile extends Component {
                           placeholder: "800033",
                           defaultValue: "",
                           name:"prf_number",
-                          onChange: this.handleChange
+                          onChange: this.handleChange,
                           plaintext: true,
                           readOnly: true
                         },
