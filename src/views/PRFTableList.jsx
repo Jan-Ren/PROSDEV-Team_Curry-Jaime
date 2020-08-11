@@ -47,11 +47,11 @@ class PRFTableList extends Component {
     })
     
     // to check if na-receive yung data
-    setTimeout(() => {
-      window.alert(this.state.PRF)
-      window.alert(this.state.PRF)
-      console.log(this.state.PRF)
-    }, 3000)
+    // setTimeout(() => {
+    //   window.alert(this.state.PRF)
+    //   window.alert(this.state.PRF)
+    //   console.log(this.state.PRF)
+    // }, 3000)
   }
 
 //   render() {

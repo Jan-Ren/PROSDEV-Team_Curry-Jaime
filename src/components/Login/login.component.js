@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import {ReactComponent as ReactLogo} from './undraw_travel_booking_6koc.svg';
+import { Switch, Redirect } from 'react-router-dom';
 import users from '../../api/users'
 
 
@@ -19,6 +20,7 @@ export default class Login extends Component {
         this.state = {
             isAdmin:true,
             password: '',
+            login_success: false
         }
 
         this.handleChange = this.handleChange.bind(this)
@@ -42,10 +44,10 @@ export default class Login extends Component {
         const payload = { isAdmin, password }
         
         try {
-            await users.login(payload).then(res => {
-                alert(res.data)
-                console.log(res.data)
-            })
+            const data = (await users.login(payload)).data
+            console.log(data)
+            localStorage.setItem('token', data.token)
+            this.setState({ login_success: true })
         } catch (error) {
             alert(error)
             console.log(error.message)
@@ -69,9 +71,22 @@ export default class Login extends Component {
         }
     }
 
+    handleRedirect() {
+        if (this.state.login_success) {
+
+            if (this.state.isAdmin)
+                return <Redirect from='/' to='/Admin' />
+            else
+                return <Redirect from='/' to='/Employee' />
+        }
+    }
+
     render() {        
-        return (
+        return (        
             <div className="App">
+
+                { this.handleRedirect() }
+
                 <div className="auth-wrapper">
                     <div className="auth-inner">
                     <ReactLogo 
@@ -84,7 +99,7 @@ export default class Login extends Component {
                         <div className="form-group">
                             <label>User</label>
                             {/* <input type="email" className="form-control" placeholder="name@example.com" /> */}
-                            <Dropdown options={options} onChange={this.handleChange} name="isAdmin" value={defaultOption} placeholder="Select an option" />
+                            <Dropdown options={options} onChange={(e) => this.handleChange} name="isAdmin" value={this.state.isAdmin ? 'Admin': 'Employee'} placeholder="Select an option" />
                         </div>
                 
                         <div className="form-group">

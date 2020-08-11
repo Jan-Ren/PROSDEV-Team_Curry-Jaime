@@ -49,14 +49,15 @@ loginUser = async (req, res) => {
                         token,
                         user,
                     });
+                    
                 }
             );
-            // res.cookie('token', token, {
-            //     domain: "localhost",
-            //     maxAge: 3600,
-            //     httpOnly: true
-            // });
-            res.cookie('token', token);
+            res.cookie('token', token, {
+                // domain: "localhost",
+                maxAge: 3600,
+                httpOnly: true
+            });
+            // res.cookie('token', token);
         } else {
             return res
             .status(400)
