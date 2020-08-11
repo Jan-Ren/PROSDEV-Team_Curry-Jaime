@@ -2,6 +2,14 @@ const User = require('../models/User')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const keys = require('../db/index')
+const jsonwebtoken = require('jsonwebtoken');
+
+getJWT = (req, res) => {
+    const token = jsonwebtoken.sign({ user: 'johndoe' }, require('../db').secretOrKey)
+
+    res.cookie('token', token, { httpOnly: true });
+    res.json({ token });
+}
 
 loginUser = async (req, res) => {
     if (!req.body.password) {
@@ -35,18 +43,20 @@ loginUser = async (req, res) => {
                 payload,
                 keys.secretOrKey,
                 { expiresIn: 28800 }, // 8hours in seconds
-                (err, token) => {
+                (err, token) => {                    
                     res.json({
                         success: true,
                         token,
-                        user
+                        user,
                     });
                 }
             );
-            res.cookie('token', token, {
-                maxAge: 3600,
-                httpOnly: true
-            })
+            // res.cookie('token', token, {
+            //     domain: "localhost",
+            //     maxAge: 3600,
+            //     httpOnly: true
+            // });
+            res.cookie('token', token);
         } else {
             return res
             .status(400)
@@ -91,5 +101,6 @@ module.exports = {
     loginUser,
     logoutUser,
     registerUser,    
-    getUser
+    getUser,
+    getJWT
 }
