@@ -168,7 +168,7 @@ class NewPRF extends Component {
                 content={
                   <form onSubmit={this.handleSave}>
                     <FormInputs
-                      ncols={["col-md-3","col-md-5",  "col-md-3"]}
+                      ncols={["col-md-3","col-md-5"]}
                       properties={[
                         {
                           label: "PRF#",
@@ -190,14 +190,6 @@ class NewPRF extends Component {
                           name:"recepient",
                           onChange: this.handleChange
                         },
-                        {
-                          label: "Date",
-                          type: "date",
-                          bsClass: "form-control",
-                          placeholder: "Email",
-                          name:"paid_date",
-                          onChange: this.handleChange
-                        }
                       ]}
                                             
                       // value={this.state.prf_number}
