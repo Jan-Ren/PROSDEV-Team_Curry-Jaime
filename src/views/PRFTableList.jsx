@@ -16,6 +16,7 @@
 
 */
 import React, { Component } from "react";
+import { Link } from 'react-router-dom'
 import { Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
@@ -146,7 +147,7 @@ class PRFTableList extends Component {
                                 <></>
                                 <Button variant="outline-primary" bsStyle="primary" href="/employee/New-PO"><i className="pe-7s-news-paper" /> New PO</Button>{' '}
                                 <></>
-                                <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>
+                                <Button variant="outline-secondary"><Link to={{pathname: '/employee/New-PRF', state: {PRF: prop} }} ><i className="pe-7s-look" />View</Link></Button>
                             </td>
                           </tr>
                         );

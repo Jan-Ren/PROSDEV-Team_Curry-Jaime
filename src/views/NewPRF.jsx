@@ -35,24 +35,41 @@ class NewPRF extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-        // name: 'Sample Name',
-        // rating: '9.0',
-        // time: '24:00',
-        // firstNames:[],
-        // lastNames:[]
-        prf_number: 800033,
-        pax:[''],
-        recepient: '',
-        paid_date: '',
-        particulars: '',
-        php: 0,
-        usd: 0,
-        total: 0,
-        conversion_rate: 0,
-        prepared_by: '',
-        approved_by: '',
-        received_by: '',
+    if (this.props.location.state) {
+      console.log(this.props.location.state.PRF)
+      alert('waw')
+      const { prf_number, pax, recipient, paid_date, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = props.location.state.PRF
+      this.state = {
+          prf_number,
+          pax,
+          recipient,
+          paid_date,
+          particulars,
+          php,
+          usd,
+          total,
+          conversion_rate,
+          prepared_by,
+          approved_by,
+          received_by
+      }
+    } else {
+      console.log(this.props.location)
+      alert('daz weird')
+      this.state = {
+          prf_number: 800033,
+          pax:[''],
+          recipient: '',
+          paid_date: '',
+          particulars: '',
+          php: 0,
+          usd: 0,
+          total: 0,
+          conversion_rate: 0,
+          prepared_by: '',
+          approved_by: '',
+          received_by: '',      
+      }
     }
     this.handleChange = this.handleChange.bind(this)
   }
@@ -127,31 +144,60 @@ class NewPRF extends Component {
     // })
     // console.log(this.state)
 
-    const { prf_number, pax, recepient, paid_date, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by } = this.state
-    const payload = { prf_number, pax, recepient, paid_date, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by }
+    const { prf_number, pax, recipient, paid_date, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by } = this.state
+    const payload = { prf_number, pax, recipient, paid_date, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by }
     alert('here')
-    console.log(this.state)
-    try {
-      await api.insertPRF(payload).then(res => {   
-        window.alert(res.message)
-        this.setState({
-          prf_number: '',
-          pax: [''],
-          recepient: '',
-          paid_date: '',
-          particulars: '',
-          conversion_rate: 0,
-          php: 0,
-          usd: 0,
-          total: 0,
-          prepared_by: '',
-          approved_by: '',
-          received_by: ''
+    
+    if (this.props.location.state.PRF) {
+      const prf_id = this.props.location.state.PRF._id
+      try {
+        await api.updatePRFById(prf_id, payload).then(res => {
+          window.alert(`Edit succesfully: ${res.message}`)
+          this.setState({
+            prf_number: '',
+            pax: [''],
+            recipient: '',
+            paid_date: '',
+            particulars: '',
+            conversion_rate: 0,
+            php: 0,
+            usd: 0,
+            total: 0,
+            prepared_by: '',
+            approved_by: '',
+            received_by: ''
+          })
         })
-      })
-    } catch (error) {
-      console.log(error.message)
-      alert(error.message)
+      } catch (error) {
+        console.log(error.message)
+        alert(`Editing failed: ${error.message}`)
+      }
+
+    } else {
+
+      try {
+        await api.insertPRF(payload).then(res => {   
+          window.alert(res.message)
+          this.setState({
+            prf_number: '',
+            pax: [''],
+            recipient: '',
+            paid_date: '',
+            particulars: '',
+            conversion_rate: 0,
+            php: 0,
+            usd: 0,
+            total: 0,
+            prepared_by: '',
+            approved_by: '',
+            received_by: ''
+          })
+        })
+      } catch (error) {
+        console.log(error.message)
+        alert(error.message)
+      }
+
     }
     
     
@@ -178,6 +224,7 @@ class NewPRF extends Component {
                           defaultValue: "",
                           name:"prf_number",
                           onChange: this.handleChange,
+                          value: this.state.prf_number,
                           plaintext: true,
                           readOnly: true
                         },
@@ -185,10 +232,11 @@ class NewPRF extends Component {
                           label: "To",
                           type: "text",
                           bsClass: "form-control",
-                          placeholder: "Recepient",
+                          placeholder: "Recipient",
                           defaultValue: "",
-                          name:"recepient",
-                          onChange: this.handleChange
+                          name:"recipient",
+                          onChange: this.handleChange,
+                          value: this.state.recipient,
                         },
                       ]}
                                             
@@ -201,7 +249,7 @@ class NewPRF extends Component {
                           label: "To",
                           type: "text",
                           bsClass: "form-control",
-                          placeholder: "Recepient",
+                          placeholder: "Recipient",
                           defaultValue: "",
                         },
                       ]}
@@ -255,7 +303,8 @@ class NewPRF extends Component {
                                 placeholder: "Input Name",
                                 defaultValue: ``,
                                 name:`pax${index}`,
-                                onChange: this.handleChange
+                                onChange: this.handleChange,
+                                value: this.state.pax[index],
                               }
                             ]}
                           />
@@ -280,6 +329,7 @@ class NewPRF extends Component {
                             defaultValue=""
                             name="particulars"
                             onChange={this.handleChange}
+                            value= {this.state.particulars}
                           />
                         </FormGroup>
                     </Col>
@@ -294,9 +344,9 @@ class NewPRF extends Component {
                           placeholder: "Input Amount",
                           defaultValue:"",
                           step:"0.01",
-                          value:this.state.conversion_rate,
                           name: "conversion_rate",
-                          onChange: this.handleChange
+                          onChange: this.handleChange,
+                          value:this.state.conversion_rate,
                         },
                         {
                           label: "US $",
@@ -304,10 +354,10 @@ class NewPRF extends Component {
                           bsClass: "form-control",
                           placeholder: "Input Amount",
                           defaultValue: "",
-                          value:this.state.usd,
                           name: "usd",
                           step: "0.01",
-                          onChange: this.handleChange
+                          onChange: this.handleChange,
+                          value:this.state.usd,
                         },
                         {
                           label: "PHP",
@@ -315,10 +365,10 @@ class NewPRF extends Component {
                           bsClass: "form-control",
                           placeholder: "TOTAL AMOUNT",
                           defaultValue: "",
-                          value:this.state.php,
                           name: "php",
                           step: "0.01",
-                          onChange: this.handleChange
+                          onChange: this.handleChange,
+                          value:this.state.php,
                         },
                         {
                           label: "Total",
@@ -326,10 +376,10 @@ class NewPRF extends Component {
                           bsClass: "form-control",
                           placeholder: "TOTAL AMOUNT",
                           defaultValue: "",
-                          value: this.state.total,
                           name: "total",
                           step: "0.01",
-                          onChange: this.handleChange
+                          onChange: this.handleChange,
+                          value: this.state.total,
                         }
                       ]}
                     />
@@ -343,7 +393,8 @@ class NewPRF extends Component {
                           placeholder: "Enter Name",
                           defaultValue:"",
                           name:"prepared_by",
-                          onChange: this.handleChange
+                          onChange: this.handleChange,
+                          value: this.state.prepared_by,
                         },
                         {
                           label: "Approved By:",
@@ -352,7 +403,8 @@ class NewPRF extends Component {
                           placeholder: "Enter Name",
                           defaultValue: "",
                           name: "approved_by",
-                          onChange: this.handleChange
+                          onChange: this.handleChange,
+                          value: this.state.approved_by,
                         },
                         {
                           label: "Received By:",
@@ -361,7 +413,8 @@ class NewPRF extends Component {
                           placeholder: "Enter Name",
                           defaultValue: "",
                           name: "received_by",
-                          onChange: this.handleChange
+                          onChange: this.handleChange,
+                          value: this.state.received_by,
                         }
                       ]}
                     />
