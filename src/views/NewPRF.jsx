@@ -46,9 +46,10 @@ class NewPRF extends Component {
         recepient: '',
         paid_date: '',
         particulars: '',
-        php: '',
-        usd: '',
-        total: '',
+        php: 0,
+        usd: 0,
+        total: 0,
+        conversion_rate: 0,
         prepared_by: '',
         approved_by: '',
         received_by: '',
@@ -77,19 +78,31 @@ class NewPRF extends Component {
         pax: pax
       }, () => { console.log(this.state.pax[index])})
     } else {
-      console.log(`${name}`)
+      
        this.setState( {
         [name]: value
-       }, () => { console.log(this.state[name]) }) 
+       }, () => { 
+         console.log(this.state[name]) 
+        
+         if (name === 'usd' || name === 'php' || name === 'conversion_rate') {
+          const { usd, php, conversion_rate } = this.state
+          // console.log(`${usd} and ${php} and ${conversion_rate}`)
+          let total = 0
 
-       if (name === 'usd' || name === 'php') {
-        const { usd, php, conversion_rate } = this.state
-        console.log(`${usd} and ${php} and ${conversion_rate}`)
-        if (usd !== '' && php !== '' && conversion_rate !== '') {
-          const total = usd*conversion_rate + php
-          this.setState({ total })
-        }    
-      }
+          if (usd !== '' && php !== '' && conversion_rate !== '') {
+            total = (parseFloat(usd) * parseFloat(conversion_rate)) + parseFloat(php)
+          } else if (usd === '' || conversion_rate === '') {
+            if (php !== '')
+              total = parseFloat(php)
+          } else {
+            if (usd !== '' && conversion_rate !== '')
+              total = (parseFloat(usd) * parseFloat(conversion_rate))
+          } 
+          
+          this.setState({ total: total })
+
+        }
+        })     
     }
     
   }
@@ -127,10 +140,10 @@ class NewPRF extends Component {
           recepient: '',
           paid_date: '',
           particulars: '',
-          conversion_rate: '',
-          php: '',
-          usd: '',
-          total: '',
+          conversion_rate: 0,
+          php: 0,
+          usd: 0,
+          total: 0,
           prepared_by: '',
           approved_by: '',
           received_by: ''
@@ -144,6 +157,7 @@ class NewPRF extends Component {
     
   }
   render() {
+    
     return (
       <div className="content">
         <Grid fluid>
@@ -288,6 +302,7 @@ class NewPRF extends Component {
                           placeholder: "Input Amount",
                           defaultValue:"",
                           step:"0.01",
+                          value:this.state.conversion_rate,
                           name: "conversion_rate",
                           onChange: this.handleChange
                         },
@@ -297,6 +312,7 @@ class NewPRF extends Component {
                           bsClass: "form-control",
                           placeholder: "Input Amount",
                           defaultValue: "",
+                          value:this.state.usd,
                           name: "usd",
                           step: "0.01",
                           onChange: this.handleChange
@@ -307,13 +323,14 @@ class NewPRF extends Component {
                           bsClass: "form-control",
                           placeholder: "TOTAL AMOUNT",
                           defaultValue: "",
+                          value:this.state.php,
                           name: "php",
                           step: "0.01",
                           onChange: this.handleChange
                         },
                         {
                           label: "Total",
-                          type: "number",
+                          readOnly: "true",
                           bsClass: "form-control",
                           placeholder: "TOTAL AMOUNT",
                           defaultValue: "",
