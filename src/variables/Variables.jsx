@@ -266,26 +266,32 @@ var style = {
 // // // For tables
 // //
 //
-const prfHArray = ["PRF#", "Recipient", "Paid Date", "Date Created", "Last Modified"];
-  const prfDArray = [
-  ["850532", "Aaron", "07/19/20", "", ""],
-  ["850533", "Iris", "07/20/20", "", ""],
-  ["850534", "Janren", "07/21/20", "", ""],
-  ["850535", "Jerick", "07/22/20", "", ""],
-  ["850536", "Jitsu", "07/23/20", "", ""],
-  ["850537", "Rollo", "07/24/20", "", ""],
+const prfHArray = ["PRF#", "Date", "Recepient", "Paid Date", "Date Created", "Last Modified"];
+const prfDArray = [
+  ["850532", "07/20/2020", "Aaron", "07/19/20", "", ""],
+  ["850533", "07/21/2020", "Iris", "07/20/20", "", ""],
+  ["850534", "07/22/2020", "Janren", "07/21/20", "", ""],
+  ["850535", "07/23/2020", "Jerick", "07/22/20", "", ""],
+  ["850536", "07/24/2020", "Jitsu", "07/23/20", "", ""],
+  ["850537", "07/25/2020", "Rollo", "07/24/20", "", ""],
 ];
 
-const poHArray = ["PO#", "Recipient", "Paid Date","PRF#", "Date Created", "Last Modified"];
+const poHArray = ["PO#", "Date", "Recepient", "Paid Date","PRF#", "Date Created", "Last Modified"];
 const poDArray = [
-  ["117620", "Aaron", "07/19/20", "850532", "", ""],
-  ["117117", "Aaron", "07/18/20","850532", "", ""],
-  ["117118", "Iris", "07/20/20","850533", "", ""],
-  ["117120", "Janren", "07/21/20","850534", "", ""],
-  ["117300", "Jerick", "07/22/20","850535", "", ""],
-  ["117115", "Jitsu", "07/23/20","850536", "", ""],
-  ["117146", "Rollo", "07/24/20","850537", "", ""],
+  ["117620", "07/20/2020", "Aaron", "07/19/20", "850532", "", ""],
+  ["117117", "07/21/2020", "Aaron", "07/18/20","850532", "", ""],
+  ["117118", "07/21/2020", "Iris", "07/20/20","850533", "", ""],
+  ["117120", "07/22/2020", "Janren", "07/21/20","850534", "", ""],
+  ["117300", "07/23/2020", "Jerick", "07/22/20","850535", "", ""],
+  ["117115", "07/24/2020", "Jitsu", "07/23/20","850536", "", ""],
+  ["117146", "07/25/2020", "Rollo", "07/24/20","850537", "", ""],
 ];
+
+const poList = ["PO List"];
+const poFolder =[["220"],["219"],["218"],];
+
+const prfList = ["PRF List"];
+const prfFolder =[["220"],["219"],["218"],];
 
 module.exports = {
   style, // For notifications (App container and Notifications view)
@@ -293,4 +299,8 @@ module.exports = {
   prfDArray,
   poHArray,
   poDArray, // For tables (TableList view)
+  poList,
+  poFolder,
+  prfList,
+  prfFolder,
 };
