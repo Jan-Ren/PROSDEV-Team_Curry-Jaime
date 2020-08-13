@@ -44,9 +44,13 @@ export default class Login extends Component {
         const payload = { isAdmin, password }
         
         try {
+            alert("Camera1")
             const data = (await users.login(payload)).data
+            alert("camera2")
             console.log(data)
+            alert("camera3")
             localStorage.setItem('token', data.token)
+            alert("camera4")
             this.setState({ login_success: true })
         } catch (error) {
             alert(error)

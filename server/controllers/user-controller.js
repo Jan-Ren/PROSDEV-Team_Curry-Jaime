@@ -54,7 +54,6 @@ loginUser = async (req, res) => {
             );
             res.cookie('token', token, {
                 // domain: "localhost",
-                maxAge: 3600,
                 httpOnly: true
             });
             // res.cookie('token', token);
