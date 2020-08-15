@@ -171,7 +171,7 @@ class Employee extends Component {
         <div id="main-panel" className="main-panel" ref="mainPanel">
           <EmployeeNavbar
             {...this.props}
-            brandText={this.getBrandText(this.props.location.pathname)}
+            brandText={this.getBrandText(this.props.location.state.pathname)}
           />
           <Switch>
             {this.getRoutes(routes)}
