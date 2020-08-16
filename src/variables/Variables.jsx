@@ -287,10 +287,20 @@ const poDArray = [
   ["117146", "07/25/2020", "Rollo", "07/24/20","850537", "", ""],
 ];
 
+const poList = ["PO List"];
+const poFolder =[["220"],["219"],["218"],];
+
+const prfList = ["PRF List"];
+const prfFolder =[["220"],["219"],["218"],];
+
 module.exports = {
   style, // For notifications (App container and Notifications view)
   prfHArray,
   prfDArray,
   poHArray,
   poDArray, // For tables (TableList view)
+  poList,
+  poFolder,
+  prfList,
+  prfFolder,
 };

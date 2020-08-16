@@ -26,6 +26,8 @@ import { style } from "variables/Variables.jsx";
 
 import routes from "routes.js";
 import NewPO from "views/NewPO.jsx";
+import PRFTableList from "views/PRFTableList.jsx";
+import POTableList from "views/POTableList.jsx";
 
 class Employee extends Component {
   constructor(props) {
@@ -176,6 +178,8 @@ class Employee extends Component {
           <Switch>
             {this.getRoutes(routes)}
             <Route path="/employee/New-PO" component={NewPO} />
+            <Route path="/employee/PO/{}" component={POTableList} />
+            <Route path="/employee/PRF/{}" component={PRFTableList} />
           </Switch>
         </div>
       </div>
