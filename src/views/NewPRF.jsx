@@ -28,13 +28,72 @@ import {
 import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
-
+import api from '../api'
 
 class NewPRF extends Component {
 
-  state = {
-    PAXNames:[]
+  constructor(props) {
+    super(props)
+
+    this.state = {
+        // name: 'Sample Name',
+        // rating: '9.0',
+        // time: '24:00',
+        // firstNames:[],
+        // lastNames:[]
+        prf_number: 800033,
+        pax:[''],
+        recepient: '',
+        paid_date: '',
+        particulars: '',
+        php: 0,
+        usd: 0,
+        total: 0,
+        conversion_rate: 0,
+        prepared_by: '',
+        approved_by: '',
+        received_by: '',
+        PAXNames:[]
+    }
+    if (this.props.location.state) {
+      console.log(this.props.location.state.PRF)
+      alert('waw')
+      const { prf_number, pax, recipient, paid_date, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = props.location.state.PRF
+      this.state = {
+          prf_number,
+          pax,
+          recipient,
+          paid_date,
+          particulars,
+          php,
+          usd,
+          total,
+          conversion_rate,
+          prepared_by,
+          approved_by,
+          received_by
+      }
+    } else {
+      console.log(this.props.location)
+      alert('daz weird')
+      this.state = {
+          prf_number: 800033,
+          pax:[''],
+          recipient: '',
+          paid_date: '',
+          particulars: '',
+          php: 0,
+          usd: 0,
+          total: 0,
+          conversion_rate: 0,
+          prepared_by: '',
+          approved_by: '',
+          received_by: '',      
+      }
+    }
+    this.handleChange = this.handleChange.bind(this)
   }
+  
 
   addName(){
     this.setState({PAXNames: [...this.state.PAXNames, ""]})
@@ -47,6 +106,51 @@ class NewPRF extends Component {
     this.state.PAXNames.splice(index,1)
     this.setState({PAXNames: this.state.PAXNames})
 
+  }
+  handleSave = async () => {
+
+    // const { name, rating, time } = this.state
+    // const arrayTime = time.split('/')
+    // const payload = { name, rating, time: arrayTime }    
+
+    // await api.insertPRF(payload).then(res => {
+    //     window.alert(`Movie inserted successfully`)
+    //     this.setState({
+    //         name: '',
+    //         rating: '',
+    //         time: '',
+    //     })
+    // })
+    // console.log(this.state)
+
+    const { prf_number, pax, recepient, paid_date, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by } = this.state
+    const payload = { prf_number, pax, recepient, paid_date, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by }
+    alert('here')
+    console.log(this.state)
+    try {
+      await api.insertPRF(payload).then(res => {   
+        window.alert(res.message)
+        this.setState({
+          prf_number: '',
+          pax: [''],
+          recepient: '',
+          paid_date: '',
+          particulars: '',
+          conversion_rate: 0,
+          php: 0,
+          usd: 0,
+          total: 0,
+          prepared_by: '',
+          approved_by: '',
+          received_by: ''
+        })
+      })
+    } catch (error) {
+      console.log(error.message)
+      alert(error.message)
+    }
+    
+    
   }
   render() {
     return (
@@ -68,6 +172,8 @@ class NewPRF extends Component {
                           bsClass: "form-control",
                           placeholder: "800033",
                           defaultValue: "",
+                          name:"prf_number",
+                          onChange: this.handleChange,
                           plaintext: true,
                           readOnly: true
                         },
@@ -76,8 +182,32 @@ class NewPRF extends Component {
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Recepient",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name:"recepient",
+                          onChange: this.handleChange
                         },
+                      ]}
+                                            
+                      // value={this.state.prf_number}
+                      />
+                      <FormInputs
+                      ncols={["col-md-3","col-md-5",  "col-md-3"]}
+                      properties={[
+                        {
+                          label: "To",
+                          type: "text",
+                          bsClass: "form-control",
+                          placeholder: "Recepient",
+                          defaultValue: "",
+                        },
+                      ]}
+                      name="PRF_number"
+                      onChange={(e)=>this.handleChange(e)}
+                      value={this.state.prf_number}
+                      />
+                      <FormInputs
+                      ncols={["col-md-3","col-md-5",  "col-md-3"]}
+                      properties={[
                         {
                           label: "Date",
                           type: "date",
@@ -112,7 +242,9 @@ class NewPRF extends Component {
                                 type: "text",
                                 bsClass: "form-control",
                                 placeholder: "Input Name",
-                                defaultValue: ""
+                                defaultValue: ``,
+                                name:`pax${index}`,
+                                onChange: this.handleChange
                               }
                             ]}
                             onChange={(e)=>this.handleChange(e,index)}
@@ -133,6 +265,8 @@ class NewPRF extends Component {
                             bsClass="form-control"
                             placeholder="Input Particulars"
                             defaultValue=""
+                            name="particulars"
+                            onChange={this.handleChange}
                           />
                         </FormGroup>
                     </Col>
@@ -145,28 +279,44 @@ class NewPRF extends Component {
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "Input Amount",
-                          defaultValue:""
+                          defaultValue:"",
+                          step:"0.01",
+                          value:this.state.conversion_rate,
+                          name: "conversion_rate",
+                          onChange: this.handleChange
                         },
                         {
                           label: "US $",
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "Input Amount",
-                          defaultValue: ""
+                          defaultValue: "",
+                          value:this.state.usd,
+                          name: "usd",
+                          step: "0.01",
+                          onChange: this.handleChange
                         },
                         {
                           label: "PHP",
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "TOTAL AMOUNT",
-                          defaultValue: ""
+                          defaultValue: "",
+                          value:this.state.php,
+                          name: "php",
+                          step: "0.01",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Total",
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "TOTAL AMOUNT",
-                          defaultValue: ""
+                          defaultValue: "",
+                          value: this.state.total,
+                          name: "total",
+                          step: "0.01",
+                          onChange: this.handleChange
                         }
                       ]}
                     />
@@ -178,21 +328,27 @@ class NewPRF extends Component {
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Enter Name",
-                          defaultValue:""
+                          defaultValue:"",
+                          name:"prepared_by",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Approved By:",
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Enter Name",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "approved_by",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Received By:",
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Enter Name",
-                          defaultValue: ""
+                          defaultValue: "",
+                          name: "received_by",
+                          onChange: this.handleChange
                         }
                       ]}
                     />
