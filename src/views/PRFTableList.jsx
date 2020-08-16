@@ -22,10 +22,37 @@ import Card from "components/Card/Card.jsx";
 import { prfHArray, prfDArray } from "variables/Variables.jsx"; 
 
 import DateInput from "components/DatePicker/DatePicker.jsx"
-
+import api from '../api'
 
 
 class PRFTableList extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+        PRF: [],
+        columns: [],
+        isLoading: false,
+    }    
+  }
+  
+  componentDidMount = async () => {
+    this.setState({ isLoading: true })
+    
+    await api.getAllPRF().then(PRF => {
+        this.setState({
+            PRF: PRF.data.data,
+            isLoading: false,
+        })
+    })
+    
+    // to check if na-receive yung data
+    setTimeout(() => {
+      window.alert(this.state.PRF)
+      window.alert(this.state.PRF)
+      console.log(this.state.PRF)
+    }, 3000)
+  }
 
   render() {
     return (

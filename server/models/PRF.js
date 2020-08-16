@@ -39,7 +39,7 @@ const PRF = new Schema({
         type: String,
         require:true
     }],
-    recipient: String,
+    recepient: String,
     date_created: {
         type: Date,
         default: Date.now
