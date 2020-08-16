@@ -19,7 +19,7 @@ import React, { Component } from "react";
 import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { prfHArray, prfDArray } from "variables/Variables.jsx";
+import { prfHArray, prfDArray } from "variables/Variables.jsx"; 
 
 import DateInput from "components/DatePicker/DatePicker.jsx"
 
