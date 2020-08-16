@@ -16,7 +16,7 @@
 
 */
 import React, { Component } from "react";
-import { Grid, Row, Col, Table, Button } from "react-bootstrap";
+import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 import { poHArray, poDArray } from "variables/Variables.jsx";
@@ -34,7 +34,28 @@ class POTableList extends Component {
                 ctTableFullWidth
                 ctTableResponsive
                 content={
-                  <Table striped hover>
+                  <div>
+                    <Col md={8}>
+                    <Form inline>
+                      <FormGroup controlId="formInlineDateFrom">
+                          <ControlLabel>Dates</ControlLabel>{' '}
+                        <FormControl type="date" />
+                        </FormGroup>{' '}
+                        <FormGroup controlId="formInlineDateFrom">  
+                          <FormControl type="date" />
+                        </FormGroup>{' '}
+                        <FormGroup>
+                        <InputGroup>
+                          <FormControl type="number" placeholder="Search PO#" />
+                          <InputGroup.Addon>
+                            <Glyphicon glyph="search" />
+                          </InputGroup.Addon>
+                        </InputGroup>
+                      </FormGroup>
+                    </Form>
+                  </Col>
+
+                    <Table striped hover>
                     <thead>
                       <tr>
                         {poHArray.map((prop, key) => {
@@ -56,8 +77,10 @@ class POTableList extends Component {
                         );
                       })}
                     </tbody>
-                    
+                  
                   </Table>
+                    
+                  </div>
                 }
               />
             </Col>
