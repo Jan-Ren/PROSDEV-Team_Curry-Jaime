@@ -39,20 +39,6 @@ const dashboardRoutes = [
     layout: "/employee"
   },
   {
-    path: "/PRF-List",
-    name: "PRF List",
-    icon: "pe-7s-note2",
-    component: PRFList,
-    layout: "/employee"
-  },
-  {
-    path: "/PO-List",
-    name: "PO List",
-    icon: "pe-7s-note2",
-    component: POList,
-    layout: "/employee"
-  },
-  {
     NewPRF: true,
     path: "/New-PRF",
     name: "New PRF ",

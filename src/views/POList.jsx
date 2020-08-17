@@ -52,6 +52,7 @@ class POListFolders extends Component {
                                     })}
                                     <td>
                                     <Button variant="outline-secondary" bsStyle="primary" className="pull-right">Set as Working Directory</Button>
+                                    <Button className="pull-right" href="/employee/PO-List"><i className="pe-7s-look"/></Button>
                                     </td>
                                 </tr>
                                 

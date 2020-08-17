@@ -69,7 +69,7 @@ class PRFTableList extends Component {
                 ctTableResponsive
                 content={
                   <React.Fragment>
-                  <Col md={3}>
+                  <Col md={8}>
                     <Form inline>
                       <FormGroup controlId="formInlineDateFrom">
                           <ControlLabel>Dates</ControlLabel>{' '}

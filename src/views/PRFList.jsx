@@ -51,7 +51,9 @@ class PRFListFolders extends Component {
                                     return <td key={key}>{prop}</td>;
                                     })}
                                     <td>
+                                    
                                     <Button variant="outline-secondary" bsStyle="primary" className="pull-right">Set as Working Directory</Button>
+                                    <Button className="pull-right" href="/employee/PRF-List"><i className="pe-7s-look"/></Button>
                                     </td>
                                 </tr>
                                 
