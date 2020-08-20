@@ -29,6 +29,7 @@ import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
+import { AlertErrorOutline } from "material-ui/svg-icons";
 
 class NewPRF extends Component {
 
@@ -139,11 +140,15 @@ class NewPRF extends Component {
 
     // const { prf_number, pax, recipient, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by } = this.state
     const payload = this.state
-    alert('here')
+    // alert('here')
     console.log(this.state)
     if (this.props.location.state) {
       const prf_id = this.props.location.state.PRF._id
+      alert(prf_id)
+      console.log(this.state.conversion_rate)
+      console.log(this.state.recipient)
       try {
+        alert('editing please wait')
         await api.updatePRFById(prf_id, payload).then(res => {
           window.alert(`Edit succesfully: ${res.message}`)
           this.setState({
@@ -160,14 +165,15 @@ class NewPRF extends Component {
             received_by: ''
           })
         })
-        alert("edit done")
+        // alert("edit done")
       } catch (error) {
         console.log(error.message)
         alert(`Editing failed: ${error.message}`)
       }
 
     } else {
-      alert("saving please wait")
+      console.log(this.state)
+      alert("saving please wait")      
       try {
         await api.insertPRF(payload).then(res => {   
           window.alert(res.message)
@@ -192,7 +198,7 @@ class NewPRF extends Component {
         alert(error.message)
       }
     }
-    alert("pumasok ba")
+    // alert("pumasok ba")
     
   }
   render() {

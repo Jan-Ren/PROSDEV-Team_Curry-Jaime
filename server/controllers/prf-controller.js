@@ -62,6 +62,8 @@ updatePRF = async (req, res) => {
         prf.prepared_by = body.prepared_by
         prf.approved_by = body.approved_by
         prf.received_by = body.received_by
+        prf.recipient = body.recipient
+        prf.conversion_rate = body.conversion_rate
         
         prf
             .save()
