@@ -47,8 +47,8 @@ class Sidebar extends Component {
       >
         <div className="sidebar-wrapper">
           <ul className="nav">
-                    <li className={this.activeRoute("/table")}>
-                    <NavLink to={'/table'} className="nav-link" activeClassName="active">
+                    <li className={this.activeRoute("/employee/PRF-List-Folders")}>
+                    <NavLink to={'/employee/PRF-List-Folders'} className="nav-link" activeClassName="active">
                         <i className="pe-7s-note2"></i>
                         <p>Dashboard</p>
                     </NavLink>
@@ -66,7 +66,7 @@ class Sidebar extends Component {
                     </NavLink>
                     </li>
                     <li className="active-pro">
-                    <NavLink to={'/table'} className="nav-link" activeClassName="active">
+                    <NavLink to={'/employee/PRF-List'} className="nav-link" activeClassName="active">
                         <i className="pe-7s-back"></i>
                         <p>Back</p>
                     </NavLink>

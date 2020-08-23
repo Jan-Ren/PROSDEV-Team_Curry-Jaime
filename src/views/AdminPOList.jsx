@@ -16,13 +16,23 @@
 
 */
 import React, { Component } from "react";
+import {Redirect} from "react-router-dom";
 import { Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 import { poFolder } from "variables/Variables.jsx";
 
+const options = {
+    // ---------------------------------
+    // detects click on each row
+    //---------------------------------
+    onRowClick: function(row) {
 
-class POListFolders extends Component {
+    }
+};
+
+class AdminPOListFolders extends Component {
+
   render() {
     return (
       <div className="content">
@@ -48,8 +58,11 @@ class POListFolders extends Component {
                                 return (
                                 <tr key={key}>
                                     {prop.map((prop, key) => {
-                                    return <td key={key}>{prop}</td>;
+                                    return <td key={key} onRowClick={() => {
+                                        return <Redirect path="/employee/PO/{}"/>
+                                }}>{prop}</td>;
                                     })}
+                                    
                                     <td>
                                     <Button variant="outline-secondary" bsStyle="danger" className="pull-right"><i className="pe-7s-close-circle"/></Button>
                                     <Button variant="outline-secondary" bsStyle="primary" className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
@@ -73,4 +86,4 @@ class POListFolders extends Component {
   }
 }
 
-export default POListFolders;
+export default AdminPOListFolders;
