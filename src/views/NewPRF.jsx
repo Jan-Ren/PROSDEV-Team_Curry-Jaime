@@ -30,6 +30,7 @@ import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
 import { AlertErrorOutline } from "material-ui/svg-icons";
+import { withRouter } from 'react-router-dom'
 
 class NewPRF extends Component {
 
@@ -165,7 +166,8 @@ class NewPRF extends Component {
             received_by: ''
           })
         })
-        // alert("edit done")
+        alert("edit done")
+        this.props.history.push('/PRF-List')
       } catch (error) {
         console.log(error.message)
         alert(`Editing failed: ${error.message}`)
@@ -210,7 +212,7 @@ class NewPRF extends Component {
               <Card
                 title="New PRF"
                 content={
-                  <form onSubmit={this.handleSave}>
+                  <form onSubmit={this.handleSave.bind(this)}>
                     
                     <FormInputs
                       ncols={["col-md-3", "col-md-6"]}
@@ -413,4 +415,4 @@ class NewPRF extends Component {
   }
 }
 
-export default NewPRF;
+export default withRouter(NewPRF);
