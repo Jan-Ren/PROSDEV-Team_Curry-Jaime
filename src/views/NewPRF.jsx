@@ -401,8 +401,7 @@ class NewPRF extends Component {
                       ]}
                     />
                     
-                    <Button pullRight bsStyle="info"  fill type="submit"> Save PRF </Button>
-                    <Button pullRight bsStyle="danger" fill > Cancel </Button>
+                    <Button pullRight bsStyle="danger" fill > Cancel Creation </Button>
                     <div className="clearfix" />
                   </form>
                 }

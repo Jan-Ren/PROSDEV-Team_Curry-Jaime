@@ -24,7 +24,10 @@ import Sidebar from "components/Sidebar/Sidebar";
 
 import { style } from "variables/Variables.jsx";
 
-import routes from "routes.js";
+import routes from "adminRoutes.js";
+import NewPO from "views/NewPO.jsx";
+import PRFTableList from "views/AdminPRFTableList.jsx";
+import POTableList from "views/AdminPOTableList.jsx";
 
 class Admin extends Component {
   constructor(props) {
@@ -172,7 +175,12 @@ class Admin extends Component {
             {...this.props}
             brandText={this.getBrandText(this.props.location.pathname)}
           />
-          <Switch>{this.getRoutes(routes)}</Switch>
+          <Switch>
+            {this.getRoutes(routes)}
+            <Route path="/admin/New-PO" component={NewPO} />
+            <Route path="/admin/PO-List/" component={POTableList} />
+            <Route path="/admin/PRF-List/" component={PRFTableList} />
+          </Switch>
         </div>
       </div>
     );

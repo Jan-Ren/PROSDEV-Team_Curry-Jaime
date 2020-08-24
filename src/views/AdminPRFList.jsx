@@ -19,10 +19,10 @@ import React, { Component } from "react";
 import { Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { poFolder } from "variables/Variables.jsx";
+import { prfFolder } from "variables/Variables.jsx";
 
 
-class POListFolders extends Component {
+class AdminPRFListFolders extends Component {
   render() {
     return (
       <div className="content">
@@ -30,7 +30,7 @@ class POListFolders extends Component {
           <Row>
             <Col md={8}>
               <Card
-                title="PO List"
+                title="PRF List"
                 ctTableResponsive
                 content={     
                     <div>
@@ -44,7 +44,7 @@ class POListFolders extends Component {
                             </tr>
                             </thead> */}
                             <tbody>
-                            {poFolder.map((prop, key) => {
+                            {prfFolder.map((prop, key) => {
                                 return (
                                 <tr key={key}>
                                     {prop.map((prop, key) => {
@@ -73,4 +73,4 @@ class POListFolders extends Component {
   }
 }
 
-export default POListFolders;
+export default AdminPRFListFolders;
