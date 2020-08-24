@@ -28,24 +28,258 @@ import {
 import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
-
+import api from '../api'
+import { AlertErrorOutline } from "material-ui/svg-icons";
 
 class NewPO extends Component {
 
-  state = {
-    PAXNames:[],
+  constructor(props) {
+    super(props)
+
+    // if edit
+    if (this.props.location.state) {
+      console.log(this.props.location.state.PRF)
+      if (this.props.location.state.action === "edit") {
+        alert('waw')
+        const { prf, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = props.location.state.PRF
+        this.state = {
+            prf,
+            pax,
+            recipient,
+            particulars,
+            php,
+            usd,
+            total,
+            conversion_rate,
+            prepared_by,
+            approved_by,
+            received_by
+        }        
+      } else if (this.props.location.state.action === "new") {
+          alert('daz weird')
+          // PRF
+          this.state = {          
+              po_number: 711800,
+              prf: { prf_number: 800034,
+                      pax: [''],
+                      recipient: '',
+                      particulars: '',
+                      conversion_rate: 0,
+                      php: 0,
+                      usd: 0,
+                      total: 0,
+                      prepared_by: '',
+                      approved_by: '',
+                      received_by: '' },
+              pax:[''],
+              recipient: '',
+              particulars: '',
+              php: 0,
+              usd: 0,
+              total: 0,
+              conversion_rate: 0,
+              prepared_by: '',
+              approved_by: '',
+              received_by: '',      
+          }
+      }
+    } 
+    // if new po, temporarily delete later
+    else {
+      console.log(this.props.location)
+      alert('daz weird')
+      // PRF
+      this.state = {          
+          po_number: 711800,
+          prf: { prf_number: 800034,
+                pax: [''],
+                recipient: '',
+                particulars: '',
+                conversion_rate: 0,
+                php: 0,
+                usd: 0,
+                total: 0,
+                prepared_by: '',
+                approved_by: '',
+                received_by: '' },
+          pax:[''],
+          recipient: '',
+          particulars: '',
+          php: 0,
+          usd: 0,
+          total: 0,
+          conversion_rate: 0,
+          prepared_by: '',
+          approved_by: '',
+          received_by: '',      
+      }
+    }
+    this.handleChange = this.handleChange.bind(this)
   }
+  
 
   addName(){
-    this.setState({PAXNames: [...this.state.PAXNames, ""]})
+    this.setState({pax: [...this.state.pax, ""]})
   }
-  handleChange(e, index){
-    this.state.PAXNames[index] = e.target.value
-    this.setState({PAXNames:this.state.PAXNames})
+  handleChange(e){
+    e.preventDefault()
+    const {name, value} = e.target
+
+    if (name.includes('pax')) {
+      const index = name.replace("pax", "")
+      
+      const pax = [...this.state.pax]
+      pax[index] = value
+      this.setState({
+        pax: pax
+      }, () => { console.log(this.state.pax[index])})
+    } else {
+       this.setState( {
+        [name]: value
+       }, () => { 
+         console.log(this.state[name]) 
+
+         if (name === 'usd' || name === 'php' || name === 'conversion_rate') {
+          const { usd, php, conversion_rate } = this.state
+          
+          let total = 0
+          if (usd !== '' && php !== '' && conversion_rate !== '') {
+            total = (parseFloat(usd) * parseFloat(conversion_rate)) + parseFloat(php)
+          } else if (usd === '' || conversion_rate === '') {
+            if (php !== '')
+              total = parseFloat(php)
+          } else {
+            if (usd !== '' && conversion_rate !== '')
+              total = (parseFloat(usd) * parseFloat(conversion_rate))
+          } 
+          
+          this.setState({ total: total })
+
+         }
+        }) 
+      }
+    
   }
+
   handleRemove(index){
-    this.state.PAXNames.splice(index,1)
-    this.setState({PAXNames: this.state.PAXNames})
+    this.state.pax.splice(index,1)
+    this.setState({pax: this.state.pax})
+
+  }
+  handleSave = async () => {
+
+    // const { name, rating, time } = this.state
+    // const arrayTime = time.split('/')
+    // const payload = { name, rating, time: arrayTime }    
+
+    // await api.insertPRF(payload).then(res => {
+    //     window.alert(`Movie inserted successfully`)
+    //     this.setState({
+    //         name: '',
+    //         rating: '',
+    //         time: '',
+    //     })
+    // })
+    // console.log(this.state)
+
+    // const { prf_number, pax, recipient, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by } = this.state
+    const payload = this.state
+    // alert('here')
+    console.log(this.state)
+    if (this.props.location.state) {
+      if (this.props.location.state.action === "edit") {        
+        const po_id = this.props.location.state.PO._id
+        alert(po_id)
+        try {
+          alert('editing please wait')
+          await api.updatePOById(po_id, payload).then(res => {
+            window.alert(`Edit succesfully: ${res.message}`)
+            this.setState({
+              po_number: '',
+              prf: {prf_number: ''},
+              pax: [''],
+              recipient: '',
+              particulars: '',
+              conversion_rate: 0,
+              php: 0,
+              usd: 0,
+              total: 0,
+              prepared_by: '',
+              approved_by: '',
+              received_by: ''
+            })
+          })
+          // alert("edit done")
+        } catch (error) {
+          console.log(error.message)
+          alert(`Editing failed: ${error.message}`)
+        }
+      } else if (this.props.location.state.action === "new") {
+        alert("saving please wait")      
+        try {
+          await api.insertPO(payload).then(res => {   
+            window.alert(res.message)
+            // this.setState({
+            //   po_number: '',
+            //   prf: {prf_number: ''},
+            //   pax: [''],
+            //   recipient: '',
+            //   particulars: '',
+            //   conversion_rate: 0,
+            //   php: 0,
+            //   usd: 0,
+            //   total: 0,
+            //   prepared_by: '',
+            //   approved_by: '',
+            //   received_by: ''
+            // })
+
+            alert("saving done")
+          })          
+        } catch (error) {
+          console.log(error.message)
+          alert(error.message)
+        }
+      }
+
+    } 
+    // temporarily delete later
+    else {
+      console.log(this.state)
+      alert("saving please wait")      
+      try {
+        await api.insertPO(payload).then(res => {   
+          window.alert(res.message)
+          this.setState({
+            po_number: '',
+            prf: {prf_number: ''},
+            pax: [''],
+            recipient: '',
+            particulars: '',
+            conversion_rate: 0,
+            php: 0,
+            usd: 0,
+            total: 0,
+            prepared_by: '',
+            approved_by: '',
+            received_by: ''
+          })
+
+          alert("saving done")
+        })
+        // console.log(payload)
+        // alert("wait")
+        // console.log(this.state)
+        // await api.insertPO({po_number: 123456}).then(res => {
+        //   alert("Saving done")
+        // })
+      } catch (error) {
+        console.log(error)
+        alert(error.message)
+      }
+    }
+    // alert("pumasok ba")
+    
   }
   render() {
     return (
@@ -56,58 +290,77 @@ class NewPO extends Component {
               <Card
                 title="New PO"
                 content={
-                  <form>
+                  <form onSubmit={this.handleSave}>
+                    
                     <FormInputs
-                      ncols={["col-md-2","col-md-2","col-md-5","col-md-3"]}
+                      ncols={["col-md-3", "col-md-3", "col-md-6"]}
                       properties={[
                         {
                           label: "PRF#",
-                          type: "text",
+                          type: "disabled",
                           bsClass: "form-control",
-                          placeholder: "PRF#",
+                          placeholder: "800033",
                           defaultValue: "",
+                          name:"prf_number",
+                          value: this.state.prf.prf_number,
+                          plaintext: true,
                           readOnly: true
                         },
                         {
                           label: "PO#",
-                          type: "text",
+                          type: "disabled",
                           bsClass: "form-control",
-                          placeholder: "PO#",
+                          placeholder: "800033",
                           defaultValue: "",
+                          name:"po_number",
+                          value: this.state.po_number,
+                          plaintext: true,
                           readOnly: true
                         },
                         {
                           label: "To",
                           type: "text",
                           bsClass: "form-control",
-                          placeholder: "Recepient",
-                          defaultValue: ""
-                        },
+                          placeholder: "Recipient",
+                          defaultValue: "",
+                          name:`recipient`,
+                          value:this.state.recipient,
+                          onChange: this.handleChange
+                        }
+                      ]}
+                                            
+                      />
+                      
+                      {/* <FormInputs
+                      ncols={["col-md-3","col-md-5",  "col-md-3"]}
+                      properties={[
                         {
                           label: "Date",
                           type: "date",
                           bsClass: "form-control",
-                          placeholder: "Email"
+                          placeholder: "Email",
+                          name:`paid_date`,
+                          value:this.state.paid_date,
+                          onChange: this.handleChange
                         }
                       ]}
-                    />
+                    /> */}
                     <h5>Pax Name/s</h5>
-                    <FormInputs
+                    {/* <FormInputs
                       ncols={["col-md-6"]}
                       properties={[
                         {
-                          label: "Enter Name/s",
+                          label: "",
                           type: "text",
                           bsClass: "form-control",
-                          placeholder: "",
+                          placeholder: "Input Name",
                           defaultValue: ""
                         }
                       ]}
-
-                    />
-                    <Button variant="outline-secondary" onClick={(e)=>this.addName(e)}>+</Button>
+                    /> */}
+                                        
                     {
-                      this.state.PAXNames.map((PAXNames, index)=>{
+                      this.state.pax.map((pax, index)=>{
                         return(
                           <div key={index}>
                             <FormInputs
@@ -116,18 +369,25 @@ class NewPO extends Component {
                               {
                                 type: "text",
                                 bsClass: "form-control",
-                                placeholder: "Enter Name",
-                                defaultValue: ""
+                                placeholder: "Input Name",
+                                defaultValue: ``,
+                                name:`pax${index}`,
+                                value:this.state.pax[index],
+                                onChange: this.handleChange
                               }
                             ]}
-                            onChange={(e)=>this.handleChange(e,index)}
-                            value={PAXNames}
-                          /> 
-                          <Button variant="outline-secondary" onClick={(e)=>this.handleRemove(e)}>-</Button>
+                            
+                          />
+                          {
+                            index==0 ? <Button variant="outline-secondary" bsStyle="primary" fill onClick={(e)=>this.addName(e)}>+</Button> :
+                            <Button variant="outline-secondary" bsStyle="danger"  onClick={(e)=>this.handleRemove(e)}>-</Button>
+                          }
+                          
                           </div>
                         )
                       })
-                    } 
+                    }
+
                     <Col md={12}>
                         <FormGroup controlId="formControlsTextarea">
                           <ControlLabel>Particulars</ControlLabel>
@@ -137,39 +397,60 @@ class NewPO extends Component {
                             bsClass="form-control"
                             placeholder="Input Particulars"
                             defaultValue=""
+                            name="particulars"
+                            value={this.state.particulars}
+                            onChange={this.handleChange}
                           />
                         </FormGroup>
-                      </Col>
+                    </Col>
+
                       <FormInputs
-                      ncols={["col-md-3","col-md-3","col-md-3","col-md-3"]}
+                      ncols={["col-md-3","col-md-3","col-md-3", "col-md-3"]}
                       properties={[
                         {
                           label: "US$ to PHP",
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "Input Amount",
-                          defaultValue:""
+                          defaultValue:"",
+                          step:"0.01",
+                          value:this.state.conversion_rate,
+                          name: "conversion_rate",
+                          onChange: this.handleChange
                         },
                         {
-                          label: "US$",
+                          label: "US $",
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "Input Amount",
-                          defaultValue:""
+                          defaultValue: "",
+                          value:this.state.usd,
+                          name: "usd",
+                          step: "0.01",
+                          onChange: this.handleChange
                         },
                         {
                           label: "PHP",
                           type: "number",
                           bsClass: "form-control",
-                          placeholder: "Input Amount",
-                          defaultValue: ""
+                          placeholder: "TOTAL AMOUNT",
+                          defaultValue: "",
+                          value:this.state.php,
+                          name: "php",
+                          step: "0.01",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Total",
                           type: "number",
                           bsClass: "form-control",
                           placeholder: "TOTAL AMOUNT",
-                          defaultValue: ""
+                          defaultValue: "",
+                          value: this.state.total,
+                          name: "total",
+                          step: "0.01",
+                          readOnly: true,
+                          onChange: this.handleChange
                         }
                       ]}
                     />
@@ -181,25 +462,36 @@ class NewPO extends Component {
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Enter Name",
-                          defaultValue:""
+                          defaultValue:"",
+                          value: this.state.prepared_by,
+                          name:"prepared_by",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Approved By:",
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Enter Name",
-                          defaultValue: ""
+                          defaultValue: "",
+                          value: this.state.approved_by,
+                          name: "approved_by",
+                          onChange: this.handleChange
                         },
                         {
                           label: "Received By:",
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Enter Name",
-                          defaultValue: ""
+                          defaultValue: "",
+                          value: this.state.received_by,
+                          name: "received_by",
+                          onChange: this.handleChange
                         }
                       ]}
                     />
-                      <Button pullRight bsStyle="danger" fill type="submit"> Cancel Creation </Button>
+                    
+                    <Button pullRight bsStyle="info"  fill type="submit"> Save PO </Button>
+                    <Button pullRight bsStyle="danger" fill type="submit"> Cancel Creation </Button>
                     <div className="clearfix" />
                   </form>
                 }

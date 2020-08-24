@@ -120,7 +120,7 @@ getAllPO = async (req, res) => {
         if (!pos.length) {
             return res
                 .status(404)
-                .json({ success: false, error: `PO not found` })
+                .json({ success: false, error: `No POs yet` })
         }
         return res.status(200).json({ success: true, data: pos })
     }).catch(err => console.log(err))
