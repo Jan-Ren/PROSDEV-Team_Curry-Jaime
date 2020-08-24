@@ -491,7 +491,7 @@ class NewPO extends Component {
                     />
                     
                     <Button pullRight bsStyle="info"  fill type="submit"> Save PO </Button>
-                    <Button pullRight bsStyle="danger" fill > Cancel </Button>
+                    <Button pullRight bsStyle="danger" fill type="submit"> Cancel Creation </Button>
                     <div className="clearfix" />
                   </form>
                 }

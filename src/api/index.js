@@ -16,6 +16,11 @@ export const updatePOById = (id, payload) => api.put(`/PO/${id}`, payload)
 export const deletePOById = id => api.delete(`/PO/${id}`)
 export const getPOById = id => api.get(`/PO/${id}`)
 
+export const insertNF = payload => api.post(`/NF`, payload)
+export const getAllNF = () => api.get(`/NF`)
+export const updateNFById = (id, payload) => api.put(`/NF/${id}`, payload)
+export const deleteNFById = id => api.delete(`/NF/${id}`)
+export const getNFById = id => api.get(`/NF/${id}`)
 const apis = {
     insertPRF,
     getAllPRF,
@@ -27,6 +32,11 @@ const apis = {
     updatePOById,
     deletePOById,
     getPOById,
+    insertNF,
+    getAllNF,
+    updateNFById,
+    deleteNFById,
+    getNFById
 }
 
 export default apis

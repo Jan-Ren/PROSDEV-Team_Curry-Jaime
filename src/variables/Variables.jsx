@@ -266,7 +266,7 @@ var style = {
 // // // For tables
 // //
 //
-const prfHArray = ["PRF#", "Recepient", "Paid Date", "Date Created", "Last Modified"];
+const prfHArray = ["PRF#", "Recepient", "Paid Date", "Date Created", "Last Modified", "Actions"];
 const prfDArray = [
   ["850532", "07/20/2020", "Aaron", "07/19/20", "", ""],
   ["850533", "07/21/2020", "Iris", "07/20/20", "", ""],
