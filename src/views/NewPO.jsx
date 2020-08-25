@@ -58,19 +58,11 @@ class NewPO extends Component {
       } else if (this.props.location.state.action === "new") {
           alert('daz weird')
           // PRF
+          const prf = this.props.location.state.PRF
+
           this.state = {          
               po_number: 711800,
-              prf: { prf_number: 800034,
-                      pax: [''],
-                      recipient: '',
-                      particulars: '',
-                      conversion_rate: 0,
-                      php: 0,
-                      usd: 0,
-                      total: 0,
-                      prepared_by: '',
-                      approved_by: '',
-                      received_by: '' },
+              prf,
               pax:[''],
               recipient: '',
               particulars: '',
