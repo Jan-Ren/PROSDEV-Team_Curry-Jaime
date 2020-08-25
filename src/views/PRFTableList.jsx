@@ -111,9 +111,9 @@ class PRFTableList extends Component {
                             <td>
                                 <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
                                 <></>
-                                <Button variant="outline-primary" bsStyle="primary" href="/employee/New-PO"><i className="pe-7s-news-paper" /> New PO</Button>{' '}
+                                <Button variant="outline-primary" bsStyle="primary"><Link to={{pathname: '/employee/New-PO', state: {PRF: prop, action: "new"} }} ><i className="pe-7s-look" />New PO</Link></Button>{' '}
                                 <></>
-                                <Button variant="outline-secondary"><Link to={{pathname: '/employee/New-PRF', state: {PRF: prop} }} ><i className="pe-7s-look" />View</Link></Button>
+                                <Button variant="outline-secondary"><Link to={{pathname: '/new/New-PRF', state: {PRF: prop} }} ><i className="pe-7s-look" />View</Link></Button>
                             </td>
                           </tr>
                         );
