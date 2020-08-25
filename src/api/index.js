@@ -11,7 +11,7 @@ export const deletePRFById = id => api.delete(`/PRF/${id}`)
 export const getPRFById = id => api.get(`/PRF/${id}`)
 
 export const insertPO = payload => api.post(`/PO`, payload)
-export const getAllPO = () => api.get(`/PO`)
+export const getAllPO = () => api.get(`/All-PO`)
 export const updatePOById = (id, payload) => api.put(`/PO/${id}`, payload)
 export const deletePOById = id => api.delete(`/PO/${id}`)
 export const getPOById = id => api.get(`/PO/${id}`)

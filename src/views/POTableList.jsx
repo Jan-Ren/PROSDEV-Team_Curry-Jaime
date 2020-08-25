@@ -20,9 +20,37 @@ import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid
 
 import Card from "components/Card/Card.jsx";
 import { poHArray, poDArray } from "variables/Variables.jsx";
+import api from '../api'
+import moment from 'moment'
 
 
 class POTableList extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+        PO: [],
+        columns: [],
+        isLoading: false,
+    }    
+  }
+  
+  componentDidMount = async () => {
+    this.setState({ isLoading: true })
+    
+    await api.getAllPO().then(PO => {
+        this.setState({
+            PO: PO.data.data,
+            isLoading: false,
+        }, () => {
+          console.log(this.state.PO)
+          this.state.PO.map(po => console.log(po.prf))
+          // alert(this.state.PO)
+        })
+    })
+    
+  }
+
   render() {
     return (
       <div className="content">
@@ -64,15 +92,22 @@ class POTableList extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      {poDArray.map((prop, key) => {
+                      {this.state.PO.map((prop, key) => {
                         return (
                           <tr key={key}>
-                            {prop.map((prop, key) => {
+                            {/* {prop.map((prop, key) => {
                               return <td key={key}>{prop}</td>;
-                            })}
+                            })} */}
+                            <td key={key+1}>{prop.po_number}</td>
+                            <td key={key+2}>{prop.recipient}</td>
+                            <td key={key+3}>{moment(prop.paid_date).format('DD-MM-YYYY')}</td>
+                            <td key={key+4}>{prop.prf ? prop.prf.prf_number : ''}</td>
+                            <td key={key+5}>{moment(prop.date_created).format('DD-MM-YYY hh:mm:ss A')}</td>
+                            <td key={key+6}>{moment(prop.last_modified).format('DD-MM-YYY hh:mm:ss A')}</td>
                             <td>
-                            <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
-                            <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button></td>
+                              <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
+                              <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>
+                            </td>
                           </tr>
                         );
                       })}
