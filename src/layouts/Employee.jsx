@@ -16,7 +16,7 @@
 
 */
 import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import NotificationSystem from "react-notification-system";
 
 import EmployeeNavbar from "components/Navbars/EmployeeNavbar";
@@ -26,15 +26,17 @@ import { style } from "variables/Variables.jsx";
 
 import routes from "routes.js";
 import NewPO from "views/NewPO.jsx";
+import users from '../api/users'
 
 class Employee extends Component {
   constructor(props) {
-    super(props);
+    super(props);    
     this.state = {
       _notificationSystem: null,
       color: "black",
       hasImage: true,
-      fixedClasses: "dropdown show-dropdown open"
+      fixedClasses: "dropdown show-dropdown open",
+      authenticated: true
     };
   }
   handleNotificationClick = position => {
@@ -114,7 +116,28 @@ class Employee extends Component {
       this.setState({ fixedClasses: "dropdown" });
     }
   };
+  handleAuthenticate = async () => {
+    const token = localStorage.getItem('token')
+    alert(token)
+    if (!token) {
+      this.setState({ authenticated: false })
+    } else {
+      try {
+        const user = await users.getUser(token).then(res => { alert(res, " SEX") })
+        alert(user, " TITE")
+      } catch (error) {
+        alert(error, " putae")
+        this.setState({ authenticated: false })
+      }
+    }
+  }
+  handleRedirect = () => {
+    if (!this.state.authenticated) {
+      return <Redirect to ="/" />
+    }
+  }
   componentDidMount() {
+    this.handleAuthenticate()
     this.setState({ _notificationSystem: this.refs.notificationSystem });
     var _notificationSystem = this.refs.notificationSystem;
     var color = Math.floor(Math.random() * 4 + 1);
@@ -164,6 +187,7 @@ class Employee extends Component {
   render() {
     return (
       <div className="wrapper">
+        {this.handleRedirect()}
         <NotificationSystem ref="notificationSystem" style={style} />
         <Sidebar {...this.props} routes={routes} image={this.state.image}
         color={this.state.color}
