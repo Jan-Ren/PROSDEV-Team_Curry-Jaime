@@ -1,18 +1,15 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-//Number-Folder (NF)
-const NF = new Schema({
-    nf_number:{
+//Number-Folder (NF_PO)
+const NF_PO = new Schema({
+    nf_po_number:{
         type: Number,
         required: true
     },
     total_documents:{
         type: Number
     },
-    document_type:{
-        type: String,
-        required: true
-    }
+    po: [{type : Schema.Types.ObjectId, ref : 'po'}],
 })
 
-module.exports = mongoose.model('nf', NF)
+module.exports = mongoose.model('nf_po', NF_PO)
