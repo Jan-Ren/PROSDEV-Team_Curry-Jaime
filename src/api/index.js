@@ -16,11 +16,17 @@ export const updatePOById = (id, payload) => api.put(`/PO/${id}`, payload)
 export const deletePOById = id => api.delete(`/PO/${id}`)
 export const getPOById = id => api.get(`/PO/${id}`)
 
-export const insertNF = payload => api.post(`/NF`, payload)
-export const getAllNF = () => api.get(`/NF`)
-export const updateNFById = (id, payload) => api.put(`/NF/${id}`, payload)
-export const deleteNFById = id => api.delete(`/NF/${id}`)
-export const getNFById = id => api.get(`/NF/${id}`)
+export const insertNF_PRF = payload => api.post(`/NF_PRF`, payload)
+export const getAllNF_PRF = () => api.get(`/NF_PRF`)
+export const updateNF_PRFById = (id, payload) => api.put(`/NF_PRF/${id}`, payload)
+export const deleteNF_PRFById = id => api.delete(`/NF_PRF/${id}`)
+export const getNF_PRFById = id => api.get(`/NF_PRF/${id}`)
+
+export const insertNF_PO = payload => api.post(`/NF_PO`, payload)
+export const getAllNF_PO = () => api.get(`/NF_PO`)
+export const updateNF_POById = (id, payload) => api.put(`/NF_PO/${id}`, payload)
+export const deleteNF_POById = id => api.delete(`/NF_PO/${id}`)
+export const getNF_POById = id => api.get(`/NF_PO/${id}`)
 const apis = {
     insertPRF,
     getAllPRF,
@@ -32,11 +38,16 @@ const apis = {
     updatePOById,
     deletePOById,
     getPOById,
-    insertNF,
-    getAllNF,
-    updateNFById,
-    deleteNFById,
-    getNFById
+    insertNF_PRF,
+    getAllNF_PRF,
+    updateNF_PRFById,
+    deleteNF_PRFById,
+    getNF_PRFById,
+    insertNF_PO,
+    getAllNF_PO,
+    updateNF_POById,
+    deleteNF_POById,
+    getNF_POById
 }
 
 export default apis
