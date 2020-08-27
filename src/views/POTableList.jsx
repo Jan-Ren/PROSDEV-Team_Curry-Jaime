@@ -44,8 +44,8 @@ class POTableList extends Component {
             isLoading: false,
         }, () => {
           console.log(this.state.PO)
-          this.state.PO.map(po => console.log(po.prf))
-          // alert(this.state.PO)
+          this.state.PO.map(po => po.prf_number ? console.log(po.prf_number) : console.log("no prf"))
+          // alert(this.state.PO.prf)
         })
     })
     
@@ -100,10 +100,10 @@ class POTableList extends Component {
                             })} */}
                             <td key={key+1}>{prop.po_number}</td>
                             <td key={key+2}>{prop.recipient}</td>
-                            <td key={key+3}>{moment(prop.paid_date).format('DD-MM-YYYY')}</td>
-                            <td key={key+4}>{prop.prf ? prop.prf.prf_number : ''}</td>
-                            <td key={key+5}>{moment(prop.date_created).format('DD-MM-YYY hh:mm:ss A')}</td>
-                            <td key={key+6}>{moment(prop.last_modified).format('DD-MM-YYY hh:mm:ss A')}</td>
+                            <td key={key+3}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                            <td key={key+4}>{prop.prf_number}</td>
+                            <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                            <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
                               <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
                               <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>

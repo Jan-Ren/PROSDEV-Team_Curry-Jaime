@@ -6,7 +6,7 @@ const PO = new Schema({
         type: Number, 
         required:true
     },
-    prf_number : {type : Schema.Types.ObjectId, ref : 'prf'},
+    prf_number : {type : Number, required:true},
     pax: [{
         type: String,
         require:true
