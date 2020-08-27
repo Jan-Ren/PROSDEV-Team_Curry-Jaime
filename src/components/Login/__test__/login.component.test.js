@@ -1,9 +1,6 @@
 import * as React from 'react';
 import Login from './../login.component';
-import { render, cleanup, screen} from "@testing-library/react";
-import userEvent from '@testing-library/user-event';
-
-    afterEach(cleanup);
+import { render } from "@testing-library/react";
 
     test("login page renders without crashing", ()=> {
         const { getByText, getByLabelText } = render(<Login/>);
