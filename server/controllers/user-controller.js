@@ -92,6 +92,36 @@ registerUser = (req, res) => {
     // return res.send("etits")
 }
 
+deleteUser = async (req, res) => {
+    await User.findOneAndDelete({ _id: req.params.id }, (err, user) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+
+        if (!user) {
+            return res
+                .status(404)
+                .json({ success: false, error: `user not found` })
+        }
+
+        return res.status(200).json({ success: true, data: user })
+    }).catch(err => console.log(err))
+}
+
+getAllUser = async (req, res) => {
+    await User.find({}, (err, users) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+        if (!users.length) {
+            return res
+                .status(404)
+                .json({ success: false, error: `User not found` })
+        }
+        return res.status(200).json({ success: true, data: users })
+    }).catch(err => console.log(err))
+}
+
 getUser = async (req, res) => {
     const token = req.body.token
     // console.log(req.body.token)
@@ -119,10 +149,133 @@ getUser = async (req, res) => {
     }
 }
 
+updatePassword = async (req, res) => {
+    const { password, isAdmin } = req.body
+
+    if (!req.body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide a body to update',
+        })
+    }
+
+    User.findOne({isAdmin: isAdmin}, (err, user) => {
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'User not found!',
+            })
+        }
+
+        bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(password, salt, (err, hash) => {
+                if (err) throw err;
+                user.password = hash;
+                user
+            .save()
+            .then(() => {
+                return res.status(200).json({
+                    success: true,
+                    id: user._id,
+                    message: 'User updated!',
+                })
+                            })
+                            .catch(error => {
+                            return res.status(404).json({
+                            error,
+                            message: 'User not updated!',
+                            })
+                        })
+                })
+            });
+        });    
+}
+
+updatePRFFolder = async (req, res) => {
+
+    const { password, isAdmin } = req.body
+
+    const body = req.body
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide a body to update',
+        })
+    }
+
+    User.findOne({isAdmin: isAdmin}, (err, user) => {
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'User not found!',
+            })
+        }
+        user.prf_folder = body.prf_folder
+        
+        user
+            .save()
+            .then(() => {
+                return res.status(200).json({
+                    success: true,
+                    id: user._id,
+                    message: 'PRF Folder updated!',
+                })
+            })
+            .catch(error => {
+                return res.status(404).json({
+                    error,
+                    message: 'PRF Folder  not updated!',
+                })
+            })
+    })
+}
+
+updatePOFolder = async (req, res) => {
+
+    const { password, isAdmin } = req.body
+    
+    const body = req.body
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide a body to update',
+        })
+    }
+
+    User.findOne({isAdmin: isAdmin}, (err, user) => {
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'User not found!',
+            })
+        }
+        user.po_folder = body.po_folder
+        
+        user
+            .save()
+            .then(() => {
+                return res.status(200).json({
+                    success: true,
+                    id: user._id,
+                    message: 'PO Folder updated!',
+                })
+            })
+            .catch(error => {
+                return res.status(404).json({
+                    error,
+                    message: 'PO Folder  not updated!',
+                })
+            })
+    })
+}
 module.exports = {
     loginUser,
     logoutUser,
-    registerUser,    
+    registerUser,
+    deleteUser,    
+    getAllUser,
     getUser,
-    getJWT
+    updatePassword,
+    updatePRFFolder,
+    updatePOFolder
 }

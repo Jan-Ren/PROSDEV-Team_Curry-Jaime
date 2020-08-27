@@ -6,12 +6,12 @@ const PO = new Schema({
         type: Number, 
         required:true
     },
-    prf : {type : Schema.Types.ObjectId, ref : 'prf'},
+    prf_number : {type : Number, required:true},
     pax: [{
         type: String,
         require:true
     }],
-    recepient: String,
+    recipient: String,
     date_created: {
         type: Date,
         default: Date.now
@@ -22,6 +22,7 @@ const PO = new Schema({
     },
     paid_date: Date,
     particulars: String,
+    conversion_rate: Number,
     php: Number,
     usd: Number,
     total: Number,

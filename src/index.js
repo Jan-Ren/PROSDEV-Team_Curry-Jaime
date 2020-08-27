@@ -39,6 +39,8 @@ ReactDOM.render(
     <Switch>
       <Route exact path='/' component={Login} />
       <Route path="/Employee" render={props => <EmployeeLayout {...props} />} />
+      <Route path="/Admin" render={props => <AdminLayout {...props} />} />
+      <Route path="/new" render={props => <PRFLayout {...props} />} />
       <Route path="/Employee/New-PRF" render={props => <PRFLayout {...props} />} />
       <Redirect from="/" to="/employee/PRF-List" />
     </Switch>
