@@ -122,10 +122,8 @@ class Employee extends Component {
       this.setState({ authenticated: false })
     } else {
       try {
-        alert(token)
         const user = await users.getUser({token})
-        console.log(user.data.data)
-        alert(user.data.data.isAdmin)
+        console.log(user.data.data.isAdmin)
       } catch (error) {
         alert(`${error} putae`)
         this.setState({ authenticated: false })

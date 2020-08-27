@@ -38,6 +38,9 @@ class Sidebar extends Component {
     this.updateDimensions();
     window.addEventListener("resize", this.updateDimensions.bind(this));
   }
+  removeToken() {
+    localStorage.removeItem('token')
+  }
   render() {
     const sidebarBackground = {
       backgroundImage: "url(" + this.props.image + ")"
@@ -67,6 +70,7 @@ class Sidebar extends Component {
                         : this.activeRoute(prop.layout + prop.path)
                     }
                     key={key}
+                    onClick={this.removeToken}
                   >
                     <NavLink
                       to={prop.layout + prop.path}

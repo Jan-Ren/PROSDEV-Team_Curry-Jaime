@@ -33,7 +33,7 @@ export default class Login extends Component {
     async getJwt () {
         const { data } = await users.getJWT()
         localStorage.setItem('token', data.token);
-        this.setState({ jwt: data.token }, () => { alert(this.state.jwt) });
+        this.setState({ jwt: data.token });
         console.log(data.token)
     };
 
@@ -43,9 +43,7 @@ export default class Login extends Component {
         // this.getJwt()
 
         const { isAdmin, password } = this.state
-        const payload = { isAdmin, password }
-        
-        alert(isAdmin)
+        const payload = { isAdmin, password }        
 
         try {
             const data = (await users.login(payload)).data
@@ -62,16 +60,14 @@ export default class Login extends Component {
     handleChange(e) {
         e.preventDefault()
         const { name, value } = e.target
-        
+
         this.setState({ [name]:value }, () => {
             console.log(this.state.password)
         })
     }
 
     handleIsAdmin = isAdmin => {
-        this.setState({ isAdmin: isAdmin[0].value }, () => {
-            alert(this.state.isAdmin)
-        })
+        this.setState({ isAdmin: isAdmin[0].value })
     }
 
     handleRedirect() {
@@ -102,12 +98,12 @@ export default class Login extends Component {
                         <div className="form-group">
                             <label>User</label>
                             {/* <input type="email" className="form-control" placeholder="name@example.com" /> */}
-                            <Select options={options} onChange={this.handleIsAdmin} name="isAdmin" value={this.state.isAdmin ? 'Admin': 'Employee'} placeholder="Select an option" />
+                            <Select required options={options} onChange={this.handleIsAdmin} placeholder="Select an option" />
                         </div>
                 
                         <div className="form-group">
                             <label>Password</label>
-                            <input type="password" className="form-control" name="password" onChange={this.handleChange} placeholder="********" />
+                            <input required type="password" className="form-control" name="password" onChange={this.handleChange} placeholder="********" />
                         </div>
 
                         <button type="submit" className="btn btn-primary btn-block">Login</button>
