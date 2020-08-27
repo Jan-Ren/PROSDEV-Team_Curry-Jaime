@@ -2,7 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
-const jwt = require('express-jwt');
+// const jwt = require('express-jwt');
 
 const db = require('./db').connection
 require('dotenv').config()

@@ -94,9 +94,9 @@ registerUser = (req, res) => {
 
 getUser = async (req, res) => {
     const token = req.body.token
-    alert(token)
-    // const user = await User.findById(req.user.id).select('-password')
-    // res.json(user)
+    // console.log(req.body.token)
+    // console.log(token, " baket wala huhu")
+    // alert(token)    
 
     if (!token) 
         res.status(400).json({ msg: "No token, authorization denied" });
@@ -104,12 +104,18 @@ getUser = async (req, res) => {
     try {
         // Verify token
         const decodedUser = jwt.verify(token, keys.secretOrKey);
+        // const decodedUser = jwt_decode(token)
 
         // Add user to payload
         req.user = decodedUser;
-        next();
+        
+        const user = await User.findById({ _id: decodedUser.id }).select('-password')
+        console.log(user)
+        return res.status(200).json({ success: true, data: user })
+        // next();
     } catch (error) {
-        res.status(400).json({ msg: "Token is not valid" })
+        console.log(error)
+        res.status(404).json({ msg: "Token is not valid" })
     }
 }
 

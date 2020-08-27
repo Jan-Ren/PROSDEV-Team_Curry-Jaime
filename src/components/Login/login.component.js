@@ -49,7 +49,7 @@ export default class Login extends Component {
             localStorage.setItem('token', data.token)
             this.setState({ login_success: true })
         } catch (error) {
-            alert(error)
+            alert("Wrong credentials")
             console.log(error.message)
         }
         

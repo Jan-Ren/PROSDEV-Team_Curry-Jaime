@@ -118,15 +118,16 @@ class Employee extends Component {
   };
   handleAuthenticate = async () => {
     const token = localStorage.getItem('token')
-    alert(token)
     if (!token) {
       this.setState({ authenticated: false })
     } else {
       try {
-        const user = await users.getUser(token).then(res => { alert(res, " SEX") })
-        alert(user, " TITE")
+        alert(token)
+        const user = await users.getUser({token})
+        console.log(user.data.data)
+        alert(user.data.data.isAdmin)
       } catch (error) {
-        alert(error, " putae")
+        alert(`${error} putae`)
         this.setState({ authenticated: false })
       }
     }
