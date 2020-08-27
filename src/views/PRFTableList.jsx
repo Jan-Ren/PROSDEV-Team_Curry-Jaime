@@ -105,9 +105,9 @@ class PRFTableList extends Component {
                             
                             <td key={key+1}>{prop.prf_number}</td>
                             <td key={key+2}>{prop.recipient}</td>
-                            <td key={key+4}>{moment(prop.paid_date).format('DD-MM-YYYY')}</td>
-                            <td key={key+4}>{moment(prop.date_created).format('DD-MM-YYYY hh:mm:ss A')}</td>
-                            <td key={key+5}>{moment(prop.last_modified).format('DD-MM-YYYY hh:mm:ss A')}</td>
+                            <td key={key+4}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                            <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                            <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
                                 <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
                                 <></>

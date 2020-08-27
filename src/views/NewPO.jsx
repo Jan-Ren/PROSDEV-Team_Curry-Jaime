@@ -43,7 +43,7 @@ class NewPO extends Component {
         alert('waw')
         const { prf, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = props.location.state.PRF
         this.state = {
-            prf,
+            prf_number: prf.prf_number,
             pax,
             recipient,
             particulars,
@@ -62,7 +62,7 @@ class NewPO extends Component {
 
           this.state = {          
               po_number: 711800,
-              prf,
+              prf_number: prf.prf_number,
               pax:[''],
               recipient: '',
               particulars: '',
@@ -83,17 +83,7 @@ class NewPO extends Component {
       // PRF
       this.state = {          
           po_number: 711800,
-          prf: { prf_number: 800034,
-                pax: [''],
-                recipient: '',
-                particulars: '',
-                conversion_rate: 0,
-                php: 0,
-                usd: 0,
-                total: 0,
-                prepared_by: '',
-                approved_by: '',
-                received_by: '' },
+          prf_number: '810810',
           pax:[''],
           recipient: '',
           particulars: '',
@@ -294,7 +284,7 @@ class NewPO extends Component {
                           placeholder: "800033",
                           defaultValue: "",
                           name:"prf_number",
-                          value: this.state.prf.prf_number,
+                          value: this.state.prf_number,                          
                           plaintext: true,
                           readOnly: true
                         },
