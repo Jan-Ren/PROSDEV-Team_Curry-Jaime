@@ -10,7 +10,7 @@ const UserSchema = new Schema({
     type: Boolean,
     required: true
   },
-  prf_folder: [{type : Schema.Types.ObjectId, ref : 'nf_prf'}],
-  po_folder: [{type : Schema.Types.ObjectId, ref : 'nf_po'}]
+  prf_folder: {type : Schema.Types.ObjectId, ref : 'nf_prf'},
+  po_folder: {type : Schema.Types.ObjectId, ref : 'nf_po'}
 });
 module.exports = User = mongoose.model("users", UserSchema);
