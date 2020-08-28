@@ -18,6 +18,9 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 
+import EmployeeNavbarLinks from "../Navbars/EmployeeNavbarLinks.jsx";
+
+
 class Sidebar extends Component {
   constructor(props) {
     super(props);
@@ -47,30 +50,14 @@ class Sidebar extends Component {
       >
         <div className="sidebar-wrapper">
           <ul className="nav">
+                return (
                     <li className={this.activeRoute("/table")}>
                     <NavLink to={'/table'} className="nav-link" activeClassName="active">
                         <i className="pe-7s-note2"></i>
-                        <p>Dashboard</p>
+                        <p>Table List</p>
                     </NavLink>
                     </li>
-                    <li className={this.activeRoute("/table")}>
-                    <NavLink to={'/table'} className="nav-link" activeClassName="active">
-                        <i className="pe-7s-plus"></i>
-                        <p>New PRF</p>
-                    </NavLink>
-                    </li>
-                    <li className={this.activeRoute("/table")}>
-                    <NavLink to={'/table'} className="nav-link" activeClassName="active">
-                        <i className="pe-7s-diskette"></i>
-                        <p>Save</p>
-                    </NavLink>
-                    </li>
-                    <li className="active-pro">
-                    <NavLink to={'/table'} className="nav-link" activeClassName="active">
-                        <i className="pe-7s-back"></i>
-                        <p>Back</p>
-                    </NavLink>
-                    </li>
+                );
           </ul>
         </div>
       </div>

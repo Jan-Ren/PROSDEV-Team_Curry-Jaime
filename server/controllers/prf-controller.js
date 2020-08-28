@@ -52,7 +52,6 @@ updatePRF = async (req, res) => {
         }
         prf.pax = body.pax
         prf.receipient = body.receipient
-        prf.po = body.po
         prf.date_created = body.date_created
         prf.last_modified = body.last_modified
         prf.paid_date = body.paid_date
@@ -63,8 +62,6 @@ updatePRF = async (req, res) => {
         prf.prepared_by = body.prepared_by
         prf.approved_by = body.approved_by
         prf.received_by = body.received_by
-        prf.recipient = body.recipient
-        prf.conversion_rate = body.conversion_rate
         
         prf
             .save()

@@ -52,7 +52,6 @@ updatePO = async (req, res) => {
         }
         po.pax = body.pax
         po.receipient = body.receipient
-        po.prf = body.prf
         po.date_created = body.date_created
         po.last_modified = body.last_modified
         po.paid_date = body.paid_date
@@ -121,7 +120,7 @@ getAllPO = async (req, res) => {
         if (!pos.length) {
             return res
                 .status(404)
-                .json({ success: false, error: `No POs yet` })
+                .json({ success: false, error: `PO not found` })
         }
         return res.status(200).json({ success: true, data: pos })
     }).catch(err => console.log(err))
