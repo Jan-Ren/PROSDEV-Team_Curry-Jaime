@@ -16,6 +16,7 @@
 
 */
 import React, { Component } from "react";
+import { Link } from 'react-router-dom'
 import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
@@ -105,9 +106,8 @@ class POTableList extends Component {
                             <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
-                              <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
-                              <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>
-                            </td>
+                            <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
+                            <Button variant="outline-secondary"><Link to={{pathname: '/employee/New-PO', state: {PO: prop} }} ><i className="pe-7s-look" />View</Link></Button></td>
                           </tr>
                         );
                       })}
