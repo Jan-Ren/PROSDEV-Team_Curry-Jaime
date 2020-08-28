@@ -266,7 +266,7 @@ var style = {
 // // // For tables
 // //
 //
-const prfHArray = ["PRF#", "Date", "Recepient", "Paid Date", "Date Created", "Last Modified"];
+const prfHArray = ["PRF#", "Recipient", "Paid Date", "Date Created", "Last Modified", "Actions"];
 const prfDArray = [
   ["850532", "07/20/2020", "Aaron", "07/19/20", "", ""],
   ["850533", "07/21/2020", "Iris", "07/20/20", "", ""],
@@ -276,7 +276,7 @@ const prfDArray = [
   ["850537", "07/25/2020", "Rollo", "07/24/20", "", ""],
 ];
 
-const poHArray = ["PO#", "Date", "Recepient", "Paid Date","PRF#", "Date Created", "Last Modified"];
+const poHArray = ["PO#", "Recipient", "Paid Date","PRF#", "Date Created", "Last Modified", "Actions"];
 const poDArray = [
   ["117620", "07/20/2020", "Aaron", "07/19/20", "850532", "", ""],
   ["117117", "07/21/2020", "Aaron", "07/18/20","850532", "", ""],
@@ -287,10 +287,20 @@ const poDArray = [
   ["117146", "07/25/2020", "Rollo", "07/24/20","850537", "", ""],
 ];
 
+const poList = ["PO List"];
+const poFolder =[["220"],["219"],["218"],];
+
+const prfList = ["PRF List"];
+const prfFolder =[["220"],["219"],["218"],];
+
 module.exports = {
   style, // For notifications (App container and Notifications view)
   prfHArray,
   prfDArray,
   poHArray,
   poDArray, // For tables (TableList view)
+  poList,
+  poFolder,
+  prfList,
+  prfFolder,
 };

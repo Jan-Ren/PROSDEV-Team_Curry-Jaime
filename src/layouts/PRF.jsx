@@ -68,7 +68,7 @@ class PRF extends Component {
   };
   getRoutes = routes => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/employee") {
+      if (prop.layout === "/new") {
         return (
           <Route
             path={prop.layout + prop.path}
@@ -132,17 +132,7 @@ class PRF extends Component {
       default:
         break;
     }
-    _notificationSystem.addNotification({
-      title: <span data-notify="icon" className="pe-7s-id" />,
-      message: (
-        <div>
-                     Welcome, Employee!
-        </div>
-      ),
-      level: level,
-      position: "tr",
-      autoDismiss: 15
-    });
+    
   }
   componentDidUpdate(e) {
     if (
@@ -165,7 +155,8 @@ class PRF extends Component {
         color={this.state.color}
         hasImage={this.state.hasImage}/>
         <div id="main-panel" className="main-panel" ref="mainPanel">
-
+        <Switch>{this.getRoutes(routes)}
+          </Switch>
         </div>
       </div>
     );

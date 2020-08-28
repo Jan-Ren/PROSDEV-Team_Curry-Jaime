@@ -33,10 +33,7 @@ class EmployeeNavbarLinks extends Component {
         <Nav>
         </Nav>
         <Nav pullRight>
-          <Form inline>
-            <FormControl type="text" placeholder="PRF#" className="mr-sm-2" />
-            <Button variant="outline-success"><i className="fa fa-search" /> </Button>
-        </Form>
+
         </Nav>
         
       </div>

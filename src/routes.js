@@ -15,33 +15,33 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import PRFTableList from "views/PRFTableList.jsx";
-import POTableList from "views/POTableList.jsx";
+
+import POListFolders from "views/POList.jsx";
+import PRFListFolders from "views/PRFList.jsx";
 import Login from "./components/Login/login.component.js";
 import NewPRF from "views/NewPRF.jsx";
 
 const dashboardRoutes = [
   {
-    path: "/PRF-List",
-    name: "PRF List",
+    path: "/PRF-List-Folders",
+    name: "PRF List Folders",
     icon: "pe-7s-note2",
-    component: PRFTableList,
+    component: PRFListFolders,
     layout: "/employee"
   },
   {
-    path: "/PO-List",
-    name: "PO List",
+    path: "/PO-List-Folders",
+    name: "PO List Folders",
     icon: "pe-7s-news-paper",
-    component: POTableList,
+    component: POListFolders,
     layout: "/employee"
   },
   {
-    NewPRF: true,
     path: "/New-PRF",
     name: "New PRF ",
     icon: "pe-7s-plus",
     component: NewPRF,
-    layout: "/employee"
+    layout: "/new"
   },
   {
     logout: true,

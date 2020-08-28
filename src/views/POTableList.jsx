@@ -16,13 +16,41 @@
 
 */
 import React, { Component } from "react";
-import { Grid, Row, Col, Table, Button } from "react-bootstrap";
+import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 import { poHArray, poDArray } from "variables/Variables.jsx";
+import api from '../api'
+import moment from 'moment'
 
 
 class POTableList extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+        PO: [],
+        columns: [],
+        isLoading: false,
+    }    
+  }
+  
+  componentDidMount = async () => {
+    this.setState({ isLoading: true })
+    
+    await api.getAllPO().then(PO => {
+        this.setState({
+            PO: PO.data.data,
+            isLoading: false,
+        }, () => {
+          console.log(this.state.PO)
+          this.state.PO.map(po => po.prf_number ? console.log(po.prf_number) : console.log("no prf"))
+          // alert(this.state.PO.prf)
+        })
+    })
+    
+  }
+
   render() {
     return (
       <div className="content">
@@ -34,7 +62,28 @@ class POTableList extends Component {
                 ctTableFullWidth
                 ctTableResponsive
                 content={
-                  <Table striped hover>
+                  <div>
+                    <Col md={8}>
+                    <Form inline>
+                      <FormGroup controlId="formInlineDateFrom">
+                          <ControlLabel>Dates</ControlLabel>{' '}
+                        <FormControl type="date" />
+                        </FormGroup>{' '}
+                        <FormGroup controlId="formInlineDateFrom">  
+                          <FormControl type="date" />
+                        </FormGroup>{' '}
+                        <FormGroup>
+                        <InputGroup>
+                          <FormControl type="number" placeholder="Search PO#" />
+                          <InputGroup.Addon>
+                            <Glyphicon glyph="search" />
+                          </InputGroup.Addon>
+                        </InputGroup>
+                      </FormGroup>
+                    </Form>
+                  </Col>
+
+                    <Table striped hover>
                     <thead>
                       <tr>
                         {poHArray.map((prop, key) => {
@@ -43,23 +92,30 @@ class POTableList extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      {poDArray.map((prop, key) => {
+                      {this.state.PO.map((prop, key) => {
                         return (
                           <tr key={key}>
-                            {prop.map((prop, key) => {
+                            {/* {prop.map((prop, key) => {
                               return <td key={key}>{prop}</td>;
-                            })}
+                            })} */}
+                            <td key={key+1}>{prop.po_number}</td>
+                            <td key={key+2}>{prop.recipient}</td>
+                            <td key={key+3}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                            <td key={key+4}>{prop.prf_number}</td>
+                            <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                            <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
-                            <Button variant="outline-primary"><i className="pe-7s-trash"/></Button>{' '}
-                            <></>
-                            <Button variant="outline-primary" href="/employee/New-PO"><i className="pe-7s-news-paper" /> New PO</Button>{' '}
-                            <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button></td>
+                              <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
+                              <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>
+                            </td>
                           </tr>
                         );
                       })}
                     </tbody>
-                    
+                  
                   </Table>
+                    
+                  </div>
                 }
               />
             </Col>

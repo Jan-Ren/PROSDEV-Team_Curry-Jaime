@@ -37,8 +37,6 @@ class Sidebar extends Component {
   componentDidMount() {
     this.updateDimensions();
     window.addEventListener("resize", this.updateDimensions.bind(this));
-    console.log(this.props.routes[3].name)
-    alert(this.props.routes[3].logout)
   }
   removeToken() {
     localStorage.removeItem('token')
@@ -63,7 +61,7 @@ class Sidebar extends Component {
           <ul className="nav">
             {this.state.width <= 991 ? <EmployeeNavbarLinks /> : null}
             {this.props.routes.map((prop, key) => {
-              if (prop.logout)
+              if (!prop.redirect)
                 return (
                   <li
                     className={
@@ -72,26 +70,7 @@ class Sidebar extends Component {
                         : this.activeRoute(prop.layout + prop.path)
                     }
                     key={key}
-                    onClick={ this.removeToken }
-                  >
-                    <NavLink
-                      to={prop.layout + prop.path}
-                      className="nav-link"
-                      activeClassName="active"
-                    >
-                      <i className={prop.icon} />
-                      <p>{prop.name}</p>
-                    </NavLink>
-                  </li>
-                );
-              if (!prop.redirect)
-                return (
-                  <li
-                    className={
-                      prop.logout
-                        ? "active active-pro"
-                        : this.activeRoute(prop.layout + prop.path)
-                    }            
+                    onClick={this.removeToken}
                   >
                     <NavLink
                       to={prop.layout + prop.path}
