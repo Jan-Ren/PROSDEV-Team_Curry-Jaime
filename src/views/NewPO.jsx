@@ -38,12 +38,12 @@ class NewPO extends Component {
 
     // if edit
     if (this.props.location.state) {
-      console.log(this.props.location.state.PRF)
+      console.log(this.props.location.state.PO)
       if (this.props.location.state.action === "edit") {
         alert('waw')
-        const { prf, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = props.location.state.PRF
+        const { prf, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = props.location.state.PO
         this.state = {
-            prf_number: prf.prf_number,
+            prf,
             pax,
             recipient,
             particulars,
@@ -62,7 +62,7 @@ class NewPO extends Component {
 
           this.state = {          
               po_number: 711800,
-              prf_number: prf.prf_number,
+              prf: prf,
               pax:[''],
               recipient: '',
               particulars: '',
@@ -83,7 +83,7 @@ class NewPO extends Component {
       // PRF
       this.state = {          
           po_number: 711800,
-          prf_number: '810810',
+          prf: {prf_number: '810810'},
           pax:[''],
           recipient: '',
           particulars: '',
@@ -284,7 +284,7 @@ class NewPO extends Component {
                           placeholder: "800033",
                           defaultValue: "",
                           name:"prf_number",
-                          value: this.state.prf_number,                          
+                          value: this.state.prf.prf_number,
                           plaintext: true,
                           readOnly: true
                         },
