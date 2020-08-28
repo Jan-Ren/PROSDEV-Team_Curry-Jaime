@@ -18,7 +18,6 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom'
 import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
-import { Link } from 'react-router-dom'
 
 import Card from "components/Card/Card.jsx";
 import { poHArray, poDArray } from "variables/Variables.jsx";
