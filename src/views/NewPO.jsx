@@ -76,14 +76,15 @@ class NewPO extends Component {
           }
       }
     } 
-    // if new po, temporarily delete later
+    // if nandaya ng URL
     else {
-      console.log(this.props.location)
-      alert('daz weird')
-      // PRF
+      this.props.history.goBack()
+      alert('bawal yan, punta ka muna PRF')
+      // this.props.history.push('/employee/PRF-List')
+      
       this.state = {          
           po_number: 711800,
-          prf: {prf_number: '810810'},
+          prf: {prf_number: 'nandaya ka ng url tsk'},
           pax:[''],
           recipient: '',
           particulars: '',
@@ -93,7 +94,7 @@ class NewPO extends Component {
           conversion_rate: 0,
           prepared_by: '',
           approved_by: '',
-          received_by: '',      
+          received_by: '',
       }
     }
     this.handleChange = this.handleChange.bind(this)
@@ -150,84 +151,37 @@ class NewPO extends Component {
   }
   handleSave = async () => {
 
-    // const { name, rating, time } = this.state
-    // const arrayTime = time.split('/')
-    // const payload = { name, rating, time: arrayTime }    
-
-    // await api.insertPRF(payload).then(res => {
-    //     window.alert(`Movie inserted successfully`)
-    //     this.setState({
-    //         name: '',
-    //         rating: '',
-    //         time: '',
-    //     })
-    // })
-    // console.log(this.state)
-
-    // const { prf_number, pax, recipient, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by } = this.state
     const payload = this.state
-    // alert('here')
+    
     console.log(this.state)
-    if (this.props.location.state) {
-      if (this.props.location.state.action === "edit") {        
-        const po_id = this.props.location.state.PO._id
-        alert(po_id)
-        try {
-          alert('editing please wait')
-          await api.updatePOById(po_id, payload).then(res => {
-            window.alert(`Edit succesfully: ${res.message}`)
-            this.setState({
-              po_number: '',
-              prf: {prf_number: ''},
-              pax: [''],
-              recipient: '',
-              particulars: '',
-              conversion_rate: 0,
-              php: 0,
-              usd: 0,
-              total: 0,
-              prepared_by: '',
-              approved_by: '',
-              received_by: ''
-            })
+    if (this.props.location.state.action === "edit") {        
+      const po_id = this.props.location.state.PO._id
+      alert(po_id)
+      try {
+        alert('editing please wait')
+        await api.updatePOById(po_id, payload).then(res => {
+          window.alert(`Edit succesfully: ${res.message}`)
+          this.setState({
+            po_number: '',
+            prf: {prf_number: ''},
+            pax: [''],
+            recipient: '',
+            particulars: '',
+            conversion_rate: 0,
+            php: 0,
+            usd: 0,
+            total: 0,
+            prepared_by: '',
+            approved_by: '',
+            received_by: ''
           })
-          // alert("edit done")
-        } catch (error) {
-          console.log(error.message)
-          alert(`Editing failed: ${error.message}`)
-        }
-      } else if (this.props.location.state.action === "new") {
-        alert("saving please wait")      
-        try {
-          await api.insertPO(payload).then(res => {   
-            window.alert(res.message)
-            // this.setState({
-            //   po_number: '',
-            //   prf: {prf_number: ''},
-            //   pax: [''],
-            //   recipient: '',
-            //   particulars: '',
-            //   conversion_rate: 0,
-            //   php: 0,
-            //   usd: 0,
-            //   total: 0,
-            //   prepared_by: '',
-            //   approved_by: '',
-            //   received_by: ''
-            // })
-
-            alert("saving done")
-          })          
-        } catch (error) {
-          console.log(error.message)
-          alert(error.message)
-        }
+        })
+        // alert("edit done")
+      } catch (error) {
+        console.log(error.message)
+        alert(`Editing failed: ${error.message}`)
       }
-
-    } 
-    // temporarily delete later
-    else {
-      console.log(this.state)
+    } else if (this.props.location.state.action === "new") {
       alert("saving please wait")      
       try {
         await api.insertPO(payload).then(res => {   
@@ -248,19 +202,13 @@ class NewPO extends Component {
           })
 
           alert("saving done")
-        })
-        // console.log(payload)
-        // alert("wait")
-        // console.log(this.state)
-        // await api.insertPO({po_number: 123456}).then(res => {
-        //   alert("Saving done")
-        // })
+        })          
       } catch (error) {
-        console.log(error)
+        console.log(error.message)
         alert(error.message)
-      }
-    }
-    // alert("pumasok ba")
+      }      
+
+    } 
     
   }
   render() {

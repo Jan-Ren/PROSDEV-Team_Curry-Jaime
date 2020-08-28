@@ -51,7 +51,6 @@ updatePRF = async (req, res) => {
             })
         }
         prf.pax = body.pax
-        prf.receipient = body.receipient
         prf.po = body.po
         prf.date_created = body.date_created
         prf.last_modified = body.last_modified

@@ -51,8 +51,7 @@ updatePO = async (req, res) => {
             })
         }
         po.pax = body.pax
-        po.receipient = body.receipient
-        po.prf = body.prf
+        po.po = body.po
         po.date_created = body.date_created
         po.last_modified = body.last_modified
         po.paid_date = body.paid_date
@@ -63,6 +62,8 @@ updatePO = async (req, res) => {
         po.prepared_by = body.prepared_by
         po.approved_by = body.approved_by
         po.received_by = body.received_by
+        po.recipient = body.recipient
+        po.conversion_rate = body.conversion_rate
         
         po
             .save()
