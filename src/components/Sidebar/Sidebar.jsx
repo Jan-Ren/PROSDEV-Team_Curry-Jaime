@@ -61,7 +61,7 @@ class Sidebar extends Component {
           <ul className="nav">
             {this.state.width <= 991 ? <EmployeeNavbarLinks /> : null}
             {this.props.routes.map((prop, key) => {
-              if (!prop.redirect)
+              if (prop.logout) 
                 return (
                   <li
                     className={
@@ -71,6 +71,26 @@ class Sidebar extends Component {
                     }
                     key={key}
                     onClick={this.removeToken}
+                  >
+                    <NavLink
+                      to={prop.layout + prop.path}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      <i className={prop.icon} />
+                      <p>{prop.name}</p>
+                    </NavLink>
+                  </li>
+                );
+              if (!prop.redirect)
+                return (
+                  <li
+                    className={
+                      prop.logout
+                        ? "active active-pro"
+                        : this.activeRoute(prop.layout + prop.path)
+                    }
+                    key={key}
                   >
                     <NavLink
                       to={prop.layout + prop.path}
