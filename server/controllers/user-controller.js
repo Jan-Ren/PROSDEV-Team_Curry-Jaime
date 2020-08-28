@@ -2,6 +2,14 @@ const User = require('../models/User')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const keys = require('../db/index')
+const jsonwebtoken = require('jsonwebtoken');
+
+getJWT = (req, res) => {
+    const token = jsonwebtoken.sign({ user: 'johndoe' }, require('../db').secretOrKey)
+
+    res.cookie('token', token, { httpOnly: true });
+    res.json({ token });
+}
 
 loginUser = async (req, res) => {
     if (!req.body.password) {
@@ -31,18 +39,24 @@ loginUser = async (req, res) => {
                 name: user.name
             };
             // Sign token
-            jwt.sign(
+            const token = jwt.sign(
                 payload,
                 keys.secretOrKey,
                 { expiresIn: 28800 }, // 8hours in seconds
-                (err, token) => {
+                (err, token) => {                    
                     res.json({
                         success: true,
                         token,
-                        user
+                        user,
                     });
+                    
                 }
             );
+            res.cookie('token', token, {
+                // domain: "localhost",
+                httpOnly: true
+            });
+            // res.cookie('token', token);
         } else {
             return res
             .status(400)
@@ -109,8 +123,30 @@ getAllUser = async (req, res) => {
 }
 
 getUser = async (req, res) => {
-    const user = await User.findById(req.user.id).select('-password')
-    res.json(user)
+    const token = req.body.token
+    // console.log(req.body.token)
+    // console.log(token, " baket wala huhu")
+    // alert(token)    
+
+    if (!token) 
+        res.status(400).json({ msg: "No token, authorization denied" });
+
+    try {
+        // Verify token
+        const decodedUser = jwt.verify(token, keys.secretOrKey);
+        // const decodedUser = jwt_decode(token)
+
+        // Add user to payload
+        req.user = decodedUser;
+        
+        const user = await User.findById({ _id: decodedUser.id }).select('-password')
+        console.log(user)
+        return res.status(200).json({ success: true, data: user })
+        // next();
+    } catch (error) {
+        console.log(error)
+        res.status(404).json({ msg: "Token is not valid" })
+    }
 }
 
 updatePassword = async (req, res) => {

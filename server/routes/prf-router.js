@@ -1,5 +1,5 @@
 const express = require('express')
-const jwtValidator = require('../db/jwt-validator')
+// const jwtValidator = require('../db/jwt-validator')
 const PRFCntrl = require('../controllers/prf-controller')
 
 const router = express.Router()
