@@ -17,11 +17,13 @@
 */
 import React, { Component } from "react";
 import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
+import { Link } from 'react-router-dom'
 
 import Card from "components/Card/Card.jsx";
 import { poHArray, poDArray } from "variables/Variables.jsx";
 import api from '../api'
 import moment from 'moment'
+import { filter } from "core-js/fn/dict";
 
 
 class POTableList extends Component {
@@ -42,12 +44,51 @@ class POTableList extends Component {
         this.setState({
             PO: PO.data.data,
             isLoading: false,
-        }, () => {
+        }, async () => {
           console.log(this.state.PO)
-          this.state.PO.map(po => po.prf_number ? console.log(po.prf_number) : console.log("no prf"))
+          
+          let prf = this.state.PO.map(async po => {
+            if (po.prf) {
+              const prf = await (await api.getPRFById(po.prf)).data.data
+              console.log(prf.prf_number)
+              return prf
+            }
+          })
+
+          const updatedPO = [...this.state.PO]
+          prf = await Promise.all(prf)
+          prf.map((p, index) => {
+            if (p) {
+              console.log(p)
+              console.log(index)
+              updatedPO[index].prf = p
+            }
+          })
+          this.setState({ PO: updatedPO })
+          // .then((res, index) => {
+          //   try {
+          //   } catch (error) {
+              
+          //   }            
+          // })
+          // .then(() => {
+          //   updatedPO.map(err => console.log(err))
+          //   this.setState({ PO: updatedPO })
+          // })
+          
           // alert(this.state.PO.prf)
         })
     })
+
+    // const PO = await (await api.getAllPO()).data.data
+
+    // PO.filter(async po => {
+    //   if (po.prf_number) {
+    //     const prf = await (await api.getPRFById(po.prf_number)).data.data
+    //     console.log(prf.prf_number)
+    //     return prf
+    //   }
+    // })
     
   }
 
@@ -101,12 +142,12 @@ class POTableList extends Component {
                             <td key={key+1}>{prop.po_number}</td>
                             <td key={key+2}>{prop.recipient}</td>
                             <td key={key+3}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
-                            <td key={key+4}>{prop.prf_number}</td>
+                            <td key={key+4}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
                             <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
                               <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
-                              <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>
+                              <Button variant="outline-secondary"><Link to={{pathname: '/employee/New-PO', state: {PO: prop, action: "edit"} }} ><i className="pe-7s-look" />View</Link></Button>
                             </td>
                           </tr>
                         );
