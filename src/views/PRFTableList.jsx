@@ -34,7 +34,9 @@ class PRFTableList extends Component {
         PRF: [],
         columns: [],
         isLoading: false,
-    }    
+    }
+
+    this.handleCancel = this.handleCancel.bind(this)
   }
   
   componentDidMount = async () => {
@@ -55,6 +57,20 @@ class PRFTableList extends Component {
     //   window.alert(this.state.PRF)
     //   console.log(this.state.PRF)
     // }, 3000)
+  }
+
+  handleCancel = async (prf) => {
+
+    console.log(prf)
+    alert(prf._id)
+    prf.is_cancelled = true
+    try {
+      const res = await api.updatePRFById(prf._id, prf)
+      console.log(res.data)
+      alert("Cancelled")
+    } catch (error) {
+      alert(error)
+    }    
   }
 
   render() {
@@ -109,7 +125,7 @@ class PRFTableList extends Component {
                             <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
-                                <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
+                                <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/></Button>{' '}
                                 <></>
                                 <Button variant="outline-primary" bsStyle="primary"><Link to={{pathname: '/employee/New-PO', state: {PRF: prop, action: "new"} }} ><i className="pe-7s-look" />New PO</Link></Button>{' '}
                                 <></>

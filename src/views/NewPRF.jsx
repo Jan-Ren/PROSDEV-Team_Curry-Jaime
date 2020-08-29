@@ -400,8 +400,8 @@ class NewPRF extends Component {
                         }
                       ]}
                     />
-                    
-                    <Button pullRight bsStyle="danger" fill > Cancel Creation </Button>
+                    <Button pullRight bsStyle="info"  fill type="submit"> Save PRF </Button>
+                    <Button pullRight bsStyle="danger" fill onClick={this.props.history.goBack}> Cancel Creation </Button>
                     <div className="clearfix" />
                   </form>
                 }

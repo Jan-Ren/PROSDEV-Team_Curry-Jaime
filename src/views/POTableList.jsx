@@ -34,62 +34,49 @@ class POTableList extends Component {
         PO: [],
         columns: [],
         isLoading: false,
-    }    
+    }
+
+    this.handleCancel = this.handleCancel.bind(this)
   }
   
   componentDidMount = async () => {
     this.setState({ isLoading: true })
     
-    await api.getAllPO().then(PO => {
-        this.setState({
-            PO: PO.data.data,
-            isLoading: false,
-        }, async () => {
-          console.log(this.state.PO)
-          
-          let prf = this.state.PO.map(async po => {
-            if (po.prf) {
-              const prf = await (await api.getPRFById(po.prf)).data.data
-              console.log(prf.prf_number)
-              return prf
-            }
-          })
+    const PO = await (await api.getAllPO()).data.data
 
-          const updatedPO = [...this.state.PO]
-          prf = await Promise.all(prf)
-          prf.map((p, index) => {
-            if (p) {
-              console.log(p)
-              console.log(index)
-              updatedPO[index].prf = p
-            }
-          })
-          this.setState({ PO: updatedPO })
-          // .then((res, index) => {
-          //   try {
-          //   } catch (error) {
-              
-          //   }            
-          // })
-          // .then(() => {
-          //   updatedPO.map(err => console.log(err))
-          //   this.setState({ PO: updatedPO })
-          // })
-          
-          // alert(this.state.PO.prf)
-        })
+    let prf = PO.map(async po => {
+      if (po.prf) {
+        const prf = await (await api.getPRFById(po.prf)).data.data
+        console.log(prf.prf_number)
+        return prf
+      }
     })
-
-    // const PO = await (await api.getAllPO()).data.data
-
-    // PO.filter(async po => {
-    //   if (po.prf_number) {
-    //     const prf = await (await api.getPRFById(po.prf_number)).data.data
-    //     console.log(prf.prf_number)
-    //     return prf
-    //   }
-    // })
     
+    prf = await Promise.all(prf)
+    prf.map((p, index) => {
+      if (p) {
+        console.log(p)
+        console.log(index)
+        PO[index].prf = p
+      }
+    })
+    
+    this.setState({ PO, isLoading: false })    
+
+  }
+
+  handleCancel = async (po) => {
+
+    console.log(po)
+    alert(po._id)
+    po.is_cancelled = true
+    try {
+      const res = await api.updatePOById(po._id, po)
+      console.log(res.data)
+      alert("Cancelled")
+    } catch (error) {
+      alert(error)
+    }    
   }
 
   render() {
@@ -146,7 +133,7 @@ class POTableList extends Component {
                             <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
-                              <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
+                              <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/></Button>{' '}
                               <Button variant="outline-secondary"><Link to={{pathname: '/employee/New-PO', state: {PO: prop, action: "edit"} }} ><i className="pe-7s-look" />View</Link></Button>
                             </td>
                           </tr>
