@@ -155,11 +155,12 @@ class NewPO extends Component {
     
     console.log(this.state)
     if (this.props.location.state.action === "edit") {        
-      const po_id = this.props.location.state.PO._id
-      alert(po_id)
+      const { _id, date_created } = this.props.location.state.PO
+      alert(_id)
+      payload.date_created = date_created
       try {
         alert('editing please wait')
-        await api.updatePOById(po_id, payload).then(res => {
+        await api.updatePOById(_id, payload).then(res => {
           window.alert(`Edit succesfully: ${res.message}`)
           this.setState({
             po_number: '',

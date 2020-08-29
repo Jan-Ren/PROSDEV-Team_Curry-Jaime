@@ -141,16 +141,15 @@ class NewPRF extends Component {
 
     // const { prf_number, pax, recipient, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by } = this.state
     const payload = this.state
-    // alert('here')
+    // alert('here')    
     console.log(this.state)
     if (this.props.location.state) {
-      const prf_id = this.props.location.state.PRF._id
-      alert(prf_id)
-      console.log(this.state.conversion_rate)
-      console.log(this.state.recipient)
+      const { _id, date_created } = this.props.location.state.PRF
+      alert(_id)
+      payload.date_created = date_created
       try {
         alert('editing please wait')
-        await api.updatePRFById(prf_id, payload).then(res => {
+        await api.updatePRFById(_id, payload).then(res => {
           window.alert(`Edit succesfully: ${res.message}`)
           this.setState({
             prf_number: '',
