@@ -23,7 +23,7 @@ import Card from "components/Card/Card.jsx";
 import { poHArray, poDArray } from "variables/Variables.jsx";
 import api from '../api'
 import moment from 'moment'
-import { filter } from "core-js/fn/dict";
+//import { filter } from "core-js/fn/dict";
 
 
 class POTableList extends Component {
@@ -39,57 +39,57 @@ class POTableList extends Component {
   
   componentDidMount = async () => {
     this.setState({ isLoading: true })
-    
-    await api.getAllPO().then(PO => {
-        this.setState({
-            PO: PO.data.data,
-            isLoading: false,
-        }, async () => {
-          console.log(this.state.PO)
-          
-          let prf = this.state.PO.map(async po => {
-            if (po.prf) {
-              const prf = await (await api.getPRFById(po.prf)).data.data
-              console.log(prf.prf_number)
-              return prf
-            }
-          })
-
-          const updatedPO = [...this.state.PO]
-          prf = await Promise.all(prf)
-          prf.map((p, index) => {
-            if (p) {
-              console.log(p)
-              console.log(index)
-              updatedPO[index].prf = p
-            }
-          })
-          this.setState({ PO: updatedPO })
-          // .then((res, index) => {
-          //   try {
-          //   } catch (error) {
-              
-          //   }            
-          // })
-          // .then(() => {
-          //   updatedPO.map(err => console.log(err))
-          //   this.setState({ PO: updatedPO })
-          // })
-          
-          // alert(this.state.PO.prf)
-        })
+  
+    let po = this.props.location.state.PO.map(async po => {
+      if (this.props.location.state.PO) {
+        const po = await (await api.getPOById(this.props.location.state.PO)).data.data
+        console.log(po)
+        return po
+      }
     })
 
+    po = await Promise.all(po)
+
+    this.setState({ PO: po})
+
+    console.log(this.state.PRF)
+
+    let prf = this.state.PO.map(async po => {
+      if ( this.state.PO.prf) {
+        const prf = await (await api.getPRFById(this.state.PO.prf)).data.data
+        return prf
+      }
+    })
+    
+    prf = await Promise.all(prf)
+    prf.map((p, index) => {
+      if (p) {
+        console.log(p)
+        console.log(index)
+        this.state.PO[index].prf = p
+      }
+    })
+
+    // this.setState({ PO, isLoading: false })
     // const PO = await (await api.getAllPO()).data.data
 
-    // PO.filter(async po => {
-    //   if (po.prf_number) {
-    //     const prf = await (await api.getPRFById(po.prf_number)).data.data
+    // let prf = PO.map(async po => {
+    //   if (po.prf) {
+    //     const prf = await (await api.getPRFById(po.prf)).data.data
     //     console.log(prf.prf_number)
     //     return prf
     //   }
     // })
     
+    // prf = await Promise.all(prf)
+    // prf.map((p, index) => {
+    //   if (p) {
+    //     console.log(p)
+    //     console.log(index)
+    //     PO[index].prf = p
+    //   }
+    // })
+    // this.setState({ PO, isLoading: false })
   }
 
   render() {
