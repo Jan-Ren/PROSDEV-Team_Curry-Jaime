@@ -26,6 +26,7 @@ import { style } from "variables/Variables.jsx";
 
 import routes from "routes.js";
 import NewPO from "views/NewPO.jsx";
+import NewPRF from "views/NewPRF.jsx";
 import PRFTableList from "views/PRFTableList.jsx";
 import POTableList from "views/POTableList.jsx";
 
@@ -73,7 +74,7 @@ class Employee extends Component {
   };
   getRoutes = routes => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/employee") {
+      if (prop.layout === "/") {
         return (
           <Route
             path={prop.layout + prop.path}
@@ -177,9 +178,9 @@ class Employee extends Component {
           />
           <Switch>
             {this.getRoutes(routes)}
-            <Route path="/employee/New-PO" component={NewPO} />
-            <Route path="/employee/PO-List/" component={POTableList} />
-            <Route path="/employee/PRF-List/" component={PRFTableList} />
+            <Route path="/create/New-PO" component={NewPO} />
+            <Route path="/PO-List/" component={POTableList} />
+            <Route path="/PRF-List/" component={PRFTableList} />
           </Switch>
         </div>
       </div>

@@ -79,7 +79,7 @@ class PRFTableList extends Component {
                         <ControlLabel>to</ControlLabel>{' '}
                           <FormControl type="date" />
                         </FormGroup>{' '}
-                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/></Button>{' '}
+                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/>Filter Date</Button>{' '}
                         <InputGroup className="pull-right">
                           <FormControl type="number" placeholder="Search PRF#" />
                           <InputGroup.Addon>
@@ -109,7 +109,7 @@ class PRFTableList extends Component {
                             <td key={key+4}>{moment(prop.date_created).format('DD-MM-YYYY hh:mm:ss A')}</td>
                             <td key={key+5}>{moment(prop.last_modified).format('DD-MM-YYYY hh:mm:ss A')}</td>
                             <td>
-                                <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
+                                <Button variant="outline-primary" bsStyle="warning"><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                 <></>
                                 <Button variant="outline-primary" bsStyle="primary" href="/employee/New-PO"><i className="pe-7s-news-paper" /> New PO</Button>{' '}
                                 <></>

@@ -23,25 +23,25 @@ import NewPRF from "views/NewPRF.jsx";
 
 const dashboardRoutes = [
   {
-    path: "/PRF-List-Folders",
+    path: "PRF-List-Folders",
     name: "PRF List Folders",
     icon: "pe-7s-note2",
     component: PRFListFolders,
-    layout: "/employee"
+    layout: "/"
   },
   {
-    path: "/PO-List-Folders",
+    path: "PO-List-Folders",
     name: "PO List Folders",
     icon: "pe-7s-news-paper",
     component: POListFolders,
-    layout: "/employee"
+    layout: "/"
   },
   {
-    path: "/New-PRF",
+    path: "New-PRF",
     name: "New PRF ",
     icon: "pe-7s-plus",
     component: NewPRF,
-    layout: "/new"
+    layout: "/"
   },
   {
     logout: true,

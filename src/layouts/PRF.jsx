@@ -68,7 +68,7 @@ class PRF extends Component {
   };
   getRoutes = routes => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/new") {
+      if (prop.layout === "/create") {
         return (
           <Route
             path={prop.layout + prop.path}
