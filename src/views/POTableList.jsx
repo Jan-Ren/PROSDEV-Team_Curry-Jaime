@@ -23,7 +23,7 @@ import Card from "components/Card/Card.jsx";
 import { poHArray, poDArray } from "variables/Variables.jsx";
 import api from '../api'
 import moment from 'moment'
-import { filter } from "core-js/fn/dict";
+//import { filter } from "core-js/fn/dict";
 
 
 class POTableList extends Component {
