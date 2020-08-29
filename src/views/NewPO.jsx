@@ -30,6 +30,7 @@ import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
 import { AlertErrorOutline } from "material-ui/svg-icons";
+import { withRouter } from 'react-router-dom'
 
 class NewPO extends Component {
 
@@ -144,7 +145,8 @@ class NewPO extends Component {
     
   }
 
-  handleRemove(index){
+  handleRemove(e, index){
+    e.preventDefault()
     this.state.pax.splice(index,1)
     this.setState({pax: this.state.pax})
 
@@ -161,7 +163,6 @@ class NewPO extends Component {
       try {
         alert('editing please wait')
         await api.updatePOById(_id, payload).then(res => {
-          window.alert(`Edit succesfully: ${res.message}`)
           this.setState({
             po_number: '',
             prf: {prf_number: ''},
@@ -177,7 +178,7 @@ class NewPO extends Component {
             received_by: ''
           })
         })
-        // alert("edit done")
+        alert("edit done")
       } catch (error) {
         console.log(error.message)
         alert(`Editing failed: ${error.message}`)
@@ -186,7 +187,7 @@ class NewPO extends Component {
       alert("saving please wait")      
       try {
         await api.insertPO(payload).then(res => {   
-          window.alert(res.message)
+          
           this.setState({
             po_number: '',
             prf: {prf_number: ''},
@@ -210,7 +211,7 @@ class NewPO extends Component {
       }      
 
     } 
-    
+    this.props.history.push('/Employee')
   }
   render() {
     return (
@@ -221,7 +222,7 @@ class NewPO extends Component {
               <Card
                 title="New PO"
                 content={
-                  <form onSubmit={this.handleSave}>
+                  <form onSubmit={this.handleSave.bind(this)}>
                     
                     <FormInputs
                       ncols={["col-md-3", "col-md-3", "col-md-6"]}
@@ -262,33 +263,7 @@ class NewPO extends Component {
                                             
                       />
                       
-                      {/* <FormInputs
-                      ncols={["col-md-3","col-md-5",  "col-md-3"]}
-                      properties={[
-                        {
-                          label: "Date",
-                          type: "date",
-                          bsClass: "form-control",
-                          placeholder: "Email",
-                          name:`paid_date`,
-                          value:this.state.paid_date,
-                          onChange: this.handleChange
-                        }
-                      ]}
-                    /> */}
-                    <h5>Pax Name/s</h5>
-                    {/* <FormInputs
-                      ncols={["col-md-6"]}
-                      properties={[
-                        {
-                          label: "",
-                          type: "text",
-                          bsClass: "form-control",
-                          placeholder: "Input Name",
-                          defaultValue: ""
-                        }
-                      ]}
-                    /> */}
+                    <h5 style={{ display: "inline-block"}} >Pax Name/s</h5> <Button variant="outline-secondary" bsStyle="primary" fill onClick={(e)=>this.addName(e)}>+</Button>
                                         
                     {
                       this.state.pax.map((pax, index)=>{
@@ -310,8 +285,8 @@ class NewPO extends Component {
                             
                           />
                           {
-                            index==0 ? <Button variant="outline-secondary" bsStyle="primary" fill onClick={(e)=>this.addName(e)}>+</Button> :
-                            <Button variant="outline-secondary" bsStyle="danger"  onClick={(e)=>this.handleRemove(e)}>-</Button>
+                            // index==0 ? <Button variant="outline-secondary" bsStyle="primary" fill onClick={(e)=>this.addName(e)}>+</Button> :
+                            <Button variant="outline-secondary" bsStyle="danger"  onClick={(e)=>this.handleRemove(e, index)}>-</Button>
                           }
                           
                           </div>
@@ -422,7 +397,7 @@ class NewPO extends Component {
                     />
                     
                     <Button pullRight bsStyle="info"  fill type="submit"> Save PO </Button>
-                    <Button pullRight bsStyle="danger" fill type="submit"> Cancel Creation </Button>
+                    <Button pullRight bsStyle="danger" fill onClick={this.props.history.goBack}> Cancel Creation </Button>
                     <div className="clearfix" />
                   </form>
                 }
@@ -435,4 +410,4 @@ class NewPO extends Component {
   }
 }
 
-export default NewPO;
+export default withRouter(NewPO);

@@ -118,30 +118,16 @@ class NewPRF extends Component {
     
   }
 
-  handleRemove(index){
+  handleRemove(e, index){
+    e.preventDefault()
     this.state.pax.splice(index,1)
     this.setState({pax: this.state.pax})
 
   }
   handleSave = async () => {
 
-    // const { name, rating, time } = this.state
-    // const arrayTime = time.split('/')
-    // const payload = { name, rating, time: arrayTime }    
-
-    // await api.insertPRF(payload).then(res => {
-    //     window.alert(`Movie inserted successfully`)
-    //     this.setState({
-    //         name: '',
-    //         rating: '',
-    //         time: '',
-    //     })
-    // })
-    // console.log(this.state)
-
-    // const { prf_number, pax, recipient, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by } = this.state
     const payload = this.state
-    // alert('here')    
+    
     console.log(this.state)
     if (this.props.location.state) {
       const { _id, date_created } = this.props.location.state.PRF
@@ -166,7 +152,7 @@ class NewPRF extends Component {
           })
         })
         alert("edit done")
-        this.props.history.push('/PRF-List')
+        
       } catch (error) {
         console.log(error.message)
         alert(`Editing failed: ${error.message}`)
@@ -177,7 +163,7 @@ class NewPRF extends Component {
       alert("saving please wait")      
       try {
         await api.insertPRF(payload).then(res => {   
-          window.alert(res.message)
+          // window.alert(res.message)
           this.setState({
             prf_number: '',
             pax: [''],
@@ -201,6 +187,7 @@ class NewPRF extends Component {
     }
     // alert("pumasok ba")
     
+    this.props.history.push('/employee')
   }
   render() {
     return (
@@ -241,33 +228,7 @@ class NewPRF extends Component {
                                             
                       />
                       
-                      {/* <FormInputs
-                      ncols={["col-md-3","col-md-5",  "col-md-3"]}
-                      properties={[
-                        {
-                          label: "Date",
-                          type: "date",
-                          bsClass: "form-control",
-                          placeholder: "Email",
-                          name:`paid_date`,
-                          value:this.state.paid_date,
-                          onChange: this.handleChange
-                        }
-                      ]}
-                    /> */}
-                    <h5>Pax Name/s</h5>
-                    {/* <FormInputs
-                      ncols={["col-md-6"]}
-                      properties={[
-                        {
-                          label: "",
-                          type: "text",
-                          bsClass: "form-control",
-                          placeholder: "Input Name",
-                          defaultValue: ""
-                        }
-                      ]}
-                    /> */}
+                    <h5 style={{ display: "inline-block" }}>Pax Name/s</h5> <Button variant="outline-secondary" bsStyle="primary" fill onClick={(e)=>this.addName(e)}>+</Button>
                                         
                     {
                       this.state.pax.map((pax, index)=>{
@@ -289,8 +250,8 @@ class NewPRF extends Component {
                             
                           />
                           {
-                            index==0 ? <Button variant="outline-secondary" bsStyle="primary" fill onClick={(e)=>this.addName(e)}>+</Button> :
-                            <Button variant="outline-secondary" bsStyle="danger"  onClick={(e)=>this.handleRemove(e)}>-</Button>
+                            // index==0 ? <Button variant="outline-secondary" bsStyle="primary" fill onClick={(e)=>this.addName(e)}>+</Button> :
+                            <Button variant="outline-secondary" bsStyle="danger"  onClick={(e)=>this.handleRemove(e, index)}>-</Button>
                           }
                           
                           </div>
