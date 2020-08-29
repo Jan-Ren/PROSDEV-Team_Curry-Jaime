@@ -20,7 +20,7 @@ import { Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 //import { poFolder } from "variables/Variables.jsx";
-
+import { Link } from 'react-router-dom'
 import users from '../api/users'
 import api from '../api'
 
@@ -122,7 +122,7 @@ payload.isAdmin = true
                                     <td>
                                     <Button variant="outline-secondary" bsStyle="danger" className="pull-right"><i className="pe-7s-close-circle"/></Button>
                                     <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
-                                    <Button className="pull-right" href="/employee/PO-List"><i className="pe-7s-look"/>View</Button>
+                                    <Button className="pull-right"><Link to={{pathname: '/employee/PO-List', state: {PO: prop.po} }} ><i className="pe-7s-look"/>View</Link></Button>
                                     </td>
                                 </tr>
                                 
