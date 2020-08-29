@@ -26,7 +26,6 @@ import { style } from "variables/Variables.jsx";
 
 import routes from "routes.js";
 import NewPO from "views/NewPO.jsx";
-import NewPRF from "views/NewPRF.jsx";
 import PRFTableList from "views/PRFTableList.jsx";
 import POTableList from "views/POTableList.jsx";
 
@@ -178,7 +177,7 @@ class Employee extends Component {
           />
           <Switch>
             {this.getRoutes(routes)}
-            <Route path="/create/New-PO" component={NewPO} />
+            <Route path="/New-PO" component={NewPO} />
             <Route path="/PO-List/" component={POTableList} />
             <Route path="/PRF-List/" component={PRFTableList} />
           </Switch>
