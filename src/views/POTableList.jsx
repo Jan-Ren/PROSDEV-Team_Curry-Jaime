@@ -34,8 +34,9 @@ class POTableList extends Component {
         PO: [],
         columns: [],
         isLoading: false,
-        redirect: false,
-    }    
+    }
+
+    this.handleCancel = this.handleCancel.bind(this)
   }
   
   componentDidMount = async () => {
@@ -102,6 +103,20 @@ class POTableList extends Component {
     if (this.state.redirect)
       return <Redirect to="/PO-List-Folders" />      
   }
+  
+  handleCancel = async (po) => {
+
+    console.log(po)
+    alert(po._id)
+    po.is_cancelled = true
+    try {
+      const res = await api.updatePOById(po._id, po)
+      console.log(res.data)
+      alert("Cancelled")
+    } catch (error) {
+      alert(error)
+    }
+  }
 
   render() {
     return (
@@ -158,8 +173,8 @@ class POTableList extends Component {
                             <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
-                              <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
-                              <Button variant="outline-secondary"><Link to={{pathname: '/employee/New-PO', state: {PO: prop, action: "edit"} }} ><i className="pe-7s-look" />View</Link></Button>
+                              <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/></Button>{' '}
+                              <Button variant="outline-secondary"><Link to={{pathname: '/employee/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><i className="pe-7s-look" />View</Link></Button>
                             </td>
                           </tr>
                         );
