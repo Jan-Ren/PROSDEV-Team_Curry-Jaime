@@ -16,7 +16,7 @@
 
 */
 import React, { Component } from "react";
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
@@ -34,41 +34,47 @@ class POTableList extends Component {
         PO: [],
         columns: [],
         isLoading: false,
+        redirect: false,
     }    
   }
   
   componentDidMount = async () => {
     this.setState({ isLoading: true })
   
-    let po = this.props.location.state.PO.map(async po => {
-      if (this.props.location.state.PO) {
-        const po = await (await api.getPOById(this.props.location.state.PO)).data.data
-        console.log(po)
-        return po
-      }
-    })
+    if (this.props.location.state) {
 
-    po = await Promise.all(po)
-
-    this.setState({ PO: po})
-
-    console.log(this.state.PRF)
-
-    let prf = this.state.PO.map(async po => {
-      if ( this.state.PO.prf) {
-        const prf = await (await api.getPRFById(this.state.PO.prf)).data.data
-        return prf
-      }
-    })
-    
-    prf = await Promise.all(prf)
-    prf.map((p, index) => {
-      if (p) {
-        console.log(p)
-        console.log(index)
-        this.state.PO[index].prf = p
-      }
-    })
+      let po = this.props.location.state.PO.map(async po => {
+        if (this.props.location.state.PO) {
+          const po = await (await api.getPOById(this.props.location.state.PO)).data.data
+          console.log(po)
+          return po
+        }
+      })
+  
+      po = await Promise.all(po)
+  
+      this.setState({ PO: po})
+  
+      console.log(this.state.PRF)
+  
+      let prf = this.state.PO.map(async po => {
+        if ( this.state.PO.prf) {
+          const prf = await (await api.getPRFById(this.state.PO.prf)).data.data
+          return prf
+        }
+      })
+      
+      prf = await Promise.all(prf)
+      prf.map((p, index) => {
+        if (p) {
+          console.log(p)
+          console.log(index)
+          this.state.PO[index].prf = p
+        }
+      })
+    } else {
+      this.setState({ redirect: true })
+    }
 
     // this.setState({ PO, isLoading: false })
     // const PO = await (await api.getAllPO()).data.data
@@ -92,9 +98,15 @@ class POTableList extends Component {
     // this.setState({ PO, isLoading: false })
   }
 
+  handleRedirect = () => {
+    if (this.state.redirect)
+      return <Redirect to="/PO-List-Folders" />      
+  }
+
   render() {
     return (
       <div className="content">
+        { this.handleRedirect() }
         <Grid fluid>
           <Row>
             <Col md={12}>

@@ -16,7 +16,7 @@
 
 */
 import React, { Component } from "react";
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
@@ -35,11 +35,14 @@ class PRFTableList extends Component {
         PRF: [],
         columns: [],
         isLoading: false,
+        redirect: false,
       }    
     
   }
   
   componentDidMount = async () => {
+
+    if (this.props.location.state) {
 
       let prf = this.props.location.state.PRF.map(async prf => {
         if (this.props.location.state.PRF) {
@@ -54,11 +57,20 @@ class PRFTableList extends Component {
       this.setState({ PRF: prf})
 
       console.log(this.state.PRF)
+    } else {
+      this.setState({ redirect: true })
+    }
+  }
+
+  handleRedirect = () => {
+    if (this.state.redirect)
+      return <Redirect to="/PRF-List-Folders" />
   }
   
   render() {
     return (
       <div className="content">
+        { this.handleRedirect() }
         <Grid fluid>
           <Row>
             <Col md={12}>
