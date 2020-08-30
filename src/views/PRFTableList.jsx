@@ -16,7 +16,7 @@
 
 */
 import React, { Component } from "react";
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
@@ -30,7 +30,8 @@ class PRFTableList extends Component {
 
   constructor(props) {
     super(props)
-    this.state = {
+
+      this.state = {
         PRF: [],
         columns: [],
         isLoading: false,
@@ -40,23 +41,25 @@ class PRFTableList extends Component {
   }
   
   componentDidMount = async () => {
-    this.setState({ isLoading: true })
-    
-    await api.getAllPRF().then(PRF => {
-        this.setState({
-            PRF: PRF.data.data,
-            isLoading: false,
-        }, () => {
-          console.log(this.state.PRF)
-        })
-    })
-    
-    // to check if na-receive yung data
-    // setTimeout(() => {
-    //   window.alert(this.state.PRF)
-    //   window.alert(this.state.PRF)
-    //   console.log(this.state.PRF)
-    // }, 3000)
+
+    if (this.props.location.state) {
+
+      let prf = this.props.location.state.PRF.map(async prf_reference => {
+        if (this.props.location.state.PRF) {
+          const prf = await (await api.getPRFById(prf_reference)).data.data
+          console.log(prf)
+          return prf
+        }
+      })
+
+      prf = await Promise.all(prf)
+
+      this.setState({ PRF: prf})
+
+      console.log(this.state.PRF)
+    } else {
+      this.setState({ redirect: true })
+    }
   }
 
   handleCancel = async (prf) => {
@@ -73,9 +76,15 @@ class PRFTableList extends Component {
     }    
   }
 
+  handleRedirect = () => {
+    if (this.state.redirect)
+      return <Redirect to="/PRF-List-Folders" />
+  }
+  
   render() {
     return (
       <div className="content">
+        { this.handleRedirect() }
         <Grid fluid>
           <Row>
             <Col md={12}>
@@ -95,7 +104,7 @@ class PRFTableList extends Component {
                         <ControlLabel>to</ControlLabel>{' '}
                           <FormControl type="date" />
                         </FormGroup>{' '}
-                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/></Button>{' '}
+                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/>Filter Date</Button>{' '}
                         <InputGroup className="pull-right">
                           <FormControl type="number" placeholder="Search PRF#" />
                           <InputGroup.Addon>
@@ -125,7 +134,7 @@ class PRFTableList extends Component {
                             <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
-                                <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/></Button>{' '}
+                                <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                 <></>
                                 <Button variant="outline-primary" bsStyle="primary"><Link to={{pathname: '/employee/New-PO', state: {PRF: prop, action: "new"}} } style={{ color: "inherit"}} ><i className="pe-7s-look" />New PO</Link></Button>{' '}
                                 <></>

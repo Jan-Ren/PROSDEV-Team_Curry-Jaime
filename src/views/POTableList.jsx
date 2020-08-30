@@ -16,14 +16,14 @@
 
 */
 import React, { Component } from "react";
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 import { poHArray, poDArray } from "variables/Variables.jsx";
 import api from '../api'
 import moment from 'moment'
-import { filter } from "core-js/fn/dict";
+//import { filter } from "core-js/fn/dict";
 
 
 class POTableList extends Component {
@@ -41,30 +41,69 @@ class POTableList extends Component {
   
   componentDidMount = async () => {
     this.setState({ isLoading: true })
-    
-    const PO = await (await api.getAllPO()).data.data
+  
+    if (this.props.location.state) {
 
-    let prf = PO.map(async po => {
-      if (po.prf) {
-        const prf = await (await api.getPRFById(po.prf)).data.data
-        console.log(prf.prf_number)
-        return prf
-      }
-    })
-    
-    prf = await Promise.all(prf)
-    prf.map((p, index) => {
-      if (p) {
-        console.log(p)
-        console.log(index)
-        PO[index].prf = p
-      }
-    })
-    
-    this.setState({ PO, isLoading: false })    
+      let po = this.props.location.state.PO.map(async po_reference => {
+        if (this.props.location.state.PO) {
+          const po = await (await api.getPOById(po_reference)).data.data
+          console.log(po)
+          return po
+        }
+      })
+  
+      po = await Promise.all(po)
+  
+      this.setState({ PO: po})
+  
+      console.log(this.state.PRF)
+  
+      let prf = this.state.PO.map(async po => {
+        if ( this.state.PO.prf) {
+          const prf = await (await api.getPRFById(this.state.PO.prf)).data.data
+          return prf
+        }
+      })
+      
+      prf = await Promise.all(prf)
+      prf.map((p, index) => {
+        if (p) {
+          console.log(p)
+          console.log(index)
+          this.state.PO[index].prf = p
+        }
+      })
+    } else {
+      this.setState({ redirect: true })
+    }
 
+    // this.setState({ PO, isLoading: false })
+    // const PO = await (await api.getAllPO()).data.data
+
+    // let prf = PO.map(async po => {
+    //   if (po.prf) {
+    //     const prf = await (await api.getPRFById(po.prf)).data.data
+    //     console.log(prf.prf_number)
+    //     return prf
+    //   }
+    // })
+    
+    // prf = await Promise.all(prf)
+    // prf.map((p, index) => {
+    //   if (p) {
+    //     console.log(p)
+    //     console.log(index)
+    //     PO[index].prf = p
+    //   }
+    // })
+    // this.setState({ PO, isLoading: false })
   }
 
+  handleRedirect = () => {
+    if (this.state.redirect)
+      return <Redirect to="/PO-List-Folders" />      
+  }
+  
   handleCancel = async (po) => {
 
     console.log(po)
@@ -76,12 +115,13 @@ class POTableList extends Component {
       alert("Cancelled")
     } catch (error) {
       alert(error)
-    }    
+    }
   }
 
   render() {
     return (
       <div className="content">
+        { this.handleRedirect() }
         <Grid fluid>
           <Row>
             <Col md={12}>
