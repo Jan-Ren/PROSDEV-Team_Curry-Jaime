@@ -44,9 +44,9 @@ class PRFTableList extends Component {
 
     if (this.props.location.state) {
 
-      let prf = this.props.location.state.PRF.map(async prf => {
+      let prf = this.props.location.state.PRF.map(async prf_reference => {
         if (this.props.location.state.PRF) {
-          const prf = await (await api.getPRFById(this.props.location.state.PRF)).data.data
+          const prf = await (await api.getPRFById(prf_reference)).data.data
           console.log(prf)
           return prf
         }

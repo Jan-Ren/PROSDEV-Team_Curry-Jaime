@@ -43,9 +43,9 @@ class POTableList extends Component {
   
     if (this.props.location.state) {
 
-      let po = this.props.location.state.PO.map(async po => {
+      let po = this.props.location.state.PO.map(async po_reference => {
         if (this.props.location.state.PO) {
-          const po = await (await api.getPOById(this.props.location.state.PO)).data.data
+          const po = await (await api.getPOById(po_reference)).data.data
           console.log(po)
           return po
         }
