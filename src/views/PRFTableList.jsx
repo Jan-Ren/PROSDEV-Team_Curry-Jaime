@@ -30,33 +30,32 @@ class PRFTableList extends Component {
 
   constructor(props) {
     super(props)
-    this.state = {
+
+      this.state = {
         PRF: [],
         columns: [],
         isLoading: false,
-    }    
+      }    
+    
   }
   
   componentDidMount = async () => {
-    this.setState({ isLoading: true })
-    
-    await api.getAllPRF().then(PRF => {
-        this.setState({
-            PRF: PRF.data.data,
-            isLoading: false,
-        }, () => {
-          console.log(this.state.PRF)
-        })
-    })
-    
-    // to check if na-receive yung data
-    // setTimeout(() => {
-    //   window.alert(this.state.PRF)
-    //   window.alert(this.state.PRF)
-    //   console.log(this.state.PRF)
-    // }, 3000)
-  }
 
+      let prf = this.props.location.state.PRF.map(async prf => {
+        if (this.props.location.state.PRF) {
+          const prf = await (await api.getPRFById(this.props.location.state.PRF)).data.data
+          console.log(prf)
+          return prf
+        }
+      })
+
+      prf = await Promise.all(prf)
+
+      this.setState({ PRF: prf})
+
+      console.log(this.state.PRF)
+  }
+  
   render() {
     return (
       <div className="content">

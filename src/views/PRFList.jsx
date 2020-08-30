@@ -17,12 +17,76 @@
 */
 import React, { Component } from "react";
 import { Grid, Row, Col, Table, Button } from "react-bootstrap";
-
+import { Link } from 'react-router-dom'
 import Card from "components/Card/Card.jsx";
-import { prfFolder } from "variables/Variables.jsx";
 
+import users from '../api/users'
+import api from '../api'
 
 class PRFListFolders extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+        isAdmin: '',
+        prfFolder: [],
+        columns: [],
+        isLoading: false,
+    }    
+  }
+
+  componentDidMount = async () => {
+    this.setState({ isLoading: true })
+    
+    const token = localStorage.getItem('token')
+
+    try {
+      const user = await users.getUser({token})
+      this.state.isAdmin = user.data.data.isAdmin
+    } catch (error) {
+      alert(`${error} putae`)
+      this.setState({ authenticated: false })
+    }
+
+    await api.getAllNF_PRF().then(prfFolder => {
+        this.setState({
+            prfFolder: prfFolder.data.data,
+            isLoading: false,
+        }, () => {
+          console.log(this.state.prfFolder)
+        })
+    })
+  }
+
+  setWorkingDirectory = async (curr_working_directory) => {
+//FOR EMPLOYEE
+    const payload = {
+      isAdmin : false,
+      prf_folder: curr_working_directory
+    }
+    
+    console.log(payload)
+    try {
+      await users.updatePRF_Folder(payload).then(res => {   
+        alert("saving done")
+      })
+    } catch (error) {
+      console.log(error.message)
+      alert(error.message)
+    }
+//FOR ADMIN
+    payload.isAdmin = true
+    
+    console.log(payload)
+    try {
+      await users.updatePRF_Folder(payload).then(res => {   
+        alert("saving done")
+      })
+    } catch (error) {
+      console.log(error.message)
+      alert(error.message)
+    }
+  }
+
   render() {
     return (
       <div className="content">
@@ -44,16 +108,16 @@ class PRFListFolders extends Component {
                             </tr>
                             </thead> */}
                             <tbody>
-                            {prfFolder.map((prop, key) => {
+                            {this.state.prfFolder.map((prop, key) => {
                                 return (
                                 <tr key={key}>
-                                    {prop.map((prop, key) => {
-                                    return <td key={key}>{prop}</td>;
-                                    })}
+
+                                    <td key={key}>{prop.nf_prf_number}</td>;
+
                                     <td>
                                     <Button variant="outline-secondary" bsStyle="warning" className="pull-right"><i className="pe-7s-close-circle"/>Cancel</Button>
-                                    <Button variant="outline-secondary" bsStyle="primary" className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
-                                    <Button className="pull-right" href="/PRF-List"><i className="pe-7s-look"/>View</Button>
+                                    <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
+                                    <Button className="pull-right"><Link to={{pathname: '/employee/PRF-List', state: {PRF: prop.prf} }} ><i className="pe-7s-look"/>View</Link></Button>
                                     </td>
                                 </tr>
                                 
