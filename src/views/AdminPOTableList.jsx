@@ -45,7 +45,7 @@ class AdminPOTableList extends Component {
                         <ControlLabel>to</ControlLabel>{' '}
                           <FormControl type="date" />
                         </FormGroup>{' '}
-                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/></Button>{' '}
+                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/>Filter Date</Button>{' '}
                         <FormGroup className="pull-right">
                         <InputGroup>
                           <FormControl type="number" placeholder="Search PO#" />
@@ -80,8 +80,8 @@ class AdminPOTableList extends Component {
                             })}
                             <td>
                             <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>
-                            <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
-                            <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-junk"/></Button>{' '}
+                            <Button variant="outline-primary" bsStyle="warning"><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                            <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-junk"/>Delete</Button>{' '}
                             </td>
                             
                           </tr>

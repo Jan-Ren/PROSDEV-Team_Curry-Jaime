@@ -59,12 +59,6 @@ class Sidebar extends Component {
                         <p>New PRF</p>
                     </NavLink>
                     </li>
-                    <li className={this.activeRoute("/table")}>
-                    <NavLink to={'/table'} className="nav-link" activeClassName="active">
-                        <i className="pe-7s-diskette"></i>
-                        <p>Save</p>
-                    </NavLink>
-                    </li>
                     <li className="active-pro">
                     <NavLink to={'/table'} className="nav-link" activeClassName="active">
                         <i className="pe-7s-back"></i>

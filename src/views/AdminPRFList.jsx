@@ -51,7 +51,7 @@ class AdminPRFListFolders extends Component {
                                     return <td key={key}>{prop}</td>;
                                     })}
                                     <td>
-                                    <Button variant="outline-secondary" bsStyle="danger" className="pull-right"><i className="pe-7s-close-circle"/></Button>
+                                    <Button variant="outline-secondary" bsStyle="warning" className="pull-right"><i className="pe-7s-close-circle"/>Cancel</Button>
                                     <Button variant="outline-secondary" bsStyle="primary" className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
                                     <Button className="pull-right" href="/admin/PRF-List"><i className="pe-7s-look"/>View</Button>
                                     </td>

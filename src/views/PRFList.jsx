@@ -115,7 +115,7 @@ class PRFListFolders extends Component {
                                     <td key={key}>{prop.nf_prf_number}</td>;
 
                                     <td>
-                                    <Button variant="outline-secondary" bsStyle="danger" className="pull-right"><i className="pe-7s-close-circle"/></Button>
+                                    <Button variant="outline-secondary" bsStyle="warning" className="pull-right"><i className="pe-7s-close-circle"/>Cancel</Button>
                                     <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
                                     <Button className="pull-right"><Link to={{pathname: '/employee/PRF-List', state: {PRF: prop.prf} }} ><i className="pe-7s-look"/>View</Link></Button>
                                     </td>

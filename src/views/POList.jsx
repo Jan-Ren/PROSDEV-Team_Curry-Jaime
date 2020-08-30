@@ -120,7 +120,7 @@ payload.isAdmin = true
                                     <td key={key}>{prop.nf_po_number}</td>;
 
                                     <td>
-                                    <Button variant="outline-secondary" bsStyle="danger" className="pull-right"><i className="pe-7s-close-circle"/></Button>
+                                    <Button variant="outline-secondary" bsStyle="warning" className="pull-right"><i className="pe-7s-close-circle"/>Cancel</Button>
                                     <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
                                     <Button className="pull-right"><Link to={{pathname: '/employee/PO-List', state: {PO: prop.po} }} ><i className="pe-7s-look"/>View</Link></Button>
                                     </td>
