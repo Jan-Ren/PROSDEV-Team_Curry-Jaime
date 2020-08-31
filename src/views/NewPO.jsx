@@ -31,19 +31,39 @@ import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
 import { AlertErrorOutline } from "material-ui/svg-icons";
 import { withRouter } from 'react-router-dom'
+import users from "api/users";
 
 class NewPO extends Component {
 
   constructor(props) {
     super(props)
 
-    // if edit
+    this.state = {          
+        po_number: '',
+        prf: {prf_number: 'nandaya ka ng url tsk'},
+        pax:[''],
+        recipient: '',
+        particulars: '',
+        php: 0,
+        usd: 0,
+        total: 0,
+        conversion_rate: 0,
+        prepared_by: '',
+        approved_by: '',
+        received_by: '',
+    }
+    
+    this.handleChange = this.handleChange.bind(this)
+  }
+  
+  componentDidMount = async() => {
     if (this.props.location.state) {
-      console.log(this.props.location.state.PO)
+      
+      // edit PO
       if (this.props.location.state.action === "edit") {
         alert('waw')
-        const { prf, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = props.location.state.PO
-        this.state = {
+        const { prf, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = this.props.location.state.PO
+        this.setState({
             prf,
             pax,
             recipient,
@@ -55,14 +75,18 @@ class NewPO extends Component {
             prepared_by,
             approved_by,
             received_by
-        }        
-      } else if (this.props.location.state.action === "new") {
+        } )       
+      } 
+      
+      // new PO
+      else if (this.props.location.state.action === "new") {
           alert('daz weird')
           // PRF
           const prf = this.props.location.state.PRF
+          const po_number = await this.getCurrentPO()
 
-          this.state = {          
-              po_number: 711800,
+          this.setState({          
+              po_number,
               prf: prf,
               pax:[''],
               recipient: '',
@@ -74,7 +98,7 @@ class NewPO extends Component {
               prepared_by: '',
               approved_by: '',
               received_by: '',      
-          }
+          })
       }
     } 
     // if nandaya ng URL
@@ -83,24 +107,28 @@ class NewPO extends Component {
       alert('bawal yan, punta ka muna PRF')
       // this.props.history.push('/employee/PRF-List')
       
-      this.state = {          
-          po_number: 711800,
-          prf: {prf_number: 'nandaya ka ng url tsk'},
-          pax:[''],
-          recipient: '',
-          particulars: '',
-          php: 0,
-          usd: 0,
-          total: 0,
-          conversion_rate: 0,
-          prepared_by: '',
-          approved_by: '',
-          received_by: '',
-      }
     }
-    this.handleChange = this.handleChange.bind(this)
   }
-  
+
+  getCurrentPO = async() => {
+    const token = window.localStorage.getItem('token')
+    
+    console.log(token)
+    try {
+      
+      const user = await (await users.getUser({token})).data.data
+      
+      const workingDirectory = await (await api.getNF_POById(user.po_folder)).data.data
+      
+      this.setState({ folder: workingDirectory })
+
+      return (workingDirectory.nf_po_number*1000) + workingDirectory.po.length
+
+    } catch (error) {
+      console.log(error)
+      alert(error)
+    }
+  }
 
   addName(){
     this.setState({pax: [...this.state.pax, ""]})
@@ -186,25 +214,28 @@ class NewPO extends Component {
     } else if (this.props.location.state.action === "new") {
       alert("saving please wait")      
       try {
-        await api.insertPO(payload).then(res => {   
-          
-          this.setState({
-            po_number: '',
-            prf: {prf_number: ''},
-            pax: [''],
-            recipient: '',
-            particulars: '',
-            conversion_rate: 0,
-            php: 0,
-            usd: 0,
-            total: 0,
-            prepared_by: '',
-            approved_by: '',
-            received_by: ''
-          })
+        const po_id = await (await api.insertPO(payload)).data.id
+        const { folder } = this.state
 
-          alert("saving done")
-        })          
+        folder.po.push(po_id)
+        await api.updateNF_POById(folder._id, folder)
+
+        this.setState({
+          po_number: '',
+          prf: {prf_number: ''},
+          pax: [''],
+          recipient: '',
+          particulars: '',
+          conversion_rate: 0,
+          php: 0,
+          usd: 0,
+          total: 0,
+          prepared_by: '',
+          approved_by: '',
+          received_by: ''
+        })
+
+        alert("saving done")
       } catch (error) {
         console.log(error.message)
         alert(error.message)
@@ -396,7 +427,7 @@ class NewPO extends Component {
                       ]}
                     />
                     
-                    <Button pullRight bsStyle="info"  fill type="submit"> Save PO </Button>
+                    <Button pullRight bsStyle="primary" fill type="submit"> Save </Button>
                     <Button pullRight bsStyle="danger" fill onClick={this.props.history.goBack}> Cancel Creation </Button>
                     <div className="clearfix" />
                   </form>
