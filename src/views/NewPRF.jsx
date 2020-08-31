@@ -410,6 +410,7 @@ class NewPRF extends Component {
                         }
                       ]}
                     />
+
                     <Button pullRight bsStyle="primary" fill type="submit"> Save </Button>
                     <Button pullRight bsStyle="danger" fill onClick={this.props.history.goBack}> Back </Button>
                     
