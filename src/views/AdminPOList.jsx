@@ -16,22 +16,81 @@
 
 */
 import React, { Component } from "react";
-import {Redirect} from "react-router-dom";
 import { Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { poFolder } from "variables/Variables.jsx";
+//import { poFolder } from "variables/Variables.jsx";
+import { Link } from 'react-router-dom'
+import users from '../api/users'
+import api from '../api'
 
-const options = {
-    // ---------------------------------
-    // detects click on each row
-    //---------------------------------
-    onRowClick: function(row) {
+class POListFolders extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+        isAdmin: '',
+        poFolder: [],
+        columns: [],
+        isLoading: false,
+    }    
+  }
 
+
+  componentDidMount = async () => {
+    this.setState({ isLoading: true })
+    
+    const token = localStorage.getItem('token')
+
+    try {
+      const user = await users.getUser({token})
+      this.state.isAdmin = user.data.data.isAdmin
+    } catch (error) {
+      alert(`${error} putae`)
+      this.setState({ authenticated: false })
     }
-};
+    try {
+      await api.getAllNF_PO().then(poFolder => {
+        this.setState({
+            poFolder: poFolder.data.data,
+            isLoading: false,
+        }, () => {
+          console.log(this.state.poFolder)
+        })
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
-class AdminPOListFolders extends Component {
+  setWorkingDirectory = async (curr_working_directory) => {
+//FOR EMPLOYEE
+    const payload = {
+      isAdmin : false,
+      po_folder: curr_working_directory
+    }
+    
+    console.log(payload)
+    try {
+      await users.updatePO_Folder(payload).then(res => {   
+        alert("saving done")
+      })
+    } catch (error) {
+      console.log(error.message)
+      alert(error.message)
+    }
+//FOR ADMIN
+payload.isAdmin = true
+    
+    console.log(payload)
+    try {
+      await users.updatePO_Folder(payload).then(res => {   
+        alert("saving done")
+      })
+    } catch (error) {
+      console.log(error.message)
+      alert(error.message)
+    }
+  }
 
   render() {
     return (
@@ -54,19 +113,16 @@ class AdminPOListFolders extends Component {
                             </tr>
                             </thead> */}
                             <tbody>
-                            {poFolder.map((prop, key) => {
+                            {this.state.poFolder.map((prop, key) => {
                                 return (
                                 <tr key={key}>
-                                    {prop.map((prop, key) => {
-                                    return <td key={key} onRowClick={() => {
-                                        return <Redirect path="/employee/PO/{}"/>
-                                }}>{prop}</td>;
-                                    })}
-                                    
+
+                                    <td key={key}>{prop.nf_po_number}</td>;
+
                                     <td>
                                     <Button variant="outline-secondary" bsStyle="warning" className="pull-right"><i className="pe-7s-close-circle"/>Cancel</Button>
-                                    <Button variant="outline-secondary" bsStyle="primary" className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
-                                    <Button className="pull-right" href="/admin/PRF-List"><i className="pe-7s-look"/>View</Button>
+                                    <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
+                                    <Button className="pull-right"><Link to={{pathname: '/PO-List', state: {PO: prop.po} }} ><i className="pe-7s-look"/>View</Link></Button>
                                     </td>
                                 </tr>
                                 
@@ -86,4 +142,4 @@ class AdminPOListFolders extends Component {
   }
 }
 
-export default AdminPOListFolders;
+export default POListFolders;
