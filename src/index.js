@@ -38,7 +38,7 @@ ReactDOM.render(
   <BrowserRouter>
     <Switch>
       <Route exact path='/' component={Login} />
-      <Route path="/employee" render={props => <EmployeeLayout {...props} />} />
+      <Route path="/Employee" render={props => <EmployeeLayout {...props} />} />
       <Route path="/Admin" render={props => <AdminLayout {...props} />} />
       <Route path="/create" render={props => <PRFLayout {...props} />} />
       <Route path="/create/New-PRF" render={props => <PRFLayout {...props} />} />

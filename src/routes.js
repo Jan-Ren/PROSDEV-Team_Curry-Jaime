@@ -16,7 +16,7 @@
 
 */
 
-import POLists from "views/POTableList.jsx";
+import POList from "views/POTableList.jsx";
 import PRFList from "views/PRFTableList.jsx";
 import Login from "./components/Login/login.component.js";
 import NewPRF from "views/NewPRF.jsx";
