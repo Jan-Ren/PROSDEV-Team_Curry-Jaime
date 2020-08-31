@@ -23,6 +23,7 @@ import Card from "components/Card/Card.jsx";
 import { poHArray, poDArray } from "variables/Variables.jsx";
 import api from '../api'
 import moment from 'moment'
+import users from "api/users";
 //import { filter } from "core-js/fn/dict";
 
 
@@ -42,20 +43,20 @@ class POTableList extends Component {
   componentDidMount = async () => {
     this.setState({ isLoading: true })
   
-    if (this.props.location.state) {
-
-      let po = this.props.location.state.PO.map(async po_reference => {
-        if (this.props.location.state.PO) {
-          const po = await (await api.getPOById(po_reference)).data.data
-          console.log(po)
-          return po
-        }
-      })
-  
-      po = await Promise.all(po)
-        
-      // console.log(this.state.PRF)
+    try {
+      const token = window.localStorage.getItem('token')
+      const workingDirectory = await (await users.getUser({ token })).data.data.po_folder
       
+      const folder = await (await api.getNF_POById(workingDirectory)).data.data
+    
+      let po = folder.po.map(async po_reference => {
+        const po = await (await api.getPOById(po_reference)).data.data
+        console.log(po)
+        return po
+      })
+
+      po = await Promise.all(po)
+
       let prf = po.map(async po_reference => {
         if ( po_reference.prf) {
           const prf = await (await api.getPRFById(po_reference.prf)).data.data
@@ -73,9 +74,8 @@ class POTableList extends Component {
       })
 
       this.setState({ PO: po})
+    } catch (error) {
       
-    } else {
-      this.setState({ redirect: true })
     }
 
   }
@@ -112,23 +112,24 @@ class POTableList extends Component {
                 ctTableResponsive
                 content={
                   <div>
-                    <Col md={8}>
+                    <Col md={12}>
                     <Form inline>
                       <FormGroup controlId="formInlineDateFrom">
-                          <ControlLabel>Dates</ControlLabel>{' '}
+                          <ControlLabel>Dates From</ControlLabel>{' '}
                         <FormControl type="date" />
                         </FormGroup>{' '}
                         <FormGroup controlId="formInlineDateFrom">  
+                        <ControlLabel>to</ControlLabel>{' '}
                           <FormControl type="date" />
                         </FormGroup>{' '}
-                        <FormGroup>
-                        <InputGroup>
+                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/>Filter Date</Button>{' '}
+                        
+                        <InputGroup className="pull-right">
                           <FormControl type="number" placeholder="Search PO#" />
                           <InputGroup.Addon>
                             <Glyphicon glyph="search" />
                           </InputGroup.Addon>
-                        </InputGroup>
-                      </FormGroup>
+                        </InputGroup>                        
                     </Form>
                   </Col>
 

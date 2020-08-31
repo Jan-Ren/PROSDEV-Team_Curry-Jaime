@@ -25,6 +25,7 @@ import { prfHArray, prfDArray } from "variables/Variables.jsx";
 import DateInput from "components/DatePicker/DatePicker.jsx"
 import api from '../api'
 import moment from 'moment'
+import users from "api/users";
 
 class PRFTableList extends Component {
 
@@ -35,21 +36,22 @@ class PRFTableList extends Component {
         PRF: [],
         columns: [],
         isLoading: false,
-    }
-
+    }    
     this.handleCancel = this.handleCancel.bind(this)
   }
   
   componentDidMount = async () => {
 
-    if (this.props.location.state) {
-
-      let prf = this.props.location.state.PRF.map(async prf_reference => {
-        if (this.props.location.state.PRF) {
-          const prf = await (await api.getPRFById(prf_reference)).data.data
-          console.log(prf)
-          return prf
-        }
+    try {
+      const token = window.localStorage.getItem('token')
+      const workingDirectory = await (await users.getUser({ token })).data.data.prf_folder
+      
+      const folder = await (await api.getNF_PRFById(workingDirectory)).data.data
+    
+      let prf = folder.prf.map(async prf_reference => {
+        const prf = await (await api.getPRFById(prf_reference)).data.data
+        console.log(prf)
+        return prf        
       })
 
       prf = await Promise.all(prf)
@@ -57,9 +59,10 @@ class PRFTableList extends Component {
       this.setState({ PRF: prf})
 
       console.log(this.state.PRF)
-    } else {
-      this.setState({ redirect: true })
+    } catch (error) {
+      
     }
+
   }
 
   handleCancel = async (prf) => {
@@ -89,7 +92,7 @@ class PRFTableList extends Component {
           <Row>
             <Col md={12}>
               <Card
-                title="PRF #"
+                title="PRF List"
                 ctTableFullWidth
                 ctTableResponsive
                 content={

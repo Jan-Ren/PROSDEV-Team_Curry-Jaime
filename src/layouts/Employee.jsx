@@ -75,7 +75,7 @@ class Employee extends Component {
   };
   getRoutes = routes => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/") {
+      if (prop.layout === "/employee") {
         return (
           <Route
             path={prop.layout + prop.path}

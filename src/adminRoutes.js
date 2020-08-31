@@ -37,6 +37,7 @@ const adminDashboardRoutes = [
     layout: "/admin"
   },
   {
+    NewPRF: true,
     path: "/New-PRF",
     name: "New PRF ",
     icon: "pe-7s-plus",

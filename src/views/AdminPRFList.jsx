@@ -36,16 +36,6 @@ class PRFListFolders extends Component {
 
   componentDidMount = async () => {
     this.setState({ isLoading: true })
-    
-    const token = localStorage.getItem('token')
-
-    try {
-      const user = await users.getUser({token})
-      this.state.isAdmin = user.data.data.isAdmin
-    } catch (error) {
-      alert(`${error} putae`)
-      this.setState({ authenticated: false })
-    }
 
     await api.getAllNF_PRF().then(prfFolder => {
         this.setState({
@@ -58,7 +48,7 @@ class PRFListFolders extends Component {
   }
 
   setWorkingDirectory = async (curr_working_directory) => {
-//FOR EMPLOYEE
+    //FOR EMPLOYEE
     const payload = {
       isAdmin : false,
       prf_folder: curr_working_directory
@@ -73,7 +63,8 @@ class PRFListFolders extends Component {
       console.log(error.message)
       alert(error.message)
     }
-//FOR ADMIN
+    
+    //FOR ADMIN
     payload.isAdmin = true
     
     console.log(payload)
@@ -117,7 +108,7 @@ class PRFListFolders extends Component {
                                     <td>
                                     <Button variant="outline-secondary" bsStyle="warning" className="pull-right"><i className="pe-7s-close-circle"/>Cancel</Button>
                                     <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
-                                    <Button className="pull-right"><Link to={{pathname: '/PRF-List', state: {PRF: prop.prf} }} ><i className="pe-7s-look"/>View</Link></Button>
+                                    <Button className="pull-right"><Link to={{pathname: '/admin/PRF-List', state: {PRF: prop.prf} }} ><i className="pe-7s-look"/>View</Link></Button>
                                     </td>
                                 </tr>
                                 

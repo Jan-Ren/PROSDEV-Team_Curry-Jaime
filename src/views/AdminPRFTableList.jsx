@@ -16,20 +16,75 @@
 
 */
 import React, { Component } from "react";
+import { Link, Redirect } from 'react-router-dom'
 import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { prfHArray, prfDArray } from "variables/Variables.jsx";
+import { prfHArray, prfDArray } from "variables/Variables.jsx"; 
 
 import DateInput from "components/DatePicker/DatePicker.jsx"
-
-
+import api from '../api'
+import moment from 'moment'
 
 class PRFTableList extends Component {
 
+  constructor(props) {
+    super(props)
+
+      this.state = {
+        PRF: [],
+        columns: [],
+        isLoading: false,
+    }
+
+    this.handleCancel = this.handleCancel.bind(this)
+  }
+  
+  componentDidMount = async () => {
+
+    if (this.props.location.state) {
+
+      let prf = this.props.location.state.PRF.map(async prf_reference => {
+        if (this.props.location.state.PRF) {
+          const prf = await (await api.getPRFById(prf_reference)).data.data
+          console.log(prf)
+          return prf
+        }
+      })
+
+      prf = await Promise.all(prf)
+
+      this.setState({ PRF: prf})
+
+      console.log(this.state.PRF)
+    } else {
+      this.setState({ redirect: true })
+    }
+  }
+
+  handleCancel = async (prf) => {
+
+    console.log(prf)
+    alert(prf._id)
+    prf.is_cancelled = true
+    try {
+      const res = await api.updatePRFById(prf._id, prf)
+      console.log(res.data)
+      alert("Cancelled")
+    } catch (error) {
+      alert(error)
+    }    
+  }
+
+  handleRedirect = () => {
+    if (this.state.redirect)
+      return <Redirect to="/PRF-List-Folders" />
+  }
+  
   render() {
     return (
       <div className="content">
+        { this.handleRedirect() }
         <Grid fluid>
           <Row>
             <Col md={12}>
@@ -69,17 +124,21 @@ class PRFTableList extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      {prfDArray.map((prop, key) => {
+                      {this.state.PRF.map((prop, key) => {
                         return (
                           <tr key={key}>
-                            {prop.map((prop, key) => {
-                              return <td key={key}>{prop}</td>;
-                            })}
+                            
+                            <td key={key+1}>{prop.prf_number}</td>
+                            <td key={key+2}>{prop.recipient}</td>
+                            <td key={key+4}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                            <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                            <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
-                                <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>
-                                <Button variant="outline-primary" bsStyle="primary" href="/employee/New-PO"><i className="pe-7s-news-paper" /> New PO</Button>{' '}
+                                <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                 <></>
-                                <Button variant="outline-primary" bsStyle="warning"><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                                <Button variant="outline-primary" bsStyle="primary"><Link to={{pathname: '/New-PO', state: {PRF: prop, action: "new"}} } style={{ color: "inherit"}} ><i className="pe-7s-look" />New PO</Link></Button>{' '}
+                                <></>
+                                <Button variant="outline-secondary"><Link to={{pathname: '/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><i className="pe-7s-look" />View</Link></Button>{' '}
                                 <></>
                                 <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-junk"/>Delete</Button>{' '}
                             </td>

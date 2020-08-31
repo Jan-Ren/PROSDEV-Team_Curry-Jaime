@@ -38,16 +38,7 @@ class POListFolders extends Component {
 
   componentDidMount = async () => {
     this.setState({ isLoading: true })
-    
-    const token = localStorage.getItem('token')
 
-    try {
-      const user = await users.getUser({token})
-      this.state.isAdmin = user.data.data.isAdmin
-    } catch (error) {
-      alert(`${error} putae`)
-      this.setState({ authenticated: false })
-    }
     try {
       await api.getAllNF_PO().then(poFolder => {
         this.setState({
@@ -63,7 +54,7 @@ class POListFolders extends Component {
   }
 
   setWorkingDirectory = async (curr_working_directory) => {
-//FOR EMPLOYEE
+    //FOR EMPLOYEE
     const payload = {
       isAdmin : false,
       po_folder: curr_working_directory
@@ -78,8 +69,9 @@ class POListFolders extends Component {
       console.log(error.message)
       alert(error.message)
     }
-//FOR ADMIN
-payload.isAdmin = true
+
+    //FOR ADMIN
+    payload.isAdmin = true
     
     console.log(payload)
     try {
@@ -122,7 +114,7 @@ payload.isAdmin = true
                                     <td>
                                     <Button variant="outline-secondary" bsStyle="warning" className="pull-right"><i className="pe-7s-close-circle"/>Cancel</Button>
                                     <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
-                                    <Button className="pull-right"><Link to={{pathname: '/PO-List', state: {PO: prop.po} }} ><i className="pe-7s-look"/>View</Link></Button>
+                                    <Button className="pull-right"><Link to={{pathname: '/admin/PO-List', state: {PO: prop.po} }} ><i className="pe-7s-look"/>View</Link></Button>
                                     </td>
                                 </tr>
                                 
