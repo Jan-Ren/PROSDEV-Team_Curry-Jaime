@@ -428,7 +428,7 @@ class NewPO extends Component {
                     />
                     
                     <Button pullRight bsStyle="primary" fill type="submit"> Save </Button>
-                    <Button pullRight bsStyle="danger" fill onClick={this.props.history.goBack}> Cancel Creation </Button>
+                    <Button pullRight bsStyle="danger" fill onClick={this.props.history.goBack}> Back </Button>
                     <div className="clearfix" />
                   </form>
                 }

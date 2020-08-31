@@ -16,20 +16,97 @@
 
 */
 import React, { Component } from "react";
+import { Link, Redirect } from 'react-router-dom'
 import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 import { poHArray, poDArray } from "variables/Variables.jsx";
+import api from '../api'
+import moment from 'moment'
+//import { filter } from "core-js/fn/dict";
 
 
-class AdminPOTableList extends Component {
+class POTableList extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+        PO: [],
+        columns: [],
+        isLoading: false,
+    }
+
+    this.handleCancel = this.handleCancel.bind(this)
+  }
+  
+  componentDidMount = async () => {
+    this.setState({ isLoading: true })
+  
+    if (this.props.location.state) {
+
+      let po = this.props.location.state.PO.map(async po_reference => {
+        if (this.props.location.state.PO) {
+          const po = await (await api.getPOById(po_reference)).data.data
+          console.log(po)
+          return po
+        }
+      })
+  
+      po = await Promise.all(po)
+        
+      // console.log(this.state.PRF)
+      
+      let prf = po.map(async po_reference => {
+        if ( po_reference.prf) {
+          const prf = await (await api.getPRFById(po_reference.prf)).data.data
+          return prf
+        }
+      })
+      
+      prf = await Promise.all(prf)
+      prf.map((p, index) => {
+        if (p) {
+          console.log(p)
+          console.log(index)
+          po[index].prf = p
+        }
+      })
+
+      this.setState({ PO: po})
+      
+    } else {
+      this.setState({ redirect: true })
+    }
+
+  }
+
+  handleRedirect = () => {
+    if (this.state.redirect)
+      return <Redirect to="/PO-List-Folders" />      
+  }
+  
+  handleCancel = async (po) => {
+
+    console.log(po)
+    alert(po._id)
+    po.is_cancelled = true
+    try {
+      const res = await api.updatePOById(po._id, po)
+      console.log(res.data)
+      alert("Cancelled")
+    } catch (error) {
+      alert(error)
+    }
+  }
+
   render() {
     return (
       <div className="content">
+        { this.handleRedirect() }
         <Grid fluid>
           <Row>
             <Col md={12}>
-              <Card
+            <Card
                 title="PO List"
                 ctTableFullWidth
                 ctTableResponsive
@@ -37,8 +114,8 @@ class AdminPOTableList extends Component {
                   <div>
                     <Col md={12}>
                     <Form inline>
-                    <FormGroup controlId="formInlineDateFrom">
-                          <ControlLabel>Date From</ControlLabel>{' '}
+                      <FormGroup controlId="formInlineDateFrom">
+                          <ControlLabel>Dates From</ControlLabel>{' '}
                         <FormControl type="date" />
                         </FormGroup>{' '}
                         <FormGroup controlId="formInlineDateFrom">  
@@ -46,20 +123,13 @@ class AdminPOTableList extends Component {
                           <FormControl type="date" />
                         </FormGroup>{' '}
                         <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/>Filter Date</Button>{' '}
-                        <FormGroup className="pull-right">
-                        <InputGroup>
+                        
+                        <InputGroup className="pull-right">
                           <FormControl type="number" placeholder="Search PO#" />
                           <InputGroup.Addon>
                             <Glyphicon glyph="search" />
                           </InputGroup.Addon>
-                        </InputGroup>
-                        <InputGroup>
-                          <FormControl type="number" placeholder="Search PRF#" />
-                          <InputGroup.Addon>
-                            <Glyphicon glyph="search" />
-                          </InputGroup.Addon>
-                        </InputGroup>
-                      </FormGroup>
+                        </InputGroup>                        
                     </Form>
                   </Col>
 
@@ -72,18 +142,23 @@ class AdminPOTableList extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      {poDArray.map((prop, key) => {
+                      {this.state.PO.map((prop, key) => {
                         return (
                           <tr key={key}>
-                            {prop.map((prop, key) => {
+                            {/* {prop.map((prop, key) => {
                               return <td key={key}>{prop}</td>;
-                            })}
+                            })} */}
+                            <td key={key+1}>{prop.po_number}</td>
+                            <td key={key+2}>{prop.recipient}</td>
+                            <td key={key+3}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                            <td key={key+4}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
+                            <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                            <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
-                            <Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>
-                            <Button variant="outline-primary" bsStyle="warning"><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
-                            <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-junk"/>Delete</Button>{' '}
+                              <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                              <Button variant="outline-secondary"><Link to={{pathname: '/employee/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><i className="pe-7s-look" />View</Link></Button>{' '}
+                              <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-junk"/>Delete</Button>{' '}
                             </td>
-                            
                           </tr>
                         );
                       })}
@@ -102,4 +177,4 @@ class AdminPOTableList extends Component {
   }
 }
 
-export default AdminPOTableList;
+export default POTableList;
