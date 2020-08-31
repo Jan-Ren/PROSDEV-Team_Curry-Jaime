@@ -65,7 +65,7 @@ class POListFolders extends Component {
   setWorkingDirectory = async (curr_working_directory) => {
 //FOR EMPLOYEE
     const payload = {
-      isAdmin : this.state.isAdmin,
+      isAdmin : false,
       po_folder: curr_working_directory
     }
     
