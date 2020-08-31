@@ -201,8 +201,6 @@ class Employee extends Component {
           <Switch>
             {this.getRoutes(routes)}
             <Route path="/employee/New-PO" component={NewPO} />
-            <Route path="/employee/PO-List/" component={POTableList} />
-            <Route path="/employee/PRF-List/" component={PRFTableList} />
           </Switch>
         </div>
       </div>

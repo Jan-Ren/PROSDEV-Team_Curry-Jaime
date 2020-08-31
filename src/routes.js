@@ -37,7 +37,7 @@ const dashboardRoutes = [
     layout: "/employee"
   },
   {
-    path: "New-PRF",
+    path: "/New-PRF",
     name: "New PRF ",
     icon: "pe-7s-plus",
     component: NewPRF,

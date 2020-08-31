@@ -42,7 +42,7 @@ ReactDOM.render(
       <Route path="/Admin" render={props => <AdminLayout {...props} />} />
       <Route path="/create" render={props => <PRFLayout {...props} />} />
       <Route path="/create/New-PRF" render={props => <PRFLayout {...props} />} />
-      <Redirect from="/" to="/employee/PRF-List" />
+      <Redirect from="/" to="/Employee/PRF-List" />
     </Switch>
   </BrowserRouter>,
   document.getElementById("root")
