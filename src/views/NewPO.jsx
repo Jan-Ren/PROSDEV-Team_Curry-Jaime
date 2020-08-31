@@ -83,7 +83,7 @@ class NewPO extends Component {
           alert('daz weird')
           // PRF
           const prf = this.props.location.state.PRF
-          const po_number = this.getCurrentPO()
+          const po_number = await this.getCurrentPO()
 
           this.setState({          
               po_number,
@@ -120,6 +120,8 @@ class NewPO extends Component {
       
       const workingDirectory = await (await api.getNF_POById(user.po_folder)).data.data
       
+      this.setState({ folder: workingDirectory })
+
       return (workingDirectory.nf_po_number*1000) + workingDirectory.po.length
 
     } catch (error) {
@@ -212,25 +214,28 @@ class NewPO extends Component {
     } else if (this.props.location.state.action === "new") {
       alert("saving please wait")      
       try {
-        await api.insertPO(payload).then(res => {   
-          
-          this.setState({
-            po_number: '',
-            prf: {prf_number: ''},
-            pax: [''],
-            recipient: '',
-            particulars: '',
-            conversion_rate: 0,
-            php: 0,
-            usd: 0,
-            total: 0,
-            prepared_by: '',
-            approved_by: '',
-            received_by: ''
-          })
+        const po_id = await (await api.insertPO(payload)).data.id
+        const { folder } = this.state
 
-          alert("saving done")
-        })          
+        folder.po.push(po_id)
+        await api.updateNF_POById(folder._id, folder)
+
+        this.setState({
+          po_number: '',
+          prf: {prf_number: ''},
+          pax: [''],
+          recipient: '',
+          particulars: '',
+          conversion_rate: 0,
+          php: 0,
+          usd: 0,
+          total: 0,
+          prepared_by: '',
+          approved_by: '',
+          received_by: ''
+        })
+
+        alert("saving done")
       } catch (error) {
         console.log(error.message)
         alert(error.message)
