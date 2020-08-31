@@ -16,7 +16,7 @@
 
 */
 import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 
 import PRFSidebar from "components/Sidebar/PRFSidebar.jsx";
 
@@ -36,7 +36,8 @@ class PRF extends Component {
       hasImage: true,
       fixedClasses: "dropdown show-dropdown open",
       routes: routes,
-      loading: true
+      loading: true,
+      authenticated: true
     };
   }
   handleNotificationClick = position => {
@@ -116,6 +117,12 @@ class PRF extends Component {
       this.setState({ fixedClasses: "dropdown" });
     }
   };
+  handleRedirect = () => {
+    // if not logged in
+    if (!this.state.authenticated) {
+      return <Redirect to ="/" />
+    }
+  }
   async componentDidMount() {
     this.setState({ _notificationSystem: this.refs.notificationSystem });
     var _notificationSystem = this.refs.notificationSystem;
@@ -147,7 +154,7 @@ class PRF extends Component {
       else
         this.setState({ routes: routes, loading: false })
     } catch (error) {
-      alert(`${error} putae`)
+      alert(`not logged in`)
       this.setState({ authenticated: false })
     }
   }
@@ -168,6 +175,7 @@ class PRF extends Component {
   render() {
     return (
       <div className="wrapper">
+        { this.handleRedirect() }
         {
           this.state.loading ?           
           <Sidebar {...this.props} routes={this.state.routes} image={this.state.image}

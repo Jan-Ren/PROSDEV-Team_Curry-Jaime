@@ -127,14 +127,14 @@ class Employee extends Component {
         const user = await users.getUser({token})
         console.log(user.data.data.isAdmin)
       } catch (error) {
-        alert(`${error} putae`)
+        alert(`not logged in`)
         this.setState({ authenticated: false })
       }
     }
   }
   handleRedirect = () => {
     if (!this.state.authenticated) {
-      return <Redirect to ="/employee" />
+      return <Redirect to ="/" />
     }
   }
   componentDidMount() {

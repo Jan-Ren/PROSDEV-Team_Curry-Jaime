@@ -16,7 +16,7 @@
 
 */
 import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import NotificationSystem from "react-notification-system";
 
 import AdminNavbar from "components/Navbars/AdminNavbar";
@@ -28,6 +28,7 @@ import routes from "adminRoutes.js";
 import NewPO from "views/NewPO.jsx";
 import PRFTableList from "views/AdminPRFTableList.jsx";
 import POTableList from "views/AdminPOTableList.jsx";
+import users from "api/users";
 
 class Admin extends Component {
   constructor(props) {
@@ -36,7 +37,8 @@ class Admin extends Component {
       _notificationSystem: null,
       color: "black",
       hasImage: true,
-      fixedClasses: "dropdown show-dropdown open"
+      fixedClasses: "dropdown show-dropdown open",
+      authenticated: true
     };
   }
   handleNotificationClick = position => {
@@ -116,7 +118,33 @@ class Admin extends Component {
       this.setState({ fixedClasses: "dropdown" });
     }
   };
+  handleAuthenticate = async () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      this.setState({ authenticated: false })
+    } else {
+      try {
+        const user = await users.getUser({token})
+        const isAdmin = user.data.data.isAdmin
+        if (!user.data.data.isAdmin)
+          this.setState({ isEmployee: !isAdmin })
+      } catch (error) {
+        alert(`not logged in`)
+        this.setState({ authenticated: false })
+      }
+    }
+  }
+  handleRedirect = () => {
+    // if not logged in
+    if (!this.state.authenticated) {
+      return <Redirect to ="/" />
+    }
+    // if employee in admin
+    else if (this.state.isEmployee)
+      return <Redirect to ="/employee" />
+  }
   componentDidMount() {
+    this.handleAuthenticate()
     this.setState({ _notificationSystem: this.refs.notificationSystem });
     var _notificationSystem = this.refs.notificationSystem;
     var color = Math.floor(Math.random() * 4 + 1);
@@ -166,6 +194,7 @@ class Admin extends Component {
   render() {
     return (
       <div className="wrapper">
+        { this.handleRedirect() }
         <NotificationSystem ref="notificationSystem" style={style} />
         <Sidebar {...this.props} routes={routes} image={this.state.image}
         color={this.state.color}
