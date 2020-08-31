@@ -3,8 +3,8 @@ import NewPRF from './../NewPRF';
 import { fireEvent, render, screen, wait } from "@testing-library/react";
 import {BrowserRouter} from "react-router-dom";
 
-const mockCancel = (NewPRF.handleRemove = jest.fn());
-const mockNewPRF = (NewPRF.handleSave = jest.fn());
+//const mockCancel = (NewPRF.props.history.goBack() = jest.fn());
+const mockNewPRF = (NewPRF.handleSave() = jest.fn());
 
     describe("NewPRF view renders without crashing", () => {
         test("render check", ()=> {
@@ -47,7 +47,7 @@ const mockNewPRF = (NewPRF.handleSave = jest.fn());
             const inputParticulars = screen.getByPlaceholderText("Input Particulars");
             //added some input values to test them as well > u <
 
-            const savePRFButton = screen.getByText("Save");
+            const savePRFButton = screen.getByText("Save PRF");
 
             fireEvent.change(inputRecipient, {target:{value:"Recipient"}});
             expect(inputRecipient).toHaveValue("Recipient");
