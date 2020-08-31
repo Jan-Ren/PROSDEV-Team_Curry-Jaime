@@ -53,14 +53,12 @@ class POTableList extends Component {
       })
   
       po = await Promise.all(po)
-  
-      this.setState({ PO: po})
-  
-      console.log(this.state.PRF)
-  
-      let prf = this.state.PO.map(async po => {
-        if ( this.state.PO.prf) {
-          const prf = await (await api.getPRFById(this.state.PO.prf)).data.data
+        
+      // console.log(this.state.PRF)
+      
+      let prf = po.map(async po_reference => {
+        if ( po_reference.prf) {
+          const prf = await (await api.getPRFById(po_reference.prf)).data.data
           return prf
         }
       })
@@ -70,33 +68,16 @@ class POTableList extends Component {
         if (p) {
           console.log(p)
           console.log(index)
-          this.state.PO[index].prf = p
+          po[index].prf = p
         }
       })
+
+      this.setState({ PO: po})
+      
     } else {
       this.setState({ redirect: true })
     }
 
-    // this.setState({ PO, isLoading: false })
-    // const PO = await (await api.getAllPO()).data.data
-
-    // let prf = PO.map(async po => {
-    //   if (po.prf) {
-    //     const prf = await (await api.getPRFById(po.prf)).data.data
-    //     console.log(prf.prf_number)
-    //     return prf
-    //   }
-    // })
-    
-    // prf = await Promise.all(prf)
-    // prf.map((p, index) => {
-    //   if (p) {
-    //     console.log(p)
-    //     console.log(index)
-    //     PO[index].prf = p
-    //   }
-    // })
-    // this.setState({ PO, isLoading: false })
   }
 
   handleRedirect = () => {
@@ -173,7 +154,7 @@ class POTableList extends Component {
                             <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
-                              <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/></Button>{' '}
+                              <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                               <Button variant="outline-secondary"><Link to={{pathname: '/employee/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><i className="pe-7s-look" />View</Link></Button>
                             </td>
                           </tr>
