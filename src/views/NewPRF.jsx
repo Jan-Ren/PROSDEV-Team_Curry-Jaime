@@ -31,17 +31,37 @@ import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
 import { AlertErrorOutline } from "material-ui/svg-icons";
 import { withRouter } from 'react-router-dom'
+import users from "api/users";
 
 class NewPRF extends Component {
 
   constructor(props) {
     super(props)
 
+    this.state = {
+      prf_number: '',
+      pax:[''],
+      recipient: '',
+      particulars: '',
+      php: 0,
+      usd: 0,
+      total: 0,
+      conversion_rate: 0,
+      prepared_by: '',
+      approved_by: '',
+      received_by: '',
+      folder: '',
+    }    
+    this.handleChange = this.handleChange.bind(this)
+  }
+
+  componentDidMount = async() => {
+    // edit PRF
     if (this.props.location.state) {
       console.log(this.props.location.state.PRF)
       alert('waw')
-      const { prf_number, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = props.location.state.PRF
-      this.state = {
+      const { prf_number, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = this.props.location.state.PRF
+      this.setState({
           prf_number,
           pax,
           recipient,
@@ -53,12 +73,19 @@ class NewPRF extends Component {
           prepared_by,
           approved_by,
           received_by
-      }
-    } else {
+      })
+    } 
+    
+    // new PRF
+    else {
+      const prf_number = await this.getCurrentPRF()
+    
+      console.log(prf_number)
+      alert(prf_number)
       console.log(this.props.location)
       alert('daz weird')
-      this.state = {
-          prf_number: 800033,
+      this.setState({
+          prf_number,
           pax:[''],
           recipient: '',
           particulars: '',
@@ -69,11 +96,27 @@ class NewPRF extends Component {
           prepared_by: '',
           approved_by: '',
           received_by: '',      
-      }
+      })
     }
-    this.handleChange = this.handleChange.bind(this)
   }
   
+  getCurrentPRF = async () => {
+    const token = window.localStorage.getItem('token')
+    
+    console.log(token)
+    try {
+      
+      const user = await (await users.getUser({token})).data.data
+      
+      const workingDirectory = await (await api.getNF_PRFById(user.prf_folder)).data.data
+      this.setState({ folder: workingDirectory })
+      return (workingDirectory.nf_prf_number*1000) + workingDirectory.prf.length
+
+    } catch (error) {
+      console.log(error)
+      alert(error)
+    }
+  }
 
   addName(){
     this.setState({pax: [...this.state.pax, ""]})
@@ -118,90 +161,82 @@ class NewPRF extends Component {
     
   }
 
-  handleRemove(index){
+  handleRemove(e, index){
+    e.preventDefault()
     this.state.pax.splice(index,1)
     this.setState({pax: this.state.pax})
 
   }
   handleSave = async () => {
 
-    // const { name, rating, time } = this.state
-    // const arrayTime = time.split('/')
-    // const payload = { name, rating, time: arrayTime }    
-
-    // await api.insertPRF(payload).then(res => {
-    //     window.alert(`Movie inserted successfully`)
-    //     this.setState({
-    //         name: '',
-    //         rating: '',
-    //         time: '',
-    //     })
-    // })
-    // console.log(this.state)
-
-    // const { prf_number, pax, recipient, particulars, php, usd, conversion_rate, total, prepared_by, approved_by, received_by } = this.state
     const payload = this.state
     // alert('here')
-    console.log(this.state)
+    
+    // edit PRF
     if (this.props.location.state) {
       const prf_id = this.props.location.state.PRF._id
-      alert(prf_id)
-      console.log(this.state.conversion_rate)
-      console.log(this.state.recipient)
+      
       try {
         alert('editing please wait')
-        await api.updatePRFById(prf_id, payload).then(res => {
-          window.alert(`Edit succesfully: ${res.message}`)
-          this.setState({
-            prf_number: '',
-            pax: [''],
-            recipient: '',
-            particulars: '',
-            conversion_rate: 0,
-            php: 0,
-            usd: 0,
-            total: 0,
-            prepared_by: '',
-            approved_by: '',
-            received_by: ''
-          })
+        await api.updatePRFById(prf_id, payload)
+
+        this.setState({
+          prf_number: '',
+          pax: [''],
+          recipient: '',
+          particulars: '',
+          conversion_rate: 0,
+          php: 0,
+          usd: 0,
+          total: 0,
+          prepared_by: '',
+          approved_by: '',
+          received_by: ''
         })
+
         alert("edit done")
-        this.props.history.push('/PRF-List')
       } catch (error) {
         console.log(error.message)
         alert(`Editing failed: ${error.message}`)
       }
-
-    } else {
+      
+    } 
+    
+    // new PRF
+    else {
       console.log(this.state)
       alert("saving please wait")      
       try {
-        await api.insertPRF(payload).then(res => {   
-          window.alert(res.message)
-          this.setState({
-            prf_number: '',
-            pax: [''],
-            recipient: '',
-            particulars: '',
-            conversion_rate: 0,
-            php: 0,
-            usd: 0,
-            total: 0,
-            prepared_by: '',
-            approved_by: '',
-            received_by: ''
-          })
+        const prf_id = await (await api.insertPRF(payload)).data.id
+        const { folder } = this.state
 
-          alert("saving done")
+        folder.prf.push(prf_id)
+        await api.updateNF_PRFById(folder._id, folder)
+        this.setState({
+          prf_number: '',
+          pax: [''],
+          recipient: '',
+          particulars: '',
+          conversion_rate: 0,
+          php: 0,
+          usd: 0,
+          total: 0,
+          prepared_by: '',
+          approved_by: '',
+          received_by: '',
         })
+        
+        alert("saving done")
+        
       } catch (error) {
         console.log(error.message)
         alert(error.message)
       }
     }
-    // alert("pumasok ba")
     
+    this.props.history.push('/PRF-List')
+    
+    this.props.history.push('/employee')
   }
   render() {
     return (
@@ -221,9 +256,10 @@ class NewPRF extends Component {
                           label: "PRF#",
                           type: "disabled",
                           bsClass: "form-control",
-                          placeholder: "800033",
+                          placeholder: "",
                           defaultValue: "",
                           name:"prf_number",
+                          value:this.state.prf_number,
                           onChange: this.handleChange,
                           plaintext: true,
                           readOnly: true
@@ -242,33 +278,7 @@ class NewPRF extends Component {
                                             
                       />
                       
-                      {/* <FormInputs
-                      ncols={["col-md-3","col-md-5",  "col-md-3"]}
-                      properties={[
-                        {
-                          label: "Date",
-                          type: "date",
-                          bsClass: "form-control",
-                          placeholder: "Email",
-                          name:`paid_date`,
-                          value:this.state.paid_date,
-                          onChange: this.handleChange
-                        }
-                      ]}
-                    /> */}
-                    <h5>Pax Name/s</h5>
-                    {/* <FormInputs
-                      ncols={["col-md-6"]}
-                      properties={[
-                        {
-                          label: "",
-                          type: "text",
-                          bsClass: "form-control",
-                          placeholder: "Input Name",
-                          defaultValue: ""
-                        }
-                      ]}
-                    /> */}
+                    <h5 style={{ display: "inline-block" }}>Pax Name/s</h5> <Button variant="outline-secondary" bsStyle="primary" fill onClick={(e)=>this.addName(e)}>+</Button>
                                         
                     {
                       this.state.pax.map((pax, index)=>{
@@ -290,8 +300,8 @@ class NewPRF extends Component {
                             
                           />
                           {
-                            index==0 ? <Button variant="outline-secondary" bsStyle="primary" fill onClick={(e)=>this.addName(e)}>+</Button> :
-                            <Button variant="outline-secondary" bsStyle="danger"  onClick={(e)=>this.handleRemove(e)}>-</Button>
+                            // index==0 ? <Button variant="outline-secondary" bsStyle="primary" fill onClick={(e)=>this.addName(e)}>+</Button> :
+                            <Button variant="outline-secondary" bsStyle="danger"  onClick={(e)=>this.handleRemove(e, index)}>-</Button>
                           }
                           
                           </div>
@@ -400,8 +410,11 @@ class NewPRF extends Component {
                         }
                       ]}
                     />
-                    <Button pullRight bsStyle="primary" fill > Save </Button>
-                    <Button pullRight bsStyle="danger" fill > Cancel Creation </Button>
+
+                    <Button pullRight bsStyle="primary" fill type="submit"> Save </Button>
+                    <Button pullRight bsStyle="danger" fill onClick={this.props.history.goBack}> Cancel Creation </Button>
+                    
+                    <div className="clearfix" />
                   </form>
                 }
               />

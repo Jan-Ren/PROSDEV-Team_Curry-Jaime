@@ -64,6 +64,7 @@ updatePO = async (req, res) => {
         po.received_by = body.received_by
         po.recipient = body.recipient
         po.conversion_rate = body.conversion_rate
+        po.is_cancelled = body.is_cancelled
         
         po
             .save()

@@ -64,6 +64,7 @@ updatePRF = async (req, res) => {
         prf.received_by = body.received_by
         prf.recipient = body.recipient
         prf.conversion_rate = body.conversion_rate
+        prf.is_cancelled = body.is_cancelled
         
         prf
             .save()

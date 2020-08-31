@@ -28,7 +28,11 @@ const PO = new Schema({
     total: Number,
     prepared_by: String,                                      
     approved_by: String,
-    received_by: String
+    received_by: String,
+    is_cancelled: {
+        type: Boolean,
+        default: false
+    }
 })
 
 module.exports = mongoose.model('po', PO)
