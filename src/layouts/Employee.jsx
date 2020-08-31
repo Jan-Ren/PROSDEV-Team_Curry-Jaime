@@ -75,7 +75,7 @@ class Employee extends Component {
   };
   getRoutes = routes => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/") {
+      if (prop.layout === "/employee") {
         return (
           <Route
             path={prop.layout + prop.path}
@@ -127,7 +127,7 @@ class Employee extends Component {
         const user = await users.getUser({token})
         console.log(user.data.data.isAdmin)
       } catch (error) {
-        alert(`${error} putae`)
+        alert(`not logged in`)
         this.setState({ authenticated: false })
       }
     }
@@ -200,9 +200,7 @@ class Employee extends Component {
           />
           <Switch>
             {this.getRoutes(routes)}
-            <Route path="/New-PO" component={NewPO} />
-            <Route path="/PO-List/" component={POTableList} />
-            <Route path="/PRF-List/" component={PRFTableList} />
+            <Route path="/employee/New-PO" component={NewPO} />
           </Switch>
         </div>
       </div>

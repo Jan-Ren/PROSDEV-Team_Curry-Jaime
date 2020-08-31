@@ -16,12 +16,15 @@
 
 */
 import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 
 import PRFSidebar from "components/Sidebar/PRFSidebar.jsx";
 
 
 import routes from "routes.js";
+import adminDashboardRoutes from "adminRoutes";
+import users from "api/users";
+import Sidebar from "components/Sidebar/Sidebar";
 
 
 class PRF extends Component {
@@ -31,7 +34,10 @@ class PRF extends Component {
       _notificationSystem: null,
       color: "black",
       hasImage: true,
-      fixedClasses: "dropdown show-dropdown open"
+      fixedClasses: "dropdown show-dropdown open",
+      routes: routes,
+      loading: true,
+      authenticated: true
     };
   }
   handleNotificationClick = position => {
@@ -111,7 +117,13 @@ class PRF extends Component {
       this.setState({ fixedClasses: "dropdown" });
     }
   };
-  componentDidMount() {
+  handleRedirect = () => {
+    // if not logged in
+    if (!this.state.authenticated) {
+      return <Redirect to ="/" />
+    }
+  }
+  async componentDidMount() {
     this.setState({ _notificationSystem: this.refs.notificationSystem });
     var _notificationSystem = this.refs.notificationSystem;
     var color = Math.floor(Math.random() * 4 + 1);
@@ -133,6 +145,18 @@ class PRF extends Component {
         break;
     }
     
+    const token = window.localStorage.getItem('token')
+    try {
+      const user = await (await users.getUser({token})).data.data
+      console.log(user.isAdmin)
+      if (user.isAdmin)
+        this.setState({ routes: adminDashboardRoutes, loading: false })
+      else
+        this.setState({ routes: routes, loading: false })
+    } catch (error) {
+      alert(`not logged in`)
+      this.setState({ authenticated: false })
+    }
   }
   componentDidUpdate(e) {
     if (
@@ -151,9 +175,17 @@ class PRF extends Component {
   render() {
     return (
       <div className="wrapper">
-        <PRFSidebar {...this.props} routes={routes} image={this.state.image}
-        color={this.state.color}
-        hasImage={this.state.hasImage}/>
+        { this.handleRedirect() }
+        {
+          this.state.loading ?           
+          <Sidebar {...this.props} routes={this.state.routes} image={this.state.image}
+          color={this.state.color}
+          hasImage={this.state.hasImage}/>
+          :
+          <Sidebar {...this.props} routes={this.state.routes} image={this.state.image}
+          color={this.state.color}
+          hasImage={this.state.hasImage}/>
+        }
         <div id="main-panel" className="main-panel" ref="mainPanel">
         <Switch>{this.getRoutes(routes)}
           </Switch>

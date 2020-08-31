@@ -16,32 +16,32 @@
 
 */
 
-import POListFolders from "views/POList.jsx";
-import PRFListFolders from "views/PRFList.jsx";
+import POList from "views/POTableList.jsx";
+import PRFList from "views/PRFTableList.jsx";
 import Login from "./components/Login/login.component.js";
 import NewPRF from "views/NewPRF.jsx";
 
 const dashboardRoutes = [
   {
-    path: "PRF-List-Folders",
-    name: "PRF List Folders",
+    path: "/PRF-List",
+    name: "PRF List",
     icon: "pe-7s-note2",
-    component: PRFListFolders,
-    layout: "/"
+    component: PRFList,
+    layout: "/employee"
   },
   {
-    path: "PO-List-Folders",
-    name: "PO List Folders",
+    path: "/PO-List",
+    name: "PO List",
     icon: "pe-7s-news-paper",
-    component: POListFolders,
-    layout: "/"
+    component: POList,
+    layout: "/employee"
   },
   {
-    path: "New-PRF",
+    path: "/New-PRF",
     name: "New PRF ",
     icon: "pe-7s-plus",
     component: NewPRF,
-    layout: "/"
+    layout: "/create"
   },
   {
     logout: true,
