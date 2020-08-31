@@ -134,7 +134,7 @@ class Employee extends Component {
   }
   handleRedirect = () => {
     if (!this.state.authenticated) {
-      return <Redirect to ="/" />
+      return <Redirect to ="/employee" />
     }
   }
   componentDidMount() {

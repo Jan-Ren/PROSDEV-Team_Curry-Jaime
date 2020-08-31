@@ -38,11 +38,11 @@ ReactDOM.render(
   <BrowserRouter>
     <Switch>
       <Route exact path='/' component={Login} />
-      <Route path="/" render={props => <EmployeeLayout {...props} />} />
+      <Route path="/employee" render={props => <EmployeeLayout {...props} />} />
       <Route path="/Admin" render={props => <AdminLayout {...props} />} />
       <Route path="/create" render={props => <PRFLayout {...props} />} />
-      <Route path="/New-PRF" render={props => <PRFLayout {...props} />} />
-      <Redirect from="/" to="/PRF-List" />
+      <Route path="/create/New-PRF" render={props => <PRFLayout {...props} />} />
+      {/* <Redirect from="/" to="/PRF-List" /> */}
     </Switch>
   </BrowserRouter>,
   document.getElementById("root")
