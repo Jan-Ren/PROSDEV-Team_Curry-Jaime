@@ -12,7 +12,7 @@
     "@material-ui/pickers": "^3.2.10",
     "@testing-library/jest-dom": "^5.11.2",
     "body-parser": "^1.19.0",
-    "bootstrap": "3.3.7",
+    "bootstrap": "3.4.1",
     "chartist": "0.10.1",
     "cors": "^2.8.5",
     "create-react-class": "^15.6.3",
