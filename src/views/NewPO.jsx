@@ -104,6 +104,7 @@ class NewPO extends Component {
     } 
     // if nandaya ng URL
     else {
+      console.log(this.props.location)
       this.props.history.goBack()
       alert('bawal yan, punta ka muna PRF')
       // this.props.history.push('/employee/PRF-List')
