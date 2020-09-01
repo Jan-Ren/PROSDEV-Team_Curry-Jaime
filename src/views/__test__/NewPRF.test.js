@@ -62,7 +62,7 @@ const mockSave = (NewPRF.handleSave = jest.fn());
            // TestingLibraryElementError: Found a label with the text of: US$ to PHP, however no form control was found associated to that label. 
            // Make sure you're using the "for" attribute or "aria-labelledby" attribute correctly.
 
-            const savePRFButton = screen.getByText("Save PRF");
+            const savePRFButton = screen.getByText("Save");
 
             fireEvent.change(inputRecipient, {target:{value:"Recipient"}});
             expect(inputRecipient).toHaveValue("Recipient");
