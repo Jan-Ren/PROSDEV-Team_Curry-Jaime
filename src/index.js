@@ -41,8 +41,8 @@ ReactDOM.render(
       <Route path="/employee" render={props => <EmployeeLayout {...props} />} />
       <Route path="/admin" render={props => <AdminLayout {...props} />} />
       <Route path="/create" render={props => <PRFLayout {...props} />} />
-      <Route path="/create/New-PRF" render={props => <PRFLayout {...props} />} />
-      <Route path="/create/New-PO" render={props => <PRFLayout {...props} />} />
+      {/* <Route path="/create/New-PRF" render={props => <PRFLayout {...props} />} />
+      <Route path="/create/New-PO" render={props => <PRFLayout {...props} />} /> */}
       {/* <Redirect from="/" to="/employee/PRF-List" /> */}
     </Switch>
   </BrowserRouter>,

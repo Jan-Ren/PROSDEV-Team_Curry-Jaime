@@ -18,7 +18,7 @@
 import React, { Component } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 
-import PRFSidebar from "components/Sidebar/PRFSidebar.jsx";
+import NewPO from "views/NewPO.jsx";
 
 
 import routes from "routes.js";
@@ -188,6 +188,7 @@ class PRF extends Component {
         }
         <div id="main-panel" className="main-panel" ref="mainPanel">
         <Switch>{this.getRoutes(routes)}
+        <Route path="/create/New-PO" component={NewPO} />
           </Switch>
         </div>
       </div>
