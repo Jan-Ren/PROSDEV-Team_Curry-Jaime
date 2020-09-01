@@ -139,9 +139,9 @@ class PRFTableList extends Component {
                             <td>
                                 <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                 <></>
-                                <Button variant="outline-primary" bsStyle="primary"><Link to={{pathname: '/New-PO', state: {PRF: prop, action: "new"}} } style={{ color: "inherit"}} ><i className="pe-7s-look" />New PO</Link></Button>{' '}
+                                <Button variant="outline-primary" bsStyle="primary"><Link to={{pathname: 'create/New-PO', state: {PRF: prop, action: "new"}} } style={{ color: "inherit"}} ><i className="pe-7s-look" />New PO</Link></Button>{' '}
                                 <></>
-                                <Button variant="outline-secondary"><Link to={{pathname: '/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><i className="pe-7s-look" />View</Link></Button>
+                                <Button variant="outline-secondary"><Link to={{pathname: 'create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><i className="pe-7s-look" />View</Link></Button>
                             </td>
                           </tr>
                         );
