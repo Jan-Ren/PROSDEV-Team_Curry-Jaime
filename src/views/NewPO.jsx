@@ -62,8 +62,9 @@ class NewPO extends Component {
       // edit PO
       if (this.props.location.state.action === "edit") {
         alert('waw')
-        const { prf, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = this.props.location.state.PO
+        const { prf, po_number, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = this.props.location.state.PO
         this.setState({
+            po_number,
             prf,
             pax,
             recipient,
@@ -87,7 +88,7 @@ class NewPO extends Component {
 
           this.setState({          
               po_number,
-              prf: prf,
+              prf,
               pax:[''],
               recipient: '',
               particulars: '',
@@ -215,10 +216,11 @@ class NewPO extends Component {
       alert("saving please wait")      
       try {
         const po_id = await (await api.insertPO(payload)).data.id
-        const { folder } = this.state
-
+        const { folder, prf } = this.state        
+        prf.po.push(po_id)
         folder.po.push(po_id)
         await api.updateNF_POById(folder._id, folder)
+        await api.updatePRFById(prf._id, prf)
 
         this.setState({
           po_number: '',
@@ -273,7 +275,7 @@ class NewPO extends Component {
                           label: "PO#",
                           type: "disabled",
                           bsClass: "form-control",
-                          placeholder: "800033",
+                          placeholder: "",
                           defaultValue: "",
                           name:"po_number",
                           value: this.state.po_number,
