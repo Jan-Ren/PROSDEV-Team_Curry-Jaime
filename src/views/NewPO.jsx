@@ -217,11 +217,13 @@ class NewPO extends Component {
       alert("saving please wait")      
       try {
         const po_id = await (await api.insertPO(payload)).data.id
-        const { folder, prf } = this.state        
+        const { folder, prf } = this.state
         prf.po.push(po_id)
         folder.po.push(po_id)
         await api.updateNF_POById(folder._id, folder)
-        await api.updatePRFById(prf._id, prf)
+        const newprf = await (await api.updatePRFById(prf._id, prf)).data
+        console.log(newprf)
+        alert(newprf)
 
         this.setState({
           po_number: '',
