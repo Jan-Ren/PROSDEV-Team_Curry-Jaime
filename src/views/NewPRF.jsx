@@ -174,11 +174,12 @@ class NewPRF extends Component {
     
     // edit PRF
     if (this.props.location.state) {
-      const prf_id = this.props.location.state.PRF._id
-      
+      const { _id, date_created } = this.props.location.state.PRF
+      payload.date_created = date_created
+
       try {
         alert('editing please wait')
-        await api.updatePRFById(prf_id, payload)
+        await api.updatePRFById(_id, payload)
 
         this.setState({
           prf_number: '',
