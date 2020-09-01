@@ -32,6 +32,7 @@ class POTableList extends Component {
     super(props)
     this.state = {
         PO: [],
+        NF_PO: {},
         columns: [],
         isLoading: false,
     }
@@ -41,11 +42,14 @@ class POTableList extends Component {
   
   componentDidMount = async () => {
     this.setState({ isLoading: true })
-  
+    
     if (this.props.location.state) {
-      alert(this.props.location.state.PO.length)
+      const { PO, NF_PO } = this.props.location.state
+      this.setState({ NF_PO })
+      alert(PO.length)
+
       try {
-        let po = this.props.location.state.PO.map(async po_reference => {
+        let po = PO.map(async po_reference => {
           try {
             const po = await (await api.getPOById(po_reference)).data.data
             console.log(po)
@@ -109,6 +113,27 @@ class POTableList extends Component {
     }
   }
 
+  handleDelete = async (po) => {
+    try {
+      
+      const new_NFPO = {...this.state.NF_PO}
+      let index = new_NFPO.po.indexOf(po._id)
+      new_NFPO.po.splice(index, 1)      
+      await api.updateNF_POById(new_NFPO._id, new_NFPO)
+
+      const prf = po.prf
+      index = prf.po.indexOf(po._id)
+      prf.po.splice(index, 1)
+      await api.updatePRFById(prf._id, prf)      
+      
+      await api.deletePOById(po._id)
+
+      alert('deleted successfully')
+    } catch (error) {
+      alert(error)
+    }
+  }
+
   render() {
     return (
       <div className="content">
@@ -167,7 +192,7 @@ class POTableList extends Component {
                             <td>
                               <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                               <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
-                              <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-junk"/>Delete</Button>{' '}
+                              <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
                             </td>
                           </tr>
                         );
