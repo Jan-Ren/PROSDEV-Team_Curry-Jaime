@@ -124,9 +124,6 @@ getAllUser = async (req, res) => {
 
 getUser = async (req, res) => {
     const token = req.body.token
-    // console.log(req.body.token)
-    // console.log(token, " baket wala huhu")
-    // alert(token)    
 
     if (!token) 
         res.status(400).json({ msg: "No token, authorization denied" });
@@ -140,7 +137,6 @@ getUser = async (req, res) => {
         req.user = decodedUser;
         
         const user = await User.findById({ _id: decodedUser.id }).select('-password')
-        console.log(user)
         return res.status(200).json({ success: true, data: user })
         // next();
     } catch (error) {
