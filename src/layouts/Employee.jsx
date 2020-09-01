@@ -200,7 +200,7 @@ class Employee extends Component {
           />
           <Switch>
             {this.getRoutes(routes)}
-            <Route path="/create/New-PO" component={NewPO} />
+            <Route path="/create/New-PO/" component={NewPO} />
           </Switch>
         </div>
       </div>

@@ -78,7 +78,7 @@ class PRFTableList extends Component {
 
   handleRedirect = () => {
     if (this.state.redirect)
-      return <Redirect to="/PRF-List-Folders" />
+      return <Redirect to="/admin/PRF-List-Folders" />
   }
   
   render() {
@@ -136,9 +136,9 @@ class PRFTableList extends Component {
                             <td>
                                 <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                 <></>
-                                <Button variant="outline-primary" bsStyle="primary"><Link to={{pathname: '/New-PO', state: {PRF: prop, action: "new"}} } style={{ color: "inherit"}} ><i className="pe-7s-look" />New PO</Link></Button>{' '}
+                                <Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"}} } style={{ color: "inherit"}} ><Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-look" />New PO</Button>{' '}</Link>
                                 <></>
-                                <Button variant="outline-secondary"><Link to={{pathname: '/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><i className="pe-7s-look" />View</Link></Button>{' '}
+                                <Link to={{pathname: '/create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
                                 <></>
                                 <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-junk"/>Delete</Button>{' '}
                             </td>
