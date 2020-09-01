@@ -72,6 +72,11 @@ class PRFTableList extends Component {
     prf.is_cancelled = true
     try {
       const res = await api.updatePRFById(prf._id, prf)
+      alert(prf.po.length)
+      prf.po.map(async po_id => {
+        const po = await (await api.cancelPOById(po_id)).data.data
+        alert(po.is_cancelled)
+      })
       console.log(res.data)
       alert("Cancelled")
     } catch (error) {

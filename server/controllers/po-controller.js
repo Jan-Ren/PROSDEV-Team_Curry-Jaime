@@ -129,10 +129,22 @@ getAllPO = async (req, res) => {
     }).catch(err => console.log(err))
 }
 
+cancelPO = async (req, res) => {
+    const po = await PO.findOneAndUpdate({ _id: req.params.id }, { is_cancelled: true }, {
+        new: true
+    }).catch(err => {
+        console.log(err)
+        return res.status(400).json({ success: false, error: err })
+    })
+
+    return res.status(200).json({ success: true, data: po })
+}
+
 module.exports = {
     createPO,
     updatePO,
     deletePO,
     getAllPO,
     getPOById,
+    cancelPO
 }
