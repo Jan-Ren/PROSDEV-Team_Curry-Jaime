@@ -43,36 +43,46 @@ class POTableList extends Component {
     this.setState({ isLoading: true })
   
     if (this.props.location.state) {
-
-      let po = this.props.location.state.PO.map(async po_reference => {
-        if (this.props.location.state.PO) {
-          const po = await (await api.getPOById(po_reference)).data.data
-          console.log(po)
-          return po
-        }
-      })
-  
-      po = await Promise.all(po)
+      alert(this.props.location.state.PO.length)
+      try {
+        let po = this.props.location.state.PO.map(async po_reference => {
+          try {
+            const po = await (await api.getPOById(po_reference)).data.data
+            console.log(po)
+            return po            
+          } catch (error) {
+            console.log(error.message)
+            alert(error)
+          }
+          
+        })
+    
+        po = await Promise.all(po)
+          
+        // console.log(this.state.PRF)
         
-      // console.log(this.state.PRF)
-      
-      let prf = po.map(async po_reference => {
-        if ( po_reference.prf) {
-          const prf = await (await api.getPRFById(po_reference.prf)).data.data
-          return prf
-        }
-      })
-      
-      prf = await Promise.all(prf)
-      prf.map((p, index) => {
-        if (p) {
-          console.log(p)
-          console.log(index)
-          po[index].prf = p
-        }
-      })
-
-      this.setState({ PO: po})
+        let prf = po.map(async po_reference => {
+          if ( po_reference.prf) {
+            const prf = await (await api.getPRFById(po_reference.prf)).data.data
+            return prf
+          }
+        })
+        
+        prf = await Promise.all(prf)
+        prf.map((p, index) => {
+          if (p) {
+            console.log(p)
+            console.log(index)
+            po[index].prf = p
+          }
+        })
+  
+        this.setState({ PO: po})
+        
+      } catch (error) {
+        console.log(error.message)
+        alert(error)
+      }
       
     } else {
       this.setState({ redirect: true })

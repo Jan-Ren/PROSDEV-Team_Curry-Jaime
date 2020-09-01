@@ -114,8 +114,7 @@ class NewPO extends Component {
 
   getCurrentPO = async() => {
     const token = window.localStorage.getItem('token')
-    
-    console.log(token)
+        
     try {
       
       const user = await (await users.getUser({token})).data.data
@@ -181,8 +180,8 @@ class NewPO extends Component {
     this.setState({pax: this.state.pax})
 
   }
-  handleSave = async () => {
-
+  handleSave = async (e) => {
+    e.preventDefault()
     const payload = this.state
     
     console.log(this.state)
@@ -214,16 +213,21 @@ class NewPO extends Component {
         alert(`Editing failed: ${error.message}`)
       }
     } else if (this.props.location.state.action === "new") {
-      alert("saving please wait")      
+      const { folder, prf } = this.state
+      console.log(folder)
+      console.log(prf)
+      // alert(prf)
+      // alert("saving please wait")
       try {
         const po_id = await (await api.insertPO(payload)).data.id
-        const { folder, prf } = this.state
         prf.po.push(po_id)
         folder.po.push(po_id)
+
         await api.updateNF_POById(folder._id, folder)
         const newprf = await (await api.updatePRFById(prf._id, prf)).data
         console.log(newprf)
         alert(newprf)
+        
 
         this.setState({
           po_number: '',
@@ -247,7 +251,7 @@ class NewPO extends Component {
       }      
 
     } 
-    this.props.history.push('/Employee')
+    window.history.go(-1)
   }
   render() {
     return (

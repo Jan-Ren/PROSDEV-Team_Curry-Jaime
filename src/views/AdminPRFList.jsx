@@ -108,7 +108,7 @@ class PRFListFolders extends Component {
                                     <td>
                                     <Button variant="outline-secondary" bsStyle="warning" className="pull-right"><i className="pe-7s-close-circle"/>Cancel</Button>
                                     <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
-                                    <Link to={{pathname: '/admin/PRF-List', state: {PRF: prop.prf} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
+                                    <Link to={{pathname: '/admin/PRF-List', state: {PRF: prop.prf, NF_PRF: prop} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
                                     </td>
                                 </tr>
                                 

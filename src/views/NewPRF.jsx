@@ -167,8 +167,8 @@ class NewPRF extends Component {
     this.setState({pax: this.state.pax})
 
   }
-  handleSave = async () => {
-
+  handleSave = async (e) => {
+    e.preventDefault()
     const payload = this.state
     // alert('here')
     
@@ -234,9 +234,7 @@ class NewPRF extends Component {
       }
     }
     
-    this.props.history.push('/PRF-List')
-    
-    this.props.history.push('/employee')
+    window.history.go(-1)
   }
   render() {
     return (
