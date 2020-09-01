@@ -36,7 +36,7 @@ const mockSave = (NewPO.handleSave = jest.fn());
 
             //added some input values to test them as well > u <
 
-            const savePOButton = screen.getByText("Save PO");
+            const savePOButton = screen.getByText("Save");
 
             fireEvent.change(inputRecipient, {target:{value:"Recipient"}});
             expect(inputRecipient).toHaveValue("Recipient");
