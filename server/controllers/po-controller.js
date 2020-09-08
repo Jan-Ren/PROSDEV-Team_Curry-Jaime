@@ -52,6 +52,7 @@ updatePO = async (req, res) => {
         }
         po.pax = body.pax
         po.po = body.po
+        po.po_folder = body.po_folder
         po.date_created = body.date_created
         po.last_modified = body.last_modified
         po.paid_date = body.paid_date
