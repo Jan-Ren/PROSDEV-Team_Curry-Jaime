@@ -86,7 +86,7 @@ updatePO = async (req, res) => {
 }
 
 deletePO = async (req, res) => {
-    await PO.findOneAndDelete({ _id: req.params.id }, (err, po) => {
+    await PO.deleteMany({  }, (err, po) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
         }

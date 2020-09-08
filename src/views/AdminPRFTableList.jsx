@@ -63,8 +63,8 @@ class PRFTableList extends Component {
   
         const user = await (await users.getUser({ token: window.localStorage.getItem('token')})).data.data
         
-        const NF_PO = await (await api.getNF_POById(user.po_folder)).data.data
-        this.setState({ NF_PO }, () => console.log(this.state.NF_PO))
+        // const NF_PO = await (await api.getNF_POById(user.po_folder)).data.data
+        // this.setState({ NF_PO }, () => console.log(this.state.NF_PO))
         
       } catch (error) {
         console.log(error.message)
@@ -99,18 +99,23 @@ class PRFTableList extends Component {
     try {      
       alert(prf.po.length)
       
-      const new_NFPO = {...this.state.NF_PO}
-      alert(`not yet deleted ${new_NFPO.po.length}`)
+      // const new_NFPO = {...this.state.NF_PO}
+      // alert(`not yet deleted ${new_NFPO.po.length}`)
       // remove all po's of prf from db and from nf_po
       let temp = prf.po.map(async po_id => {
         try {          
           alert(po_id)
-          const index = new_NFPO.po.indexOf(po_id)
-          new_NFPO.po.splice(index, 1)
+          // get po's folder id
+          const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
+          // get po folder
+          const NFPO = await (await api.getNF_POById(NFPO_id)).data.data          
+
+          const index = NFPO.po.indexOf(po_id)
+          NFPO.po.splice(index, 1)
   
           await api.deletePOById(po_id)
-          
-          this.setState({ NF_PO: new_NFPO })
+          await api.updateNF_POById(NFPO_id, NFPO)
+          // this.setState({ NF_PO: new_NFPO })
         } catch (error) {
           console.log(`hehe ${error}`)
           alert(error)
@@ -118,8 +123,8 @@ class PRFTableList extends Component {
       })
       
       temp = await Promise.all(temp)
-      alert(`should be deleted ${new_NFPO.po.length}`)
-      await api.updateNF_POById(new_NFPO._id, new_NFPO)
+      // alert(`should be deleted ${new_NFPO.po.length}`)
+      // await api.updateNF_POById(new_NFPO._id, new_NFPO)
 
       alert(prf._id)
 
