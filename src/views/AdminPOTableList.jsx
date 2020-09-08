@@ -23,6 +23,7 @@ import Card from "components/Card/Card.jsx";
 import { poHArray, poDArray } from "variables/Variables.jsx";
 import api from '../api'
 import moment from 'moment'
+import CircularProgress from '@material-ui/core/CircularProgress';
 //import { filter } from "core-js/fn/dict";
 
 
@@ -81,7 +82,7 @@ class POTableList extends Component {
           }
         })
   
-        this.setState({ PO: po})
+        this.setState({ PO: po, isLoading: false})
         
       } catch (error) {
         console.log(error.message)
@@ -168,39 +169,52 @@ class POTableList extends Component {
                         </InputGroup>                        
                     </Form>
                   </Col>
+                    {
+                      this.state.isLoading ?
+                      <div style={{padding: "100px 0", textAlign: "center"}}>
+                        <CircularProgress />
+                      </div> : 
 
-                    <Table striped hover>
-                    <thead>
-                      <tr>
-                        {poHArray.map((prop, key) => {
-                          return <th key={key}>{prop}</th>;
-                        })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {this.state.PO.map((prop, key) => {
-                        return (
-                          <tr key={key}>
-                            {/* {prop.map((prop, key) => {
-                              return <td key={key}>{prop}</td>;
-                            })} */}
-                            <td key={key+1}>{prop.po_number}</td>
-                            <td key={key+2}>{prop.recipient}</td>
-                            <td key={key+3}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
-                            <td key={key+4}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
-                            <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                            <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                            <td>
-                              <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
-                              <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
-                              <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
-                            </td>
+                      <Table striped hover>
+                        <thead>
+                          <tr>
+                            {poHArray.map((prop, key) => {
+                              return <th key={key}>{prop}</th>;
+                            })}
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  
-                  </Table>
+                        </thead>
+                        <tbody>
+                          {                        
+                            !this.state.PO.length ?
+                              <p>
+                                This list is empty.
+                              </p>
+                            :
+                            this.state.PO.map((prop, key) => {
+                              return (
+                                <tr key={key}>
+                                  {/* {prop.map((prop, key) => {
+                                    return <td key={key}>{prop}</td>;
+                                  })} */}
+                                  <td key={key+1}>{prop.po_number}</td>
+                                  <td key={key+2}>{prop.recipient}</td>
+                                  <td key={key+3}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                                  <td key={key+4}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
+                                  <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                  <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                  <td>
+                                    <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
+                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                                    <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
+                                  </td>
+                                </tr>
+                              );
+                          })}
+                        </tbody>
+
+                      </Table>
+                    }
+                    
                     
                   </div>
                 }
