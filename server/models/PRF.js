@@ -35,7 +35,7 @@ const PRF = new Schema({
         required:true
     },
     po : [{type : Schema.Types.ObjectId, ref : 'po'}],
-    prf_folder : [{type : Schema.Types.ObjectId, ref : 'nf_prf'}],
+    prf_folder : {type : Schema.Types.ObjectId, ref : 'nf_prf'},
     pax: [{
         type: String,
         require:true

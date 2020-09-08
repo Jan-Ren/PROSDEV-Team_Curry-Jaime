@@ -50,7 +50,7 @@ class NewPRF extends Component {
       prepared_by: '',
       approved_by: '',
       received_by: '',
-      folder: '',
+      prf_folder: '',
     }    
     this.handleChange = this.handleChange.bind(this)
   }
@@ -109,7 +109,7 @@ class NewPRF extends Component {
       const user = await (await users.getUser({token})).data.data
       
       const workingDirectory = await (await api.getNF_PRFById(user.prf_folder)).data.data
-      this.setState({ folder: workingDirectory })
+      this.setState({ prf_folder: workingDirectory }, () => console.log(this.state.prf_folder))
       return (workingDirectory.nf_prf_number*1000) + workingDirectory.prf.length
 
     } catch (error) {
@@ -169,7 +169,8 @@ class NewPRF extends Component {
   }
   handleSave = async (e) => {
     e.preventDefault()
-    const payload = this.state
+    const payload = {...this.state}
+    payload.prf_folder = this.state.prf_folder._id
     // alert('here')
     
     // edit PRF
@@ -209,10 +210,11 @@ class NewPRF extends Component {
       alert("saving please wait")      
       try {
         const prf_id = await (await api.insertPRF(payload)).data.id
-        const { folder } = this.state
-
-        folder.prf.push(prf_id)
-        await api.updateNF_PRFById(folder._id, folder)
+        const { prf_folder } = this.state
+        console.log(prf_folder)
+        alert(prf_folder)
+        prf_folder.prf.push(prf_id)
+        await api.updateNF_PRFById(prf_folder._id, prf_folder)
         this.setState({
           prf_number: '',
           pax: [''],
