@@ -51,6 +51,7 @@ class NewPO extends Component {
         prepared_by: '',
         approved_by: '',
         received_by: '',
+        po_folder: ''
     }
     
     this.handleChange = this.handleChange.bind(this)
@@ -121,7 +122,7 @@ class NewPO extends Component {
       
       const workingDirectory = await (await api.getNF_POById(user.po_folder)).data.data
       
-      this.setState({ folder: workingDirectory })
+      this.setState({ po_folder: workingDirectory })
 
       return (workingDirectory.nf_po_number*1000) + workingDirectory.po.length
 
@@ -182,7 +183,8 @@ class NewPO extends Component {
   }
   handleSave = async (e) => {
     e.preventDefault()
-    const payload = this.state
+    const payload = {...this.state}
+    payload.po_folder = this.state.po_folder._id
     
     console.log(this.state)
     if (this.props.location.state.action === "edit") {        
@@ -213,17 +215,17 @@ class NewPO extends Component {
         alert(`Editing failed: ${error.message}`)
       }
     } else if (this.props.location.state.action === "new") {
-      const { folder, prf } = this.state
-      console.log(folder)
+      const { po_folder, prf } = this.state
+      console.log(po_folder)
       console.log(prf)
       // alert(prf)
       // alert("saving please wait")
       try {
         const po_id = await (await api.insertPO(payload)).data.id
         prf.po.push(po_id)
-        folder.po.push(po_id)
+        po_folder.po.push(po_id)
 
-        await api.updateNF_POById(folder._id, folder)
+        await api.updateNF_POById(po_folder._id, po_folder)
         const newprf = await (await api.updatePRFById(prf._id, prf)).data
         console.log(newprf)
         alert(newprf)
