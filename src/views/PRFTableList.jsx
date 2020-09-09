@@ -27,6 +27,7 @@ import api from '../api'
 import moment from 'moment'
 import users from "api/users";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
 
 class PRFTableList extends Component {
 
@@ -37,14 +38,16 @@ class PRFTableList extends Component {
         PRF: [],
         columns: [],
         isLoading: false,
-        NF_PRF: {}
+        NF_PRF: {},
+        open: false,
+        success: false
     }    
     this.handleCancel = this.handleCancel.bind(this)
   }
   
   componentDidMount = async () => {
 
-    this.setState({ isLoading: true })
+    this.setState({ loading: true })
     try {
       const token = window.localStorage.getItem('token')
       const workingDirectory = await (await users.getUser({ token })).data.data.prf_folder
@@ -62,7 +65,7 @@ class PRFTableList extends Component {
       this.setState({ PRF: prf, NF_PRF: folder })
 
       console.log(this.state.PRF)
-      this.setState({ isLoading: false })
+      this.setState({ loading: false })
     } catch (error) {
       
     }
@@ -70,19 +73,22 @@ class PRFTableList extends Component {
   }
 
   handleCancel = async (prf) => {
-
+    this.setState({ isLoading: true, open: true, action: 'Cancel' })
     console.log(prf)
-    alert(prf._id)
+    // alert(prf._id)
     prf.is_cancelled = true
     try {
       const res = await api.updatePRFById(prf._id, prf)
-      alert(prf.po.length)
+      // alert(prf.po.length)
       prf.po.map(async po_id => {
         const po = await (await api.cancelPOById(po_id)).data.data
-        alert(po.is_cancelled)
+        // alert(po.is_cancelled)
       })
       console.log(res.data)
-      alert("Cancelled")
+      // alert("Cancelled")
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1500)
     } catch (error) {
       alert(error)
     }    
@@ -91,6 +97,11 @@ class PRFTableList extends Component {
   handleRedirect = () => {
     if (this.state.redirect)
       return <Redirect to="/PRF-List-Folders" />
+  }
+  
+  handleClose = () => {
+    this.setState({ open:false });
+    window.location.reload()
   }
   
   render() {
@@ -127,7 +138,7 @@ class PRFTableList extends Component {
                   </Col>
                   <div>
                   {
-                    this.state.isLoading ?
+                    this.state.loading ?
                     <div style={{padding: "100px 0", textAlign: "center"}}>
                         <CircularProgress />
                     </div> : 
@@ -164,6 +175,13 @@ class PRFTableList extends Component {
                       
                     </Table>
                   }
+                  <ConfirmationDialog
+                    open={this.state.open}
+                    handleClose={this.handleClose}
+                    success={this.state.success}
+                    isLoading={this.state.isLoading}
+                    action={this.state.action}
+                    />
                   </div>
                 
                   </React.Fragment>

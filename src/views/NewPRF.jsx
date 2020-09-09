@@ -68,7 +68,6 @@ class NewPRF extends Component {
           prepared_by,
           approved_by,
           received_by,
-          action: 'Edit'
       })
     } 
     
@@ -115,7 +114,7 @@ class NewPRF extends Component {
   }
 
   handleClose = (e) => {
-    this.setState({ success:false });
+    this.setState({ open:false });
     window.history.go(-1)
   };
 
@@ -197,8 +196,11 @@ class NewPRF extends Component {
           approved_by: '',
           received_by: ''
         })
-
         // alert("edit done")
+        setTimeout(() => {
+          this.setState({ isLoading: false, success: true })
+        }, 1500)
+
       } catch (error) {
         console.log(error.message)
         alert(`Editing failed: ${error.message}`)
@@ -232,15 +234,15 @@ class NewPRF extends Component {
         })
         
         // alert("saving done")
+        setTimeout(() => {
+          this.setState({ isLoading: false, success: true })    
+        }, 1500)
         
       } catch (error) {
         console.log(error.message)
         alert(error.message)
       }
     }
-    setTimeout(() => {
-      this.setState({ isLoading: false, success: true })    
-    }, 1500)
   }
   render() {    
     return (

@@ -27,6 +27,7 @@ import api from '../api'
 import moment from 'moment'
 import users from "api/users";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
 
 class PRFTableList extends Component {
 
@@ -39,13 +40,15 @@ class PRFTableList extends Component {
         NF_PO: {},
         columns: [],
         isLoading: false,
+        open: false,
+        success: false
     }
 
     this.handleCancel = this.handleCancel.bind(this)
   }
   
   componentDidMount = async () => {
-    this.setState({ isLoading: true })
+    this.setState({ loading: true })
 
     if (this.props.location.state) {
 
@@ -62,7 +65,7 @@ class PRFTableList extends Component {
   
         prf = await Promise.all(prf)
   
-        this.setState({ PRF: prf, isLoading: false }, () => console.log(this.state.PRF) )
+        this.setState({ PRF: prf, loading: false }, () => console.log(this.state.PRF) )
   
         // const user = await (await users.getUser({ token: window.localStorage.getItem('token')})).data.data
         
@@ -80,7 +83,7 @@ class PRFTableList extends Component {
   }
 
   handleCancel = async (prf) => {
-
+    this.setState({ isLoading: true, open: true, action: 'Cancel' })
     console.log(prf)
     // alert(prf._id)
     prf.is_cancelled = true
@@ -93,8 +96,10 @@ class PRFTableList extends Component {
         // alert(po.is_cancelled)
       })
       console.log(res.data)
-      alert("Success")
-      window.location.reload()
+      // alert("Success")
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1500)
     } catch (error) {
       alert(error)
     }    
@@ -107,6 +112,7 @@ class PRFTableList extends Component {
       // const new_NFPO = {...this.state.NF_PO}
       // alert(`not yet deleted ${new_NFPO.po.length}`)
       // remove all po's of prf from db and from nf_po
+      this.setState({ isLoading: true, open: true, action: 'Delete' })
       let temp = prf.po.map(async po_id => {
         try {          
           // alert(po_id)
@@ -120,7 +126,7 @@ class PRFTableList extends Component {
   
           await api.deletePOById(po_id)
           await api.updateNF_POById(NFPO_id, NFPO)
-          // this.setState({ NF_PO: new_NFPO })
+          
         } catch (error) {
           console.log(`hehe ${error}`)
           alert(error)
@@ -140,8 +146,9 @@ class PRFTableList extends Component {
       await api.updateNF_PRFById(new_NFPRF._id, new_NFPRF)
       await api.deletePRFById(prf._id)
 
-      alert('Deleted successfully')
-      window.location.reload()
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1500)
     } catch (error) {
       alert(error)
     }
@@ -150,6 +157,11 @@ class PRFTableList extends Component {
   handleRedirect = () => {
     if (this.state.redirect)
       return <Redirect to="/admin/PRF-List-Folders" />
+  }
+
+  handleClose = () => {
+    this.setState({ open:false });
+    window.location.reload()
   }
   
   render() {
@@ -186,7 +198,7 @@ class PRFTableList extends Component {
                   </Col>
                   <div>
                   {
-                    this.state.isLoading ?
+                    this.state.loading ?
                     <div style={{padding: "100px 0", textAlign: "center"}}>
                         <CircularProgress />
                     </div> : 
@@ -225,7 +237,13 @@ class PRFTableList extends Component {
 
                     </Table>
                   }
-                  
+                  <ConfirmationDialog
+                    open={this.state.open}
+                    handleClose={this.handleClose}
+                    success={this.state.success}
+                    isLoading={this.state.isLoading}
+                    action={this.state.action}
+                    />
                   </div>
                 
                   </React.Fragment>

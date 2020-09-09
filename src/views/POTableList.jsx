@@ -26,6 +26,7 @@ import moment from 'moment'
 import users from "api/users";
 //import { filter } from "core-js/fn/dict";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
 
 class POTableList extends Component {
 
@@ -35,14 +36,16 @@ class POTableList extends Component {
         PO: [],
         columns: [],
         isLoading: false,
-        NF_PO: {}
+        NF_PO: {},
+        open: false,
+        success: false
     }
 
     this.handleCancel = this.handleCancel.bind(this)
   }
   
   componentDidMount = async () => {
-    this.setState({ isLoading: true })
+    this.setState({ loading: true })
   
     try {
       const token = window.localStorage.getItem('token')
@@ -74,7 +77,7 @@ class POTableList extends Component {
         }
       })
 
-      this.setState({ PO: po, NF_PO: folder, isLoading: false })
+      this.setState({ PO: po, NF_PO: folder, loading: false })
     } catch (error) {
       
     }
@@ -87,19 +90,27 @@ class POTableList extends Component {
   }
   
   handleCancel = async (po) => {
-
+    this.setState({ isLoading: true, open: true, action: 'Cancel' })
     console.log(po)
-    alert(po._id)
+    // alert(po._id)
     po.is_cancelled = true
     try {
       const res = await api.updatePOById(po._id, po)
       console.log(res.data)
-      alert("Cancelled")
+      // alert("Cancelled")
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1500)
     } catch (error) {
       alert(error)
     }
   }
 
+  handleClose = () => {
+    this.setState({ open:false });
+    window.location.reload()
+  }
+  
   render() {
     return (
       <div className="content">
@@ -134,7 +145,7 @@ class POTableList extends Component {
                     </Form>
                   </Col>
                     {
-                      this.state.isLoading ?
+                      this.state.loading ?
                       <div style={{padding: "100px 0", textAlign: "center"}}>
                         <CircularProgress />
                       </div> : 
@@ -171,7 +182,13 @@ class POTableList extends Component {
                       
                       </Table>
                     }
-                    
+                    <ConfirmationDialog
+                      open={this.state.open}
+                      handleClose={this.handleClose}
+                      success={this.state.success}
+                      isLoading={this.state.isLoading}
+                      action={this.state.action}
+                      />
                   </div>
                 }
               />
