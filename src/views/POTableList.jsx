@@ -35,6 +35,7 @@ class POTableList extends Component {
         PO: [],
         columns: [],
         isLoading: false,
+        NF_PO: {}
     }
 
     this.handleCancel = this.handleCancel.bind(this)
@@ -73,7 +74,7 @@ class POTableList extends Component {
         }
       })
 
-      this.setState({ PO: po})
+      this.setState({ PO: po, NF_PO: folder})
     } catch (error) {
       
     }
@@ -107,7 +108,7 @@ class POTableList extends Component {
           <Row>
             <Col md={12}>
               <Card
-                title="PO List"
+                title={this.state.NF_PO.nf_po_number ? `PO ${this.state.NF_PO.nf_po_number}` : 'PO'}
                 ctTableFullWidth
                 ctTableResponsive
                 content={

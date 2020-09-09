@@ -160,7 +160,7 @@ class PRFTableList extends Component {
           <Row>
             <Col md={12}>
               <Card
-                title="PRF List"
+                title={this.state.NF_PRF.nf_prf_number ? `PRF ${this.state.NF_PRF.nf_prf_number}` : "PRF"}
                 ctTableFullWidth
                 ctTableResponsive
                 content={

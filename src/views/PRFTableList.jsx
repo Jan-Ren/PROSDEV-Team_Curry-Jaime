@@ -36,6 +36,7 @@ class PRFTableList extends Component {
         PRF: [],
         columns: [],
         isLoading: false,
+        NF_PRF: {}
     }    
     this.handleCancel = this.handleCancel.bind(this)
   }
@@ -56,7 +57,7 @@ class PRFTableList extends Component {
 
       prf = await Promise.all(prf)
 
-      this.setState({ PRF: prf})
+      this.setState({ PRF: prf, NF_PRF: folder })
 
       console.log(this.state.PRF)
     } catch (error) {
@@ -97,7 +98,7 @@ class PRFTableList extends Component {
           <Row>
             <Col md={12}>
               <Card
-                title="PRF List"
+                title={this.state.NF_PRF.nf_prf_number ? `PRF ${this.state.NF_PRF.nf_prf_number}` : "PRF"}
                 ctTableFullWidth
                 ctTableResponsive
                 content={

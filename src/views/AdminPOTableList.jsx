@@ -147,7 +147,7 @@ class POTableList extends Component {
           <Row>
             <Col md={12}>
             <Card
-                title="PO List"
+                title={this.state.NF_PO.nf_po_number ? `PO ${this.state.NF_PO.nf_po_number}` : 'PO'}
                 ctTableFullWidth
                 ctTableResponsive
                 content={
