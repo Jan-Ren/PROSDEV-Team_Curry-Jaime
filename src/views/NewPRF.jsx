@@ -23,7 +23,7 @@ import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
 import clsx from 'clsx';
 import Fab from '@material-ui/core/Fab';
-import { green, white } from '@material-ui/core/colors';
+import { green } from '@material-ui/core/colors';
 import CheckIcon from '@material-ui/icons/Check';
 import SaveIcon from '@material-ui/icons/Save';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -34,6 +34,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { withStyles } from "@material-ui/core/styles";
 import users from "api/users";
+import { white } from "material-ui/styles/colors";
 
 const styles = (theme) => ({
   root: {

@@ -45,12 +45,13 @@ class POTableList extends Component {
     this.setState({ isLoading: true })
     
     if (this.props.location.state) {
-      const { PO, NF_PO } = this.props.location.state
-      this.setState({ NF_PO })
+      const { NF_PO_id } = this.props.location.state
+      const nf_po = await (await api.getNF_POById(NF_PO_id)).data.data
+      this.setState({ NF_PO: nf_po })
       // alert(PO.length)
 
       try {
-        let po = PO.map(async po_reference => {
+        let po = this.state.NF_PO.po.map(async po_reference => {
           try {
             const po = await (await api.getPOById(po_reference)).data.data
             console.log(po)
@@ -103,16 +104,17 @@ class POTableList extends Component {
   handleCancel = async (po) => {
 
     console.log(po)
-    alert(po._id)
+    // alert(po._id)
     po.is_cancelled = true
     po.last_modified = Date.now()
     try {
       const res = await api.updatePOById(po._id, po)
       console.log(res.data)
-      alert("Cancelled")
+      alert("Success")
     } catch (error) {
       alert(error)
     }
+    window.location.reload()
   }
 
   handleDelete = async (po) => {
@@ -130,7 +132,8 @@ class POTableList extends Component {
       
       await api.deletePOById(po._id)
 
-      alert('deleted successfully')
+      alert('Deleted successfully')
+      window.location.reload()
     } catch (error) {
       alert(error)
     }

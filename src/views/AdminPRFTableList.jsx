@@ -50,10 +50,11 @@ class PRFTableList extends Component {
     if (this.props.location.state) {
 
       try {
-        const { PRF, NF_PRF } = this.props.location.state
-        this.setState({ NF_PRF }, () => console.log(this.state.NF_PRF) )
+        const { NF_PRF_id } = this.props.location.state
+        const nf_prf = await (await api.getNF_PRFById(NF_PRF_id)).data.data
+        this.setState({ NF_PRF: nf_prf }, () => console.log(this.state.NF_PRF) )
   
-        let prf = PRF.map(async prf_reference => {
+        let prf = this.state.NF_PRF.prf.map(async prf_reference => {
           const prf = await (await api.getPRFById(prf_reference)).data.data
           console.log(prf)
           return prf
@@ -81,18 +82,19 @@ class PRFTableList extends Component {
   handleCancel = async (prf) => {
 
     console.log(prf)
-    alert(prf._id)
+    // alert(prf._id)
     prf.is_cancelled = true
     prf.last_modified = Date.now()
     try {
       const res = await api.updatePRFById(prf._id, prf)
-      alert(prf.po.length)
+      // alert(prf.po.length)
       prf.po.map(async po_id => {
         const po = await (await api.cancelPOById(po_id)).data.data
-        alert(po.is_cancelled)
+        // alert(po.is_cancelled)
       })
       console.log(res.data)
-      alert("Cancelled")
+      alert("Success")
+      window.location.reload()
     } catch (error) {
       alert(error)
     }    
@@ -100,14 +102,14 @@ class PRFTableList extends Component {
 
   handleDelete = async (prf) => {
     try {      
-      alert(prf.po.length)
+      // alert(prf.po.length)
       
       // const new_NFPO = {...this.state.NF_PO}
       // alert(`not yet deleted ${new_NFPO.po.length}`)
       // remove all po's of prf from db and from nf_po
       let temp = prf.po.map(async po_id => {
         try {          
-          alert(po_id)
+          // alert(po_id)
           // get po's folder id
           const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
           // get po folder
@@ -129,7 +131,7 @@ class PRFTableList extends Component {
       // alert(`should be deleted ${new_NFPO.po.length}`)
       // await api.updateNF_POById(new_NFPO._id, new_NFPO)
 
-      alert(prf._id)
+      // alert(prf._id)
 
       const new_NFPRF = {...this.state.NF_PRF}
       const index = new_NFPRF.prf.indexOf(prf._id)
@@ -138,7 +140,8 @@ class PRFTableList extends Component {
       await api.updateNF_PRFById(new_NFPRF._id, new_NFPRF)
       await api.deletePRFById(prf._id)
 
-      alert('deleted successfully')
+      alert('Deleted successfully')
+      window.location.reload()
     } catch (error) {
       alert(error)
     }
