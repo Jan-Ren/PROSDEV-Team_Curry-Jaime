@@ -21,56 +21,9 @@ import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
-import clsx from 'clsx';
-import Fab from '@material-ui/core/Fab';
-import { green } from '@material-ui/core/colors';
-import CheckIcon from '@material-ui/icons/Check';
-import SaveIcon from '@material-ui/icons/Save';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { withStyles } from "@material-ui/core/styles";
 import users from "api/users";
-import { white } from "material-ui/styles/colors";
-
-const styles = (theme) => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 20,
-  },
-  wrapper: {
-    margin: theme.spacing(1),
-    position: 'relative',
-  },
-  buttonSuccess: {
-    backgroundColor: green[500],
-    '&:hover': {
-      backgroundColor: green[700],
-      color: white,
-    },
-    color: white,
-    borderColor: white
-  },
-  fabProgress: {
-    color: green[500],
-    position: 'absolute',
-    top: -6,
-    left: -6,
-    zIndex: 1,
-  },
-  buttonProgress: {
-    color: green[500],
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: -12,
-    marginLeft: -12,
-  },
-});
+import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
 
 class NewPRF extends Component {
 
@@ -92,7 +45,8 @@ class NewPRF extends Component {
       prf_folder: '',
       success: false,
       isLoading: false,
-      open: false
+      open: false,
+      action: 'Save'
     }    
     this.handleChange = this.handleChange.bind(this)
   }
@@ -114,7 +68,8 @@ class NewPRF extends Component {
           conversion_rate,
           prepared_by,
           approved_by,
-          received_by
+          received_by,
+          action: 'Edit'
       })
     } 
     
@@ -288,11 +243,7 @@ class NewPRF extends Component {
       this.setState({ isLoading: false, success: true })    
     }, 1500)
   }
-  render() {
-    const { classes } = this.props;
-    const buttonClassname = clsx({
-      [classes.buttonSuccess]: this.state.success,
-    });
+  render() {    
     return (
       <div className="content">
         <Grid fluid>
@@ -464,7 +415,7 @@ class NewPRF extends Component {
                         }
                       ]}
                     />
-                    <Button pullRight bsStyle="primary" fill type="submit"> Save </Button>
+                    <Button pullRight bsStyle="primary" fill type="submit"> {this.state.action} </Button>
                     <Button pullRight bsStyle="danger" fill onClick={this.props.history.goBack}> Back </Button>
                     
                     <div className="clearfix" />
@@ -475,51 +426,13 @@ class NewPRF extends Component {
               {/* <Backdrop className={classes.backdrop} open={this.state.isLoading}>
                 <CircularProgress color="inherit" />
               </Backdrop> */}
-              <Dialog 
-                open={this.state.open} 
-                maxWidth={'sm'}
-                onClose={this.handleClose}
-              >
-                <DialogTitle id="alert-dialog-title" >{"Message"}</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText id="alert-dialog-description" >
-                    
-                    <div className={classes.root}>
-                      <div className={classes.wrapper}>
-                        <Fab
-                          aria-label="save"
-                          color="inherit"
-                          className={buttonClassname}
-                          onClick={this.handleClose}
-                        >
-                          {this.state.success ? <CheckIcon /> : <SaveIcon />}
-                        </Fab>
-                        {this.state.isLoading && <CircularProgress size={68} className={classes.fabProgress} />}
-                      </div>
-                      {this.state.isLoading ? '' : 'Saved Successfully'}
-                    </div>
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions>
-                    {/* <Button onClick={this.handleClose} className={classes.} autoFocus>
-                      Okay
-                    </Button> */}
-                    <div className={classes.root}>
-                      <div className={classes.wrapper}>
-                        <Button
-                          variant="contained"
-                          color="inherit"
-                          className={buttonClassname}
-                          disabled={this.state.isLoading}
-                          onClick={this.handleClose}
-                          >
-                          Okay
-                        </Button>
-                        {this.state.isLoading && <CircularProgress size={24} className={classes.buttonProgress} />}
-                      </div>
-                    </div>
-                  </DialogActions>
-              </Dialog>
+              <ConfirmationDialog
+                open={this.state.open}
+                handleClose={this.handleClose}
+                success={this.state.success}
+                isLoading={this.state.isLoading}
+                action={this.state.action}
+                />
             </Col>
           </Row>
         </Grid>
@@ -528,4 +441,4 @@ class NewPRF extends Component {
   }
 }
 
-export default withStyles(styles)(NewPRF);
+export default NewPRF;
