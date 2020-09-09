@@ -16,22 +16,60 @@
 
 */
 import React, { Component } from "react";
-import {
-  Grid,
-  Row,
-  Col,
-  FormGroup,
-  ControlLabel,
-  FormControl
-} from "react-bootstrap";
-
+import { Grid, Row, Col, FormGroup, ControlLabel, FormControl } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
-import { AlertErrorOutline } from "material-ui/svg-icons";
-import { withRouter } from 'react-router-dom'
+import clsx from 'clsx';
+import Fab from '@material-ui/core/Fab';
+import { green, white } from '@material-ui/core/colors';
+import CheckIcon from '@material-ui/icons/Check';
+import SaveIcon from '@material-ui/icons/Save';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import { withStyles } from "@material-ui/core/styles";
 import users from "api/users";
+
+const styles = (theme) => ({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    fontSize: 20,
+  },
+  wrapper: {
+    margin: theme.spacing(1),
+    position: 'relative',
+  },
+  buttonSuccess: {
+    backgroundColor: green[500],
+    '&:hover': {
+      backgroundColor: green[700],
+      color: white,
+    },
+    color: white,
+    borderColor: white
+  },
+  fabProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: -6,
+    left: -6,
+    zIndex: 1,
+  },
+  buttonProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
+});
 
 class NewPRF extends Component {
 
@@ -51,6 +89,9 @@ class NewPRF extends Component {
       approved_by: '',
       received_by: '',
       prf_folder: '',
+      success: false,
+      isLoading: false,
+      open: false
     }    
     this.handleChange = this.handleChange.bind(this)
   }
@@ -59,7 +100,7 @@ class NewPRF extends Component {
     // edit PRF
     if (this.props.location.state) {
       console.log(this.props.location.state.PRF)
-      alert('waw')
+      // alert('waw')
       const { prf_number, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = this.props.location.state.PRF
       this.setState({
           prf_number,
@@ -81,9 +122,9 @@ class NewPRF extends Component {
       const prf_number = await this.getCurrentPRF()
     
       console.log(prf_number)
-      alert(prf_number)
+      // alert(prf_number)
       console.log(this.props.location)
-      alert('daz weird')
+      // alert('daz weird')
       this.setState({
           prf_number,
           pax:[''],
@@ -117,6 +158,11 @@ class NewPRF extends Component {
       alert(error)
     }
   }
+
+  handleClose = (e) => {
+    this.setState({ success:false });
+    window.history.go(-1)
+  };
 
   addName(){
     this.setState({pax: [...this.state.pax, ""]})
@@ -169,6 +215,7 @@ class NewPRF extends Component {
   }
   handleSave = async (e) => {
     e.preventDefault()
+    this.setState({ isLoading: true, open: true })
     const payload = {...this.state}
     payload.prf_folder = this.state.prf_folder._id
     // alert('here')
@@ -179,7 +226,7 @@ class NewPRF extends Component {
       payload.date_created = date_created
 
       try {
-        alert('editing please wait')
+        // alert('editing please wait')
         await api.updatePRFById(_id, payload)
 
         this.setState({
@@ -196,7 +243,7 @@ class NewPRF extends Component {
           received_by: ''
         })
 
-        alert("edit done")
+        // alert("edit done")
       } catch (error) {
         console.log(error.message)
         alert(`Editing failed: ${error.message}`)
@@ -207,12 +254,12 @@ class NewPRF extends Component {
     // new PRF
     else {
       console.log(this.state)
-      alert("saving please wait")      
+      // alert("saving please wait")      
       try {
         const prf_id = await (await api.insertPRF(payload)).data.id
         const { prf_folder } = this.state
         console.log(prf_folder)
-        alert(prf_folder)
+        // alert(prf_folder)
         prf_folder.prf.push(prf_id)
         await api.updateNF_PRFById(prf_folder._id, prf_folder)
         this.setState({
@@ -229,17 +276,22 @@ class NewPRF extends Component {
           received_by: '',
         })
         
-        alert("saving done")
+        // alert("saving done")
         
       } catch (error) {
         console.log(error.message)
         alert(error.message)
       }
     }
-    
-    window.history.go(-1)
+    setTimeout(() => {
+      this.setState({ isLoading: false, success: true })    
+    }, 1500)
   }
   render() {
+    const { classes } = this.props;
+    const buttonClassname = clsx({
+      [classes.buttonSuccess]: this.state.success,
+    });
     return (
       <div className="content">
         <Grid fluid>
@@ -418,6 +470,55 @@ class NewPRF extends Component {
                   </form>
                 }
               />
+              
+              {/* <Backdrop className={classes.backdrop} open={this.state.isLoading}>
+                <CircularProgress color="inherit" />
+              </Backdrop> */}
+              <Dialog 
+                open={this.state.open} 
+                maxWidth={'sm'}
+                onClose={this.handleClose}
+              >
+                <DialogTitle id="alert-dialog-title" >{"Message"}</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description" >
+                    
+                    <div className={classes.root}>
+                      <div className={classes.wrapper}>
+                        <Fab
+                          aria-label="save"
+                          color="inherit"
+                          className={buttonClassname}
+                          onClick={this.handleClose}
+                        >
+                          {this.state.success ? <CheckIcon /> : <SaveIcon />}
+                        </Fab>
+                        {this.state.isLoading && <CircularProgress size={68} className={classes.fabProgress} />}
+                      </div>
+                      {this.state.isLoading ? '' : 'Saved Successfully'}
+                    </div>
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    {/* <Button onClick={this.handleClose} className={classes.} autoFocus>
+                      Okay
+                    </Button> */}
+                    <div className={classes.root}>
+                      <div className={classes.wrapper}>
+                        <Button
+                          variant="contained"
+                          color="inherit"
+                          className={buttonClassname}
+                          disabled={this.state.isLoading}
+                          onClick={this.handleClose}
+                          >
+                          Okay
+                        </Button>
+                        {this.state.isLoading && <CircularProgress size={24} className={classes.buttonProgress} />}
+                      </div>
+                    </div>
+                  </DialogActions>
+              </Dialog>
             </Col>
           </Row>
         </Grid>
@@ -426,4 +527,4 @@ class NewPRF extends Component {
   }
 }
 
-export default withRouter(NewPRF);
+export default withStyles(styles)(NewPRF);

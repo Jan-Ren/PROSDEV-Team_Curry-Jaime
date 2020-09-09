@@ -47,7 +47,7 @@ class POTableList extends Component {
     if (this.props.location.state) {
       const { PO, NF_PO } = this.props.location.state
       this.setState({ NF_PO })
-      alert(PO.length)
+      // alert(PO.length)
 
       try {
         let po = PO.map(async po_reference => {
