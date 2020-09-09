@@ -26,6 +26,8 @@ import DateInput from "components/DatePicker/DatePicker.jsx"
 import api from '../api'
 import moment from 'moment'
 import users from "api/users";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
 
 class PRFTableList extends Component {
 
@@ -36,12 +38,16 @@ class PRFTableList extends Component {
         PRF: [],
         columns: [],
         isLoading: false,
+        NF_PRF: {},
+        open: false,
+        success: false
     }    
     this.handleCancel = this.handleCancel.bind(this)
   }
   
   componentDidMount = async () => {
 
+    this.setState({ loading: true })
     try {
       const token = window.localStorage.getItem('token')
       const workingDirectory = await (await users.getUser({ token })).data.data.prf_folder
@@ -56,9 +62,10 @@ class PRFTableList extends Component {
 
       prf = await Promise.all(prf)
 
-      this.setState({ PRF: prf})
+      this.setState({ PRF: prf, NF_PRF: folder })
 
       console.log(this.state.PRF)
+      this.setState({ loading: false })
     } catch (error) {
       
     }
@@ -66,19 +73,22 @@ class PRFTableList extends Component {
   }
 
   handleCancel = async (prf) => {
-
+    this.setState({ isLoading: true, open: true, action: 'Cancel' })
     console.log(prf)
-    alert(prf._id)
+    // alert(prf._id)
     prf.is_cancelled = true
     try {
       const res = await api.updatePRFById(prf._id, prf)
-      alert(prf.po.length)
+      // alert(prf.po.length)
       prf.po.map(async po_id => {
         const po = await (await api.cancelPOById(po_id)).data.data
-        alert(po.is_cancelled)
+        // alert(po.is_cancelled)
       })
       console.log(res.data)
-      alert("Cancelled")
+      // alert("Cancelled")
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1500)
     } catch (error) {
       alert(error)
     }    
@@ -89,6 +99,11 @@ class PRFTableList extends Component {
       return <Redirect to="/PRF-List-Folders" />
   }
   
+  handleClose = () => {
+    this.setState({ open:false });
+    window.location.reload()
+  }
+  
   render() {
     return (
       <div className="content">
@@ -97,7 +112,7 @@ class PRFTableList extends Component {
           <Row>
             <Col md={12}>
               <Card
-                title="PRF List"
+                title={this.state.NF_PRF.nf_prf_number ? `PRF ${this.state.NF_PRF.nf_prf_number}` : "PRF"}
                 ctTableFullWidth
                 ctTableResponsive
                 content={
@@ -122,40 +137,51 @@ class PRFTableList extends Component {
                     </Form>
                   </Col>
                   <div>
+                  {
+                    this.state.loading ?
+                    <div style={{padding: "100px 0", textAlign: "center"}}>
+                        <CircularProgress />
+                    </div> : 
 
-                  <Table striped hover>
-                    <thead>
-                      <tr>
-                        {prfHArray.map((prop, key) => {
-                          return <th key={key}>{prop}</th>;
+                    <Table striped hover>
+                      <thead>
+                        <tr>
+                          {prfHArray.map((prop, key) => {
+                            return <th key={key}>{prop}</th>;
+                          })}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.state.PRF.map((prop, key) => {
+                          return (
+                            <tr key={key}>
+                              
+                              <td key={key+1}>{prop.prf_number}</td>
+                              <td key={key+2}>{prop.recipient}</td>
+                              <td key={key+4}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                              <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                              <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                              <td>
+                                  <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                                  <></>
+                                  <Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"}} } style={{ color: "inherit"}} ><Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-look" />New PO</Button>{' '}</Link>
+                                  <></>
+                                  <Link to={{pathname: '/create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button></Link>
+                              </td>
+                            </tr>
+                          );
                         })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {this.state.PRF.map((prop, key) => {
-                        return (
-                          <tr key={key}>
-                            
-                            <td key={key+1}>{prop.prf_number}</td>
-                            <td key={key+2}>{prop.recipient}</td>
-                            <td key={key+4}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
-                            <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                            <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                            <td>
-                                <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
-                                <></>
-
-                                <Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"}} } style={{ color: "inherit"}} ><Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-look" />New PO</Button>{' '}</Link>
-                                <></>
-                                <Link to={{pathname: '/create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button></Link>
-
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                    
-                  </Table>
+                      </tbody>
+                      
+                    </Table>
+                  }
+                  <ConfirmationDialog
+                    open={this.state.open}
+                    handleClose={this.handleClose}
+                    success={this.state.success}
+                    isLoading={this.state.isLoading}
+                    action={this.state.action}
+                    />
                   </div>
                 
                   </React.Fragment>

@@ -32,6 +32,7 @@ import api from '../api'
 import { AlertErrorOutline } from "material-ui/svg-icons";
 import { withRouter } from 'react-router-dom'
 import users from "api/users";
+import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
 
 class NewPO extends Component {
 
@@ -51,7 +52,9 @@ class NewPO extends Component {
         prepared_by: '',
         approved_by: '',
         received_by: '',
-        po_folder: ''
+        po_folder: '',
+        open: false,
+        action: "Save"
     }
     
     this.handleChange = this.handleChange.bind(this)
@@ -62,7 +65,7 @@ class NewPO extends Component {
       
       // edit PO
       if (this.props.location.state.action === "edit") {
-        alert('waw')
+        // alert('waw')
         const { prf, po_number, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = this.props.location.state.PO
         this.setState({
             po_number,
@@ -82,7 +85,7 @@ class NewPO extends Component {
       
       // new PO
       else if (this.props.location.state.action === "new") {
-          alert('daz weird')
+          // alert('daz weird')
           // PRF
           const prf = this.props.location.state.PRF
           const po_number = await this.getCurrentPO()
@@ -107,7 +110,7 @@ class NewPO extends Component {
     else {
       console.log(this.props.location)
       this.props.history.goBack()
-      alert('bawal yan, punta ka muna PRF')
+      // alert('bawal yan, punta ka muna PRF')
       // this.props.history.push('/employee/PRF-List')
       
     }
@@ -175,6 +178,11 @@ class NewPO extends Component {
     
   }
 
+  handleClose = (e) => {
+    this.setState({ open:false });
+    window.history.go(-1)
+  };
+
   handleRemove(e, index){
     e.preventDefault()
     this.state.pax.splice(index,1)
@@ -183,16 +191,17 @@ class NewPO extends Component {
   }
   handleSave = async (e) => {
     e.preventDefault()
+    this.setState({ isLoading: true, open: true  })
     const payload = {...this.state}
     payload.po_folder = this.state.po_folder._id
     
     console.log(this.state)
     if (this.props.location.state.action === "edit") {        
       const { _id, date_created } = this.props.location.state.PO
-      alert(_id)
+      // alert(_id)
       payload.date_created = date_created
       try {
-        alert('editing please wait')
+        // alert('editing please wait')
         await api.updatePOById(_id, payload).then(res => {
           this.setState({
             po_number: '',
@@ -209,7 +218,11 @@ class NewPO extends Component {
             received_by: ''
           })
         })
-        alert("edit done")
+        // alert("edit done")
+        setTimeout(() => {
+          this.setState({ isLoading: false, success: true })
+        }, 1500)
+
       } catch (error) {
         console.log(error.message)
         alert(`Editing failed: ${error.message}`)
@@ -229,7 +242,7 @@ class NewPO extends Component {
         await api.updateNF_POById(po_folder._id, po_folder)
         const newprf = await (await api.updatePRFById(prf._id, prf)).data
         console.log(newprf)
-        alert(newprf)
+        // alert(newprf)
         
 
         this.setState({
@@ -247,14 +260,18 @@ class NewPO extends Component {
           received_by: ''
         })
 
-        alert("saving done")
+        // alert("saving done")
+        setTimeout(() => {
+          this.setState({ isLoading: false, success: true })
+        }, 1500)
+
       } catch (error) {
         console.log(error.message)
         alert(error.message)
       }      
 
     } 
-    window.history.go(-1)
+    // window.history.go(-1)
   }
   render() {
     return (
@@ -445,6 +462,13 @@ class NewPO extends Component {
                   </form>
                 }
               />
+              <ConfirmationDialog
+                open={this.state.open}
+                handleClose={this.handleClose}
+                success={this.state.success}
+                isLoading={this.state.isLoading}
+                action={this.state.action}
+                />
             </Col>
           </Row>
         </Grid>
@@ -453,4 +477,4 @@ class NewPO extends Component {
   }
 }
 
-export default withRouter(NewPO);
+export default NewPO;

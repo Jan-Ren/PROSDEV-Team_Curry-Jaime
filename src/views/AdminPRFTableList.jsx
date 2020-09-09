@@ -26,6 +26,8 @@ import DateInput from "components/DatePicker/DatePicker.jsx"
 import api from '../api'
 import moment from 'moment'
 import users from "api/users";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
 
 class PRFTableList extends Component {
 
@@ -38,20 +40,24 @@ class PRFTableList extends Component {
         NF_PO: {},
         columns: [],
         isLoading: false,
+        open: false,
+        success: false
     }
 
     this.handleCancel = this.handleCancel.bind(this)
   }
   
   componentDidMount = async () => {
+    this.setState({ loading: true })
 
     if (this.props.location.state) {
 
       try {
-        const { PRF, NF_PRF } = this.props.location.state
-        this.setState({ NF_PRF }, () => console.log(this.state.NF_PRF) )
+        const { NF_PRF_id } = this.props.location.state
+        const nf_prf = await (await api.getNF_PRFById(NF_PRF_id)).data.data
+        this.setState({ NF_PRF: nf_prf }, () => console.log(this.state.NF_PRF) )
   
-        let prf = PRF.map(async prf_reference => {
+        let prf = this.state.NF_PRF.prf.map(async prf_reference => {
           const prf = await (await api.getPRFById(prf_reference)).data.data
           console.log(prf)
           return prf
@@ -59,9 +65,9 @@ class PRFTableList extends Component {
   
         prf = await Promise.all(prf)
   
-        this.setState({ PRF: prf}, () => console.log(this.state.PRF) )
+        this.setState({ PRF: prf, loading: false }, () => console.log(this.state.PRF) )
   
-        const user = await (await users.getUser({ token: window.localStorage.getItem('token')})).data.data
+        // const user = await (await users.getUser({ token: window.localStorage.getItem('token')})).data.data
         
         // const NF_PO = await (await api.getNF_POById(user.po_folder)).data.data
         // this.setState({ NF_PO }, () => console.log(this.state.NF_PO))
@@ -77,19 +83,23 @@ class PRFTableList extends Component {
   }
 
   handleCancel = async (prf) => {
-
+    this.setState({ isLoading: true, open: true, action: 'Cancel' })
     console.log(prf)
-    alert(prf._id)
+    // alert(prf._id)
     prf.is_cancelled = true
+    prf.last_modified = Date.now()
     try {
       const res = await api.updatePRFById(prf._id, prf)
-      alert(prf.po.length)
+      // alert(prf.po.length)
       prf.po.map(async po_id => {
         const po = await (await api.cancelPOById(po_id)).data.data
-        alert(po.is_cancelled)
+        // alert(po.is_cancelled)
       })
       console.log(res.data)
-      alert("Cancelled")
+      // alert("Success")
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1500)
     } catch (error) {
       alert(error)
     }    
@@ -97,14 +107,15 @@ class PRFTableList extends Component {
 
   handleDelete = async (prf) => {
     try {      
-      alert(prf.po.length)
+      // alert(prf.po.length)
       
       // const new_NFPO = {...this.state.NF_PO}
       // alert(`not yet deleted ${new_NFPO.po.length}`)
       // remove all po's of prf from db and from nf_po
+      this.setState({ isLoading: true, open: true, action: 'Delete' })
       let temp = prf.po.map(async po_id => {
         try {          
-          alert(po_id)
+          // alert(po_id)
           // get po's folder id
           const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
           // get po folder
@@ -115,7 +126,7 @@ class PRFTableList extends Component {
   
           await api.deletePOById(po_id)
           await api.updateNF_POById(NFPO_id, NFPO)
-          // this.setState({ NF_PO: new_NFPO })
+          
         } catch (error) {
           console.log(`hehe ${error}`)
           alert(error)
@@ -126,7 +137,7 @@ class PRFTableList extends Component {
       // alert(`should be deleted ${new_NFPO.po.length}`)
       // await api.updateNF_POById(new_NFPO._id, new_NFPO)
 
-      alert(prf._id)
+      // alert(prf._id)
 
       const new_NFPRF = {...this.state.NF_PRF}
       const index = new_NFPRF.prf.indexOf(prf._id)
@@ -135,7 +146,9 @@ class PRFTableList extends Component {
       await api.updateNF_PRFById(new_NFPRF._id, new_NFPRF)
       await api.deletePRFById(prf._id)
 
-      alert('deleted successfully')
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1500)
     } catch (error) {
       alert(error)
     }
@@ -144,6 +157,11 @@ class PRFTableList extends Component {
   handleRedirect = () => {
     if (this.state.redirect)
       return <Redirect to="/admin/PRF-List-Folders" />
+  }
+
+  handleClose = () => {
+    this.setState({ open:false });
+    window.location.reload()
   }
   
   render() {
@@ -154,7 +172,7 @@ class PRFTableList extends Component {
           <Row>
             <Col md={12}>
               <Card
-                title="PRF List"
+                title={this.state.NF_PRF.nf_prf_number ? `PRF ${this.state.NF_PRF.nf_prf_number}` : "PRF"}
                 ctTableFullWidth
                 ctTableResponsive
                 content={
@@ -179,40 +197,53 @@ class PRFTableList extends Component {
                     </Form>
                   </Col>
                   <div>
+                  {
+                    this.state.loading ?
+                    <div style={{padding: "100px 0", textAlign: "center"}}>
+                        <CircularProgress />
+                    </div> : 
 
-                  <Table striped hover>
-                    <thead>
-                      <tr>
-                        {prfHArray.map((prop, key) => {
-                          return <th key={key}>{prop}</th>;
+                    <Table striped hover>
+                      <thead>
+                        <tr>
+                          {prfHArray.map((prop, key) => {
+                            return <th key={key}>{prop}</th>;
+                          })}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.state.PRF.map((prop, key) => {
+                          return (
+                            <tr key={key}>
+                              
+                              <td key={key+1}>{prop.prf_number}</td>
+                              <td key={key+2}>{prop.recipient}</td>
+                              <td key={key+4}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                              <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                              <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                              <td>
+                                  <Link to={{pathname: '/create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
+                                  <></>
+                                  <Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"} }} style={{ color: "inherit"}} ><Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-look" />New PO</Button>{' '}</Link>
+                                  <></>
+                                  <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                                  <></>
+                                  <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
+                              </td>
+                            </tr>
+                          );
                         })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {this.state.PRF.map((prop, key) => {
-                        return (
-                          <tr key={key}>
-                            
-                            <td key={key+1}>{prop.prf_number}</td>
-                            <td key={key+2}>{prop.recipient}</td>
-                            <td key={key+4}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
-                            <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                            <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                            <td>
-                                <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
-                                <></>
-                                <Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"} }} style={{ color: "inherit"}} ><Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-look" />New PO</Button>{' '}</Link>
-                                <></>
-                                <Link to={{pathname: '/create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
-                                <></>
-                                <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                    
-                  </Table>
+                      </tbody>
+
+                    </Table>
+                  }
+                  <ConfirmationDialog
+                    open={this.state.open}
+                    handleClose={this.handleClose}
+                    success={this.state.success}
+                    isLoading={this.state.isLoading}
+                    action={this.state.action}
+                    />
                   </div>
                 
                   </React.Fragment>

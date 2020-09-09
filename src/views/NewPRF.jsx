@@ -16,22 +16,13 @@
 
 */
 import React, { Component } from "react";
-import {
-  Grid,
-  Row,
-  Col,
-  FormGroup,
-  ControlLabel,
-  FormControl
-} from "react-bootstrap";
-
+import { Grid, Row, Col, FormGroup, ControlLabel, FormControl } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
-import { AlertErrorOutline } from "material-ui/svg-icons";
-import { withRouter } from 'react-router-dom'
 import users from "api/users";
+import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
 
 class NewPRF extends Component {
 
@@ -51,6 +42,10 @@ class NewPRF extends Component {
       approved_by: '',
       received_by: '',
       prf_folder: '',
+      success: false,
+      isLoading: false,
+      open: false,
+      action: 'Save'
     }    
     this.handleChange = this.handleChange.bind(this)
   }
@@ -59,7 +54,7 @@ class NewPRF extends Component {
     // edit PRF
     if (this.props.location.state) {
       console.log(this.props.location.state.PRF)
-      alert('waw')
+      // alert('waw')
       const { prf_number, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = this.props.location.state.PRF
       this.setState({
           prf_number,
@@ -72,7 +67,7 @@ class NewPRF extends Component {
           conversion_rate,
           prepared_by,
           approved_by,
-          received_by
+          received_by,
       })
     } 
     
@@ -81,9 +76,9 @@ class NewPRF extends Component {
       const prf_number = await this.getCurrentPRF()
     
       console.log(prf_number)
-      alert(prf_number)
+      // alert(prf_number)
       console.log(this.props.location)
-      alert('daz weird')
+      // alert('daz weird')
       this.setState({
           prf_number,
           pax:[''],
@@ -117,6 +112,11 @@ class NewPRF extends Component {
       alert(error)
     }
   }
+
+  handleClose = (e) => {
+    this.setState({ open:false });
+    window.history.go(-1)
+  };
 
   addName(){
     this.setState({pax: [...this.state.pax, ""]})
@@ -169,6 +169,7 @@ class NewPRF extends Component {
   }
   handleSave = async (e) => {
     e.preventDefault()
+    this.setState({ isLoading: true, open: true })
     const payload = {...this.state}
     payload.prf_folder = this.state.prf_folder._id
     // alert('here')
@@ -179,7 +180,7 @@ class NewPRF extends Component {
       payload.date_created = date_created
 
       try {
-        alert('editing please wait')
+        // alert('editing please wait')
         await api.updatePRFById(_id, payload)
 
         this.setState({
@@ -195,8 +196,11 @@ class NewPRF extends Component {
           approved_by: '',
           received_by: ''
         })
+        // alert("edit done")
+        setTimeout(() => {
+          this.setState({ isLoading: false, success: true })
+        }, 1500)
 
-        alert("edit done")
       } catch (error) {
         console.log(error.message)
         alert(`Editing failed: ${error.message}`)
@@ -207,12 +211,12 @@ class NewPRF extends Component {
     // new PRF
     else {
       console.log(this.state)
-      alert("saving please wait")      
+      // alert("saving please wait")      
       try {
         const prf_id = await (await api.insertPRF(payload)).data.id
         const { prf_folder } = this.state
         console.log(prf_folder)
-        alert(prf_folder)
+        // alert(prf_folder)
         prf_folder.prf.push(prf_id)
         prf_folder.total_documents = prf_folder.total_documents + 1
         await api.updateNF_PRFById(prf_folder._id, prf_folder)
@@ -230,17 +234,18 @@ class NewPRF extends Component {
           received_by: '',
         })
         
-        alert("saving done")
+        // alert("saving done")
+        setTimeout(() => {
+          this.setState({ isLoading: false, success: true })    
+        }, 1500)
         
       } catch (error) {
         console.log(error.message)
         alert(error.message)
       }
     }
-    
-    window.history.go(-1)
   }
-  render() {
+  render() {    
     return (
       <div className="content">
         <Grid fluid>
@@ -412,13 +417,24 @@ class NewPRF extends Component {
                         }
                       ]}
                     />
-                    <Button pullRight bsStyle="primary" fill type="submit"> Save </Button>
+                    <Button pullRight bsStyle="primary" fill type="submit"> {this.state.action} </Button>
                     <Button pullRight bsStyle="danger" fill onClick={this.props.history.goBack}> Back </Button>
                     
                     <div className="clearfix" />
                   </form>
                 }
               />
+              
+              {/* <Backdrop className={classes.backdrop} open={this.state.isLoading}>
+                <CircularProgress color="inherit" />
+              </Backdrop> */}
+              <ConfirmationDialog
+                open={this.state.open}
+                handleClose={this.handleClose}
+                success={this.state.success}
+                isLoading={this.state.isLoading}
+                action={this.state.action}
+                />
             </Col>
           </Row>
         </Grid>
@@ -427,4 +443,4 @@ class NewPRF extends Component {
   }
 }
 
-export default withRouter(NewPRF);
+export default NewPRF;

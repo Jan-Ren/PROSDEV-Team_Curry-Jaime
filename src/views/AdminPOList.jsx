@@ -112,9 +112,9 @@ class POListFolders extends Component {
                                     <td key={key}>{prop.nf_po_number}</td>
 
                                     <td>
-                                    <Button variant="outline-secondary" bsStyle="warning" className="pull-right"><i className="pe-7s-close-circle"/>Cancel</Button>
+                                    <Button variant="outline-secondary" bsStyle="danger" className="pull-right"><i className="pe-7s-close-circle"/>Delete</Button>
                                     <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
-                                    <Link to={{pathname: '/admin/PO-List', state: {PO: prop.po, NF_PO: prop} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
+                                    <Link to={{pathname: '/admin/PO-List', state: {NF_PO_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
                                     </td>
                                 </tr>
                                 

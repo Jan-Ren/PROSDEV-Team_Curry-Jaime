@@ -23,8 +23,9 @@ import Card from "components/Card/Card.jsx";
 import { poHArray, poDArray } from "variables/Variables.jsx";
 import api from '../api'
 import moment from 'moment'
+import CircularProgress from '@material-ui/core/CircularProgress';
 //import { filter } from "core-js/fn/dict";
-
+import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
 
 class POTableList extends Component {
 
@@ -35,21 +36,24 @@ class POTableList extends Component {
         NF_PO: {},
         columns: [],
         isLoading: false,
+        open: false,
+        success: false
     }
 
     this.handleCancel = this.handleCancel.bind(this)
   }
   
   componentDidMount = async () => {
-    this.setState({ isLoading: true })
+    this.setState({ loading: true })
     
     if (this.props.location.state) {
-      const { PO, NF_PO } = this.props.location.state
-      this.setState({ NF_PO })
-      alert(PO.length)
+      const { NF_PO_id } = this.props.location.state
+      const nf_po = await (await api.getNF_POById(NF_PO_id)).data.data
+      this.setState({ NF_PO: nf_po })
+      // alert(PO.length)
 
       try {
-        let po = PO.map(async po_reference => {
+        let po = this.state.NF_PO.po.map(async po_reference => {
           try {
             const po = await (await api.getPOById(po_reference)).data.data
             console.log(po)
@@ -81,7 +85,7 @@ class POTableList extends Component {
           }
         })
   
-        this.setState({ PO: po})
+        this.setState({ PO: po, loading: false})
         
       } catch (error) {
         console.log(error.message)
@@ -100,14 +104,18 @@ class POTableList extends Component {
   }
   
   handleCancel = async (po) => {
-
+    this.setState({ isLoading: true, open: true, action: 'Cancel' })
     console.log(po)
-    alert(po._id)
+    // alert(po._id)
     po.is_cancelled = true
+    po.last_modified = Date.now()
     try {
       const res = await api.updatePOById(po._id, po)
       console.log(res.data)
-      alert("Cancelled")
+      // alert("Success")
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1500)
     } catch (error) {
       alert(error)
     }
@@ -115,7 +123,7 @@ class POTableList extends Component {
 
   handleDelete = async (po) => {
     try {
-      
+      this.setState({ isLoading: true, open: true, action: 'Delete' })
       const new_NFPO = {...this.state.NF_PO}
       let index = new_NFPO.po.indexOf(po._id)
       new_NFPO.po.splice(index, 1)      
@@ -127,13 +135,20 @@ class POTableList extends Component {
       await api.updatePRFById(prf._id, prf)      
       
       await api.deletePOById(po._id)
-
-      alert('deleted successfully')
+      
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1500)
     } catch (error) {
       alert(error)
     }
   }
 
+  handleClose = () => {
+    this.setState({ open:false });
+    window.location.reload()
+  }
+  
   render() {
     return (
       <div className="content">
@@ -142,7 +157,7 @@ class POTableList extends Component {
           <Row>
             <Col md={12}>
             <Card
-                title="PO List"
+                title={this.state.NF_PO.nf_po_number ? `PO ${this.state.NF_PO.nf_po_number}` : 'PO'}
                 ctTableFullWidth
                 ctTableResponsive
                 content={
@@ -167,40 +182,60 @@ class POTableList extends Component {
                         </InputGroup>                        
                     </Form>
                   </Col>
+                    {
+                      this.state.loading ?
+                      <div style={{padding: "100px 0", textAlign: "center"}}>
+                        <CircularProgress />
+                      </div> : 
 
-                    <Table striped hover>
-                    <thead>
-                      <tr>
-                        {poHArray.map((prop, key) => {
-                          return <th key={key}>{prop}</th>;
-                        })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {this.state.PO.map((prop, key) => {
-                        return (
-                          <tr key={key}>
-                            {/* {prop.map((prop, key) => {
-                              return <td key={key}>{prop}</td>;
-                            })} */}
-                            <td key={key+1}>{prop.po_number}</td>
-                            <td key={key+2}>{prop.recipient}</td>
-                            <td key={key+3}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
-                            <td key={key+4}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
-                            <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                            <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                            <td>
-                              <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
-                              <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
-                              <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
-                            </td>
+                      <Table striped hover>
+                        <thead>
+                          <tr>
+                            {poHArray.map((prop, key) => {
+                              return <th key={key}>{prop}</th>;
+                            })}
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  
-                  </Table>
+                        </thead>
+                        <tbody>
+                          {                        
+                            !this.state.PO.length ?
+                              <p>
+                                This list is empty.
+                              </p>
+                            :
+                            this.state.PO.map((prop, key) => {
+                              return (
+                                <tr key={key}>
+                                  {/* {prop.map((prop, key) => {
+                                    return <td key={key}>{prop}</td>;
+                                  })} */}
+                                  <td key={key+1}>{prop.po_number}</td>
+                                  <td key={key+2}>{prop.recipient}</td>
+                                  <td key={key+3}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                                  <td key={key+4}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
+                                  <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                  <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                  <td>
+                                    <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
+                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                                    <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
+                                  </td>
+                                </tr>
+                              );
+                          })}
+                        </tbody>
+
+                      </Table>
+                    }
                     
+                    <ConfirmationDialog
+                    open={this.state.open}
+                    handleClose={this.handleClose}
+                    success={this.state.success}
+                    isLoading={this.state.isLoading}
+                    action={this.state.action}
+                    />
+
                   </div>
                 }
               />
