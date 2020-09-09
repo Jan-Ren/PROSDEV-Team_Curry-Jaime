@@ -21,7 +21,6 @@ import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
-import CircularProgress from '@material-ui/core/CircularProgress';
 import users from "api/users";
 import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
 
