@@ -25,7 +25,7 @@ import api from '../api'
 import moment from 'moment'
 import users from "api/users";
 //import { filter } from "core-js/fn/dict";
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 class POTableList extends Component {
 
@@ -74,7 +74,7 @@ class POTableList extends Component {
         }
       })
 
-      this.setState({ PO: po, NF_PO: folder})
+      this.setState({ PO: po, NF_PO: folder, isLoading: false })
     } catch (error) {
       
     }
@@ -133,38 +133,44 @@ class POTableList extends Component {
                         </InputGroup>                        
                     </Form>
                   </Col>
+                    {
+                      this.state.isLoading ?
+                      <div style={{padding: "100px 0", textAlign: "center"}}>
+                        <CircularProgress />
+                      </div> : 
 
-                    <Table striped hover>
-                    <thead>
-                      <tr>
-                        {poHArray.map((prop, key) => {
-                          return <th key={key}>{prop}</th>;
-                        })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {this.state.PO.map((prop, key) => {
-                        return (
-                          <tr key={key}>
-                            {/* {prop.map((prop, key) => {
-                              return <td key={key}>{prop}</td>;
-                            })} */}
-                            <td key={key+1}>{prop.po_number}</td>
-                            <td key={key+2}>{prop.recipient}</td>
-                            <td key={key+3}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
-                            <td key={key+4}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
-                            <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                            <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                            <td>
-                              <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
-                              <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button></Link>
-                            </td>
+                      <Table striped hover>
+                        <thead>
+                          <tr>
+                            {poHArray.map((prop, key) => {
+                              return <th key={key}>{prop}</th>;
+                            })}
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  
-                  </Table>
+                        </thead>
+                        <tbody>
+                          {this.state.PO.map((prop, key) => {
+                            return (
+                              <tr key={key}>
+                                {/* {prop.map((prop, key) => {
+                                  return <td key={key}>{prop}</td>;
+                                })} */}
+                                <td key={key+1}>{prop.po_number}</td>
+                                <td key={key+2}>{prop.recipient}</td>
+                                <td key={key+3}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                                <td key={key+4}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
+                                <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                <td>
+                                  <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                                  <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button></Link>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      
+                      </Table>
+                    }
                     
                   </div>
                 }
