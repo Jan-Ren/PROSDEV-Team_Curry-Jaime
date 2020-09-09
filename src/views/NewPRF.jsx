@@ -105,7 +105,7 @@ class NewPRF extends Component {
       
       const workingDirectory = await (await api.getNF_PRFById(user.prf_folder)).data.data
       this.setState({ prf_folder: workingDirectory }, () => console.log(this.state.prf_folder))
-      return (workingDirectory.nf_prf_number*1000) + workingDirectory.prf.length
+      return (workingDirectory.nf_prf_number*1000) + workingDirectory.total_documents
 
     } catch (error) {
       console.log(error)
@@ -218,6 +218,7 @@ class NewPRF extends Component {
         console.log(prf_folder)
         // alert(prf_folder)
         prf_folder.prf.push(prf_id)
+        prf_folder.total_documents = prf_folder.total_documents + 1
         await api.updateNF_PRFById(prf_folder._id, prf_folder)
         this.setState({
           prf_number: '',

@@ -127,7 +127,7 @@ class NewPO extends Component {
       
       this.setState({ po_folder: workingDirectory })
 
-      return (workingDirectory.nf_po_number*1000) + workingDirectory.po.length
+      return (workingDirectory.nf_po_number*1000) + workingDirectory.total_documents
 
     } catch (error) {
       console.log(error)
@@ -237,6 +237,7 @@ class NewPO extends Component {
         const po_id = await (await api.insertPO(payload)).data.id
         prf.po.push(po_id)
         po_folder.po.push(po_id)
+        po_folder.total_documents = po_folder.total_documents + 1
 
         await api.updateNF_POById(po_folder._id, po_folder)
         const newprf = await (await api.updatePRFById(prf._id, prf)).data

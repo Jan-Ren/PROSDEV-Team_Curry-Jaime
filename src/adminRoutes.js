@@ -18,6 +18,9 @@
 
 import AdminPOListFolders from "views/AdminPOList.jsx";
 import AdminPRFListFolders from "views/AdminPRFList.jsx";
+import AdminCancelledPRF from "views/AdminCancelledPRF.jsx";
+import AdminCancelledPO from "views/AdminCancelledPO.jsx";
+import Settings from "views/Settings.jsx";
 import Login from "./components/Login/login.component.js";
 import NewPRF from "views/NewPRF.jsx";
 
@@ -43,6 +46,27 @@ const adminDashboardRoutes = [
     icon: "pe-7s-plus",
     component: NewPRF,
     layout: "/create"
+  },
+  {
+    NewPRF: true,
+    path: "/Cancelled-PRF",
+    name: " Cancelled PRF",
+    component: AdminCancelledPRF,
+    layout: "/admin"
+  },
+  {
+    NewPRF: true,
+    path: "/Cancelled-PO",
+    name: "  Cancelled PO ",
+    component: AdminCancelledPO,
+    layout: "/admin"
+  },
+  {
+    path: "/Settings",
+    name: " Settings ",
+    component: Settings,
+    icon: "pe-7s-config",
+    layout: "/admin"
   },
   {
     logout: true,
