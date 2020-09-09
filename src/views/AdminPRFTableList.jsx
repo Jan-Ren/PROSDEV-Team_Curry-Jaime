@@ -25,6 +25,7 @@ import { prfHArray, prfDArray } from "variables/Variables.jsx";
 import DateInput from "components/DatePicker/DatePicker.jsx"
 import api from '../api'
 import moment from 'moment'
+import users from "api/users";
 
 class PRFTableList extends Component {
 
@@ -33,6 +34,8 @@ class PRFTableList extends Component {
 
       this.state = {
         PRF: [],
+        NF_PRF: {},
+        NF_PO: {},
         columns: [],
         isLoading: false,
     }
@@ -44,19 +47,30 @@ class PRFTableList extends Component {
 
     if (this.props.location.state) {
 
-      let prf = this.props.location.state.PRF.map(async prf_reference => {
-        if (this.props.location.state.PRF) {
+      try {
+        const { PRF, NF_PRF } = this.props.location.state
+        this.setState({ NF_PRF }, () => console.log(this.state.NF_PRF) )
+  
+        let prf = PRF.map(async prf_reference => {
           const prf = await (await api.getPRFById(prf_reference)).data.data
           console.log(prf)
           return prf
-        }
-      })
+        })
+  
+        prf = await Promise.all(prf)
+  
+        this.setState({ PRF: prf}, () => console.log(this.state.PRF) )
+  
+        const user = await (await users.getUser({ token: window.localStorage.getItem('token')})).data.data
+        
+        // const NF_PO = await (await api.getNF_POById(user.po_folder)).data.data
+        // this.setState({ NF_PO }, () => console.log(this.state.NF_PO))
+        
+      } catch (error) {
+        console.log(error.message)
+        alert(error)
+      }
 
-      prf = await Promise.all(prf)
-
-      this.setState({ PRF: prf})
-
-      console.log(this.state.PRF)
     } else {
       this.setState({ redirect: true })
     }
@@ -69,6 +83,11 @@ class PRFTableList extends Component {
     prf.is_cancelled = true
     try {
       const res = await api.updatePRFById(prf._id, prf)
+      alert(prf.po.length)
+      prf.po.map(async po_id => {
+        const po = await (await api.cancelPOById(po_id)).data.data
+        alert(po.is_cancelled)
+      })
       console.log(res.data)
       alert("Cancelled")
     } catch (error) {
@@ -76,9 +95,55 @@ class PRFTableList extends Component {
     }    
   }
 
+  handleDelete = async (prf) => {
+    try {      
+      alert(prf.po.length)
+      
+      // const new_NFPO = {...this.state.NF_PO}
+      // alert(`not yet deleted ${new_NFPO.po.length}`)
+      // remove all po's of prf from db and from nf_po
+      let temp = prf.po.map(async po_id => {
+        try {          
+          alert(po_id)
+          // get po's folder id
+          const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
+          // get po folder
+          const NFPO = await (await api.getNF_POById(NFPO_id)).data.data          
+
+          const index = NFPO.po.indexOf(po_id)
+          NFPO.po.splice(index, 1)
+  
+          await api.deletePOById(po_id)
+          await api.updateNF_POById(NFPO_id, NFPO)
+          // this.setState({ NF_PO: new_NFPO })
+        } catch (error) {
+          console.log(`hehe ${error}`)
+          alert(error)
+        }
+      })
+      
+      temp = await Promise.all(temp)
+      // alert(`should be deleted ${new_NFPO.po.length}`)
+      // await api.updateNF_POById(new_NFPO._id, new_NFPO)
+
+      alert(prf._id)
+
+      const new_NFPRF = {...this.state.NF_PRF}
+      const index = new_NFPRF.prf.indexOf(prf._id)
+      new_NFPRF.prf.splice(index, 1)
+
+      await api.updateNF_PRFById(new_NFPRF._id, new_NFPRF)
+      await api.deletePRFById(prf._id)
+
+      alert('deleted successfully')
+    } catch (error) {
+      alert(error)
+    }
+  }
+
   handleRedirect = () => {
     if (this.state.redirect)
-      return <Redirect to="/PRF-List-Folders" />
+      return <Redirect to="/admin/PRF-List-Folders" />
   }
   
   render() {
@@ -136,11 +201,11 @@ class PRFTableList extends Component {
                             <td>
                                 <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                 <></>
-                                <Button variant="outline-primary" bsStyle="primary"><Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"}} } style={{ color: "inherit"}} ><i className="pe-7s-look" />New PO</Link></Button>{' '}
+                                <Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"} }} style={{ color: "inherit"}} ><Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-look" />New PO</Button>{' '}</Link>
                                 <></>
-                                <Button variant="outline-secondary"><Link to={{pathname: '/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><i className="pe-7s-look" />View</Link></Button>{' '}
+                                <Link to={{pathname: '/create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
                                 <></>
-                                <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-junk"/>Delete</Button>{' '}
+                                <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
                             </td>
                           </tr>
                         );

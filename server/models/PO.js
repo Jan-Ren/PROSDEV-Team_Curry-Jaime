@@ -7,6 +7,7 @@ const PO = new Schema({
         required:true
     },
     prf : {type : Schema.Types.ObjectId, ref : 'prf'},
+    po_folder : {type : Schema.Types.ObjectId, ref : 'nf_po'},
     pax: [{
         type: String,
         require:true

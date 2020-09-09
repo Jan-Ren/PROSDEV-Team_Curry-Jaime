@@ -51,6 +51,7 @@ class NewPO extends Component {
         prepared_by: '',
         approved_by: '',
         received_by: '',
+        po_folder: ''
     }
     
     this.handleChange = this.handleChange.bind(this)
@@ -62,8 +63,9 @@ class NewPO extends Component {
       // edit PO
       if (this.props.location.state.action === "edit") {
         alert('waw')
-        const { prf, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = this.props.location.state.PO
+        const { prf, po_number, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = this.props.location.state.PO
         this.setState({
+            po_number,
             prf,
             pax,
             recipient,
@@ -87,7 +89,7 @@ class NewPO extends Component {
 
           this.setState({          
               po_number,
-              prf: prf,
+              prf,
               pax:[''],
               recipient: '',
               particulars: '',
@@ -103,6 +105,7 @@ class NewPO extends Component {
     } 
     // if nandaya ng URL
     else {
+      console.log(this.props.location)
       this.props.history.goBack()
       alert('bawal yan, punta ka muna PRF')
       // this.props.history.push('/employee/PRF-List')
@@ -112,17 +115,16 @@ class NewPO extends Component {
 
   getCurrentPO = async() => {
     const token = window.localStorage.getItem('token')
-    
-    console.log(token)
+        
     try {
       
       const user = await (await users.getUser({token})).data.data
       
       const workingDirectory = await (await api.getNF_POById(user.po_folder)).data.data
       
-      this.setState({ folder: workingDirectory })
+      this.setState({ po_folder: workingDirectory })
 
-      return (workingDirectory.nf_po_number*1000) + workingDirectory.po.length
+      return (workingDirectory.nf_po_number*1000) + workingDirectory.total_documents
 
     } catch (error) {
       console.log(error)
@@ -179,9 +181,10 @@ class NewPO extends Component {
     this.setState({pax: this.state.pax})
 
   }
-  handleSave = async () => {
-
-    const payload = this.state
+  handleSave = async (e) => {
+    e.preventDefault()
+    const payload = {...this.state}
+    payload.po_folder = this.state.po_folder._id
     
     console.log(this.state)
     if (this.props.location.state.action === "edit") {        
@@ -212,13 +215,22 @@ class NewPO extends Component {
         alert(`Editing failed: ${error.message}`)
       }
     } else if (this.props.location.state.action === "new") {
-      alert("saving please wait")      
+      const { po_folder, prf } = this.state
+      console.log(po_folder)
+      console.log(prf)
+      // alert(prf)
+      // alert("saving please wait")
       try {
         const po_id = await (await api.insertPO(payload)).data.id
-        const { folder } = this.state
+        prf.po.push(po_id)
+        po_folder.po.push(po_id)
+        po_folder.total_documents = po_folder.total_documents + 1
 
-        folder.po.push(po_id)
-        await api.updateNF_POById(folder._id, folder)
+        await api.updateNF_POById(po_folder._id, po_folder)
+        const newprf = await (await api.updatePRFById(prf._id, prf)).data
+        console.log(newprf)
+        alert(newprf)
+        
 
         this.setState({
           po_number: '',
@@ -242,7 +254,7 @@ class NewPO extends Component {
       }      
 
     } 
-    this.props.history.push('/Employee')
+    window.history.go(-1)
   }
   render() {
     return (
@@ -273,7 +285,7 @@ class NewPO extends Component {
                           label: "PO#",
                           type: "disabled",
                           bsClass: "form-control",
-                          placeholder: "800033",
+                          placeholder: "",
                           defaultValue: "",
                           name:"po_number",
                           value: this.state.po_number,

@@ -72,6 +72,11 @@ class PRFTableList extends Component {
     prf.is_cancelled = true
     try {
       const res = await api.updatePRFById(prf._id, prf)
+      alert(prf.po.length)
+      prf.po.map(async po_id => {
+        const po = await (await api.cancelPOById(po_id)).data.data
+        alert(po.is_cancelled)
+      })
       console.log(res.data)
       alert("Cancelled")
     } catch (error) {
@@ -139,9 +144,11 @@ class PRFTableList extends Component {
                             <td>
                                 <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                 <></>
-                                <Button variant="outline-primary" bsStyle="primary"><Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"}} } style={{ color: "inherit"}} ><i className="pe-7s-look" />New PO</Link></Button>{' '}
+
+                                <Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"}} } style={{ color: "inherit"}} ><Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-look" />New PO</Button>{' '}</Link>
                                 <></>
-                                <Button variant="outline-secondary"><Link to={{pathname: '/create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><i className="pe-7s-look" />View</Link></Button>
+                                <Link to={{pathname: '/create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button></Link>
+
                             </td>
                           </tr>
                         );

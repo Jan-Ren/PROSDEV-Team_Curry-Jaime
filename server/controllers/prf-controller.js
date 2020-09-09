@@ -45,6 +45,7 @@ updatePRF = async (req, res) => {
 
     PRF.findOne({ _id: req.params.id }, (err, prf) => {
         if (err) {
+            console.log(`PANO MO HINDI NAKITA ${err}`)
             return res.status(404).json({
                 err,
                 message: 'PRF not found!',
@@ -52,6 +53,7 @@ updatePRF = async (req, res) => {
         }
         prf.pax = body.pax
         prf.po = body.po
+        prf.prf_folder = body.prf_folder
         prf.date_created = body.date_created
         prf.last_modified = body.last_modified
         prf.paid_date = body.paid_date
@@ -69,6 +71,7 @@ updatePRF = async (req, res) => {
         prf
             .save()
             .then(() => {
+                console.log(`so gumana ka nga :<`)
                 return res.status(200).json({
                     success: true,
                     id: prf._id,
@@ -76,6 +79,7 @@ updatePRF = async (req, res) => {
                 })
             })
             .catch(error => {
+                console.log(`BAKET HINDI ${error}`)
                 return res.status(404).json({
                     error,
                     message: 'PRF not updated!',

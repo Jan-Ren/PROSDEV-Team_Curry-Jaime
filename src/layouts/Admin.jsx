@@ -206,7 +206,7 @@ class Admin extends Component {
           />
           <Switch>
             {this.getRoutes(routes)}
-            <Route path="/create/New-PO" component={NewPO} />
+            <Route path="/create/New-PO/" component={NewPO} />
             <Route path="/admin/PO-List/" component={POTableList} />
             <Route path="/admin/PRF-List/" component={PRFTableList} />
           </Switch>

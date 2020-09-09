@@ -32,6 +32,7 @@ class POTableList extends Component {
     super(props)
     this.state = {
         PO: [],
+        NF_PO: {},
         columns: [],
         isLoading: false,
     }
@@ -41,38 +42,51 @@ class POTableList extends Component {
   
   componentDidMount = async () => {
     this.setState({ isLoading: true })
-  
+    
     if (this.props.location.state) {
+      const { PO, NF_PO } = this.props.location.state
+      this.setState({ NF_PO })
+      alert(PO.length)
 
-      let po = this.props.location.state.PO.map(async po_reference => {
-        if (this.props.location.state.PO) {
-          const po = await (await api.getPOById(po_reference)).data.data
-          console.log(po)
-          return po
-        }
-      })
-  
-      po = await Promise.all(po)
+      try {
+        let po = PO.map(async po_reference => {
+          try {
+            const po = await (await api.getPOById(po_reference)).data.data
+            console.log(po)
+            return po            
+          } catch (error) {
+            console.log(error.message)
+            alert(error)
+          }
+          
+        })
+    
+        po = await Promise.all(po)
+          
+        // console.log(this.state.PRF)
         
-      // console.log(this.state.PRF)
-      
-      let prf = po.map(async po_reference => {
-        if ( po_reference.prf) {
-          const prf = await (await api.getPRFById(po_reference.prf)).data.data
-          return prf
-        }
-      })
-      
-      prf = await Promise.all(prf)
-      prf.map((p, index) => {
-        if (p) {
-          console.log(p)
-          console.log(index)
-          po[index].prf = p
-        }
-      })
-
-      this.setState({ PO: po})
+        let prf = po.map(async po_reference => {
+          if ( po_reference.prf) {
+            const prf = await (await api.getPRFById(po_reference.prf)).data.data
+            return prf
+          }
+        })
+        
+        prf = await Promise.all(prf)
+        prf.map((p, index) => {
+          if (p) {
+            console.log(p)
+            console.log(index)
+            po[index].prf = p
+          }
+        })
+  
+        this.setState({ PO: po})
+        
+      } catch (error) {
+        console.log(error.message)
+        alert(error)
+      }
       
     } else {
       this.setState({ redirect: true })
@@ -82,7 +96,7 @@ class POTableList extends Component {
 
   handleRedirect = () => {
     if (this.state.redirect)
-      return <Redirect to="/PO-List-Folders" />      
+      return <Redirect to="/admin/PO-List-Folders" />      
   }
   
   handleCancel = async (po) => {
@@ -94,6 +108,27 @@ class POTableList extends Component {
       const res = await api.updatePOById(po._id, po)
       console.log(res.data)
       alert("Cancelled")
+    } catch (error) {
+      alert(error)
+    }
+  }
+
+  handleDelete = async (po) => {
+    try {
+      
+      const new_NFPO = {...this.state.NF_PO}
+      let index = new_NFPO.po.indexOf(po._id)
+      new_NFPO.po.splice(index, 1)      
+      await api.updateNF_POById(new_NFPO._id, new_NFPO)
+
+      const prf = po.prf
+      index = prf.po.indexOf(po._id)
+      prf.po.splice(index, 1)
+      await api.updatePRFById(prf._id, prf)      
+      
+      await api.deletePOById(po._id)
+
+      alert('deleted successfully')
     } catch (error) {
       alert(error)
     }
@@ -156,8 +191,8 @@ class POTableList extends Component {
                             <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                             <td>
                               <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
-                              <Button variant="outline-secondary"><Link to={{pathname: '/employee/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><i className="pe-7s-look" />View</Link></Button>{' '}
-                              <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-junk"/>Delete</Button>{' '}
+                              <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
+                              <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
                             </td>
                           </tr>
                         );
