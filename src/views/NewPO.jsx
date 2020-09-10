@@ -54,7 +54,8 @@ class NewPO extends Component {
         received_by: '',
         po_folder: '',
         open: false,
-        action: "Save"
+        action: "Save",
+        is_cancelled: false
     }
     
     this.handleChange = this.handleChange.bind(this)
@@ -80,7 +81,10 @@ class NewPO extends Component {
             prepared_by,
             approved_by,
             received_by
-        } )       
+        } )
+
+        if (this.props.location.state.is_cancelled)
+          this.setState({ is_cancelled: true })
       } 
       
       // new PO
@@ -456,7 +460,7 @@ class NewPO extends Component {
                       ]}
                     />
                     
-                    <Button pullRight bsStyle="primary" fill type="submit"> Save </Button>
+                    <Button pullRight bsStyle="primary" fill type="submit" disabled={this.state.is_cancelled}> Save </Button>
                     <Button pullRight bsStyle="danger" fill onClick={this.props.history.goBack}> Back </Button>
                     <div className="clearfix" />
                   </form>
