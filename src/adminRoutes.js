@@ -18,8 +18,9 @@
 
 import AdminPOListFolders from "views/AdminPOList.jsx";
 import AdminPRFListFolders from "views/AdminPRFList.jsx";
-import AdminCancelledPRF from "views/AdminCancelledPRF.jsx";
 import AdminCancelledPO from "views/AdminCancelledPO.jsx";
+import AdminCancelledPRF from "views/AdminCancelledPRF.jsx";
+import GrossIncomeRep from "views/GrossIncomeReport.jsx";
 import Settings from "views/Settings.jsx";
 import Login from "./components/Login/login.component.js";
 import NewPRF from "views/NewPRF.jsx";
@@ -34,8 +35,8 @@ const adminDashboardRoutes = [
   },
   {
     path: "/PO-List-Folders",
-    name: "PO List Folders",
     icon: "pe-7s-news-paper",
+    name: "PO List Folders",
     component: AdminPOListFolders,
     layout: "/admin"
   },
@@ -59,6 +60,13 @@ const adminDashboardRoutes = [
     path: "/Cancelled-PO",
     name: "  Cancelled PO ",
     component: AdminCancelledPO,
+    layout: "/admin"
+  },
+  {
+    path: "/Gross-Income-Report",
+    name: " Gross Income Report ",
+    component: GrossIncomeRep,
+    icon: "pe-7s-graph1",
     layout: "/admin"
   },
   {

@@ -286,6 +286,8 @@ const poDArray = [
   ["117115", "07/24/2020", "Jitsu", "07/23/20","850536", "", ""],
   ["117146", "07/25/2020", "Rollo", "07/24/20","850537", "", ""],
 ];
+const grossHArray = ["PRF#", "Date Created", "Paid Date", "PRF Amount", "PO Amount", "Gross"];
+const grossDArray = [["850532", "07-25-2020", "07-25-2020", "0.00", "10,000", "-10000"]];
 
 const poList = ["PO List"];
 const poFolder =[["220"],["219"],["218"],];
@@ -303,4 +305,6 @@ module.exports = {
   poFolder,
   prfList,
   prfFolder,
+  grossHArray,
+  grossDArray
 };
