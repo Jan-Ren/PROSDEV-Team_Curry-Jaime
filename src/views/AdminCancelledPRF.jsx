@@ -16,16 +16,52 @@
 
 */
 import React, { Component } from "react";
-import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button } from "react-bootstrap";
+import { Link, Redirect } from 'react-router-dom'
+import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 import { prfHArray, prfDArray } from "variables/Variables.jsx";
 
 import DateInput from "components/DatePicker/DatePicker.jsx"
+import api from "../api";
+import moment from 'moment'
 
 
 
 class AdminCancelledPRF extends Component {
+
+  constructor (props) {
+    super(props)
+    this.state = {
+      PRF: [],
+      isLoading: false,
+      open: false,
+      success: false,
+    }
+  }
+
+  componentDidMount = async () => {
+    this.setState({ loading: true })
+    
+    try {
+      const PRF = await (await api.getCancelledPRF()).data.data
+      this.setState({ PRF, loading: false })
+    } catch (error) {
+      
+    }
+  }
+
+  handleDelete = async (prf) => {
+    
+  }
+
+  handleUncancel = async (prf) => {
+
+  }
+
+  handleClose = () => {
+
+  }
 
   render() {
     return (
@@ -69,16 +105,19 @@ class AdminCancelledPRF extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      {prfDArray.map((prop, key) => {
+                      {this.state.PRF.map((prop, key) => {
                         return (
                           <tr key={key}>
-                            {prop.map((prop, key) => {
-                              return <td key={key}>{prop}</td>;
-                            })}
-                            <td>
-                            <Button variant="outline-secondary"><i className="pe-7s-look" /> View</Button>
-                            <Button variant="outline-primary" bsStyle="success"><i className="pe-7s-back-2"/> Uncancel</Button>{' '}
-                            <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
+                              
+                              <td key={key+1}>{prop.prf_number}</td>
+                              <td key={key+2}>{prop.recipient}</td>
+                              <td key={key+4}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                              <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                              <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                              <td>
+                            <Link to={{pathname: '/create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
+                            <Button variant="outline-primary" bsStyle="success" onClick={() => this.handleUncancel(prop)}><i className="pe-7s-back-2"/> Uncancel</Button>{' '}
+                            <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-close-circle"/>Delete</Button>{' '}
                             </td>
                           </tr>
                         );

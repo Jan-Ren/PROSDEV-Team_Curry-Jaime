@@ -133,10 +133,25 @@ getAllPRF = async (req, res) => {
     }).catch(err => console.log(err))
 }
 
+getCancelledPRF = async (req, res) => {
+    await PRF.find({ is_cancelled: true }, (err, prfs) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+        if (!prfs.length) {
+            return res
+                .status(404)
+                .json({ success: false, error: `PRF not found` })
+        }
+        return res.status(200).json({ success: true, data: prfs })
+    }).catch(err => console.log(err))
+}
+
 module.exports = {
     createPRF,
     updatePRF,
     deletePRF,
     getAllPRF,
     getPRFById,
+    getCancelledPRF
 }
