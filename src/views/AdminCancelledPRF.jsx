@@ -16,16 +16,105 @@
 
 */
 import React, { Component } from "react";
-import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button } from "react-bootstrap";
+import { Link, Redirect } from 'react-router-dom'
+import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 import { prfHArray, prfDArray } from "variables/Variables.jsx";
 
 import DateInput from "components/DatePicker/DatePicker.jsx"
-
+import api from "../api";
+import moment from 'moment'
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
 
 
 class AdminCancelledPRF extends Component {
+
+  constructor (props) {
+    super(props)
+    this.state = {
+      PRF: [],
+      isLoading: false,
+      open: false,
+      success: false,
+    }
+  }
+
+  componentDidMount = async () => {
+    this.setState({ loading: true })
+    
+    try {
+      const PRF = await (await api.getCancelledPRF()).data.data
+      this.setState({ PRF, loading: false })
+    } catch (error) {
+      console.log(error)
+      this.setState({ loading: false })
+    }
+  }
+
+  handleDelete = async (prf) => {
+    try {
+      this.setState({ isLoading: true, open: true, action: 'Delete' })
+      
+      // deleting all po's under this prf
+      let temp = prf.po.map(async po_id => {
+        try {
+          const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
+          // get po folder
+          const NFPO = await (await api.getNF_POById(NFPO_id)).data.data          
+
+          const index = NFPO.po.indexOf(po_id)
+          NFPO.po.splice(index, 1)
+  
+          await api.deletePOById(po_id)
+          await api.updateNF_POById(NFPO_id, NFPO)
+          
+        } catch (error) {
+          console.log(`hehe ${error}`)
+          alert(error)
+        }
+      })
+      
+      temp = await Promise.all(temp)
+
+      // removing from folder and deleting actual PRF
+      const NFPRF_id = prf.prf_folder
+      const NF_PRF = await (await api.getNF_PRFById(NFPRF_id)).data.data
+      const index = NF_PRF.prf.indexOf(prf._id)
+      NF_PRF.prf.splice(index, 1)
+
+      await api.updateNF_PRFById(NFPRF_id, NF_PRF)
+      await api.deletePRFById(prf._id)
+
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1500)
+    } catch (error) {
+      alert(error)
+    }
+  }
+
+  handleUncancel = async (prf) => {
+    this.setState({ isLoading: true, open: true, action: 'Uncancel' })
+    
+    prf.is_cancelled = false
+    prf.last_modified = Date.now()
+    try {
+      await api.updatePRFById(prf._id, prf)
+
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1500)
+    } catch (error) {
+      alert(error)
+    }
+  }
+
+  handleClose = () => {
+    this.setState({ open:false });
+    window.location.reload()
+  }
 
   render() {
     return (
@@ -59,33 +148,52 @@ class AdminCancelledPRF extends Component {
                     </Form>
                   </Col>
                   <div>
-
-                  <Table striped hover>
-                    <thead>
-                      <tr>
-                        {prfHArray.map((prop, key) => {
-                          return <th key={key}>{prop}</th>;
-                        })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {prfDArray.map((prop, key) => {
-                        return (
-                          <tr key={key}>
-                            {prop.map((prop, key) => {
-                              return <td key={key}>{prop}</td>;
-                            })}
-                            <td>
-                            <Button variant="outline-secondary"><i className="pe-7s-look" /> View</Button>
-                            <Button variant="outline-primary" bsStyle="success"><i className="pe-7s-back-2"/> Uncancel</Button>{' '}
-                            <Button variant="outline-primary" bsStyle="danger"><i className="pe-7s-close-circle"/></Button>{' '}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                    
-                  </Table>
+                  {
+                    this.state.loading ?
+                    <div style={{padding: "100px 0", textAlign: "center"}}>
+                        <CircularProgress />
+                    </div> : 
+                    <Table striped hover>
+                      <thead>
+                        <tr>
+                          {prfHArray.map((prop, key) => {
+                            return <th key={key}>{prop}</th>;
+                          })}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          !this.state.PRF.length ?
+                          <p>This list is empty.</p>
+                          :
+                          this.state.PRF.map((prop, key) => {
+                            return (
+                              <tr key={key}>
+                                  
+                                  <td key={key+1}>{prop.prf_number}</td>
+                                  <td key={key+2}>{prop.recipient}</td>
+                                  <td key={key+4}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                                  <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                  <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                  <td>
+                                <Link to={{pathname: '/create/New-PRF', state: {PRF: prop, is_cancelled: true}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
+                                <Button variant="outline-primary" bsStyle="success" onClick={() => this.handleUncancel(prop)}><i className="pe-7s-back-2"/> Uncancel</Button>{' '}
+                                <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-close-circle"/>Delete</Button>{' '}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                      
+                    </Table>
+                  }
+                  <ConfirmationDialog
+                    open={this.state.open}
+                    handleClose={this.handleClose}
+                    success={this.state.success}
+                    isLoading={this.state.isLoading}
+                    action={this.state.action}
+                    />
                   </div>
                 
                   </React.Fragment>

@@ -9,6 +9,7 @@ export const getAllPRF = () => api.get(`/All-PRF`)
 export const updatePRFById = (id, payload) => api.put(`/PRF/${id}`, payload)
 export const deletePRFById = id => api.delete(`/PRF/${id}`)
 export const getPRFById = id => api.get(`/PRF/${id}`)
+export const getCancelledPRF = () => api.get(`/cancelled-PRF`)
 
 export const insertPO = payload => api.post(`/PO`, payload)
 export const getAllPO = () => api.get(`/All-PO`)
@@ -35,6 +36,7 @@ const apis = {
     updatePRFById,
     deletePRFById,
     getPRFById,
+    getCancelledPRF,
     insertPO,
     getAllPO,
     updatePOById,
