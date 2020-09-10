@@ -54,7 +54,45 @@ class AdminCancelledPRF extends Component {
   }
 
   handleDelete = async (prf) => {
-    
+    try {
+      this.setState({ isLoading: true, open: true, action: 'Delete' })
+      
+      // deleting all po's under this prf
+      let temp = prf.po.map(async po_id => {
+        try {
+          const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
+          // get po folder
+          const NFPO = await (await api.getNF_POById(NFPO_id)).data.data          
+
+          const index = NFPO.po.indexOf(po_id)
+          NFPO.po.splice(index, 1)
+  
+          await api.deletePOById(po_id)
+          await api.updateNF_POById(NFPO_id, NFPO)
+          
+        } catch (error) {
+          console.log(`hehe ${error}`)
+          alert(error)
+        }
+      })
+      
+      temp = await Promise.all(temp)
+
+      // removing from folder and deleting actual PRF
+      const NFPRF_id = prf.prf_folder
+      const NF_PRF = await (await api.getNF_PRFById(NFPRF_id)).data.data
+      const index = NF_PRF.prf.indexOf(prf._id)
+      NF_PRF.prf.splice(index, 1)
+
+      await api.updateNF_PRFById(NFPRF_id, NF_PRF)
+      await api.deletePRFById(prf._id)
+
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1500)
+    } catch (error) {
+      alert(error)
+    }
   }
 
   handleUncancel = async (prf) => {
