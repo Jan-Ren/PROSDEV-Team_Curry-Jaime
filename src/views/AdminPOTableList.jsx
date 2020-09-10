@@ -132,8 +132,8 @@ class POTableList extends Component {
       const prf = po.prf
       index = prf.po.indexOf(po._id)
       prf.po.splice(index, 1)
-      await api.updatePRFById(prf._id, prf)      
       
+      await api.updatePRFById(prf._id, prf)            
       await api.deletePOById(po._id)
       
       setTimeout(() => {

@@ -17,6 +17,7 @@ export const updatePOById = (id, payload) => api.put(`/PO/${id}`, payload)
 export const deletePOById = id => api.delete(`/PO/${id}`)
 export const getPOById = id => api.get(`/PO/${id}`)
 export const cancelPOById = id => api.get(`/PO/cancel/${id}`)
+export const getCancelledPO = () => api.get(`/cancelled-PO`)
 
 export const insertNF_PRF = payload => api.post(`/NF_PRF`, payload)
 export const getAllNF_PRF = () => api.get(`/All-NF_PRF`)
@@ -43,6 +44,7 @@ const apis = {
     deletePOById,
     getPOById,
     cancelPOById,
+    getCancelledPO,
     insertNF_PRF,
     getAllNF_PRF,
     updateNF_PRFById,

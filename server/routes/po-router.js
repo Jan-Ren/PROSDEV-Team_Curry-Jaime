@@ -10,5 +10,6 @@ router.delete('/PO/:id', POCntrl.deletePO)
 router.get('/PO/:id', POCntrl.getPOById)
 router.get('/All-PO', POCntrl.getAllPO)
 router.get('/PO/cancel/:id', POCntrl.cancelPO)
+router.get('/cancelled-po', POCntrl.getCancelledPO)
 
 module.exports = router

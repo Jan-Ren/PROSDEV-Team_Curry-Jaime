@@ -141,11 +141,26 @@ cancelPO = async (req, res) => {
     return res.status(200).json({ success: true, data: po })
 }
 
+getCancelledPO = async (req, res) => {
+    await PO.find({ is_cancelled: true }, (err, po) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+        if (!po.length) {
+            return res
+                .status(404)
+                .json({ success: false, error: `PRF not found` })
+        }
+        return res.status(200).json({ success: true, data: po })
+    }).catch(err => console.log(err))
+}
+
 module.exports = {
     createPO,
     updatePO,
     deletePO,
     getAllPO,
     getPOById,
-    cancelPO
+    cancelPO,
+    getCancelledPO
 }
