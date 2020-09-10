@@ -45,7 +45,8 @@ class NewPRF extends Component {
       success: false,
       isLoading: false,
       open: false,
-      action: 'Save'
+      action: 'Save',
+      is_cancelled: false
     }    
     this.handleChange = this.handleChange.bind(this)
   }
@@ -69,6 +70,9 @@ class NewPRF extends Component {
           approved_by,
           received_by,
       })
+
+      if (this.props.location.state.is_cancelled)
+        this.setState({ is_cancelled: true })
     } 
     
     // new PRF
@@ -417,7 +421,7 @@ class NewPRF extends Component {
                         }
                       ]}
                     />
-                    <Button pullRight bsStyle="primary" fill type="submit"> {this.state.action} </Button>
+                    <Button pullRight bsStyle="primary" fill type="submit" disabled={this.state.is_cancelled}> {this.state.action} </Button>
                     <Button pullRight bsStyle="danger" fill onClick={this.props.history.goBack}> Back </Button>
                     
                     <div className="clearfix" />
