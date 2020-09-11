@@ -22,6 +22,9 @@ import Card from "components/Card/Card.jsx";
 
 import users from '../api/users'
 import api from '../api'
+import FormDialog from "components/FormDialog/FormDialog";
+import ConfirmationDialog from "components/ConfirmationDialog/ConfirmationDialog";
+import { CircularProgress } from "@material-ui/core";
 
 class PRFListFolders extends Component {
   constructor(props) {
@@ -31,6 +34,9 @@ class PRFListFolders extends Component {
         prfFolder: [],
         columns: [],
         isLoading: false,
+        open: false,
+        open_nf: false,
+        nf_prf_number: ''
     }    
   }
 
@@ -78,6 +84,27 @@ class PRFListFolders extends Component {
     }
   }
 
+  handleClose = () => {
+    this.setState({ open:false });
+    window.location.reload()
+  }
+
+  handleChange = (e) => {
+    this.setState({ nf_prf_number: e.target.value })
+  }
+
+  handleAddNF = async () => {
+    try {
+      this.setState({ isLoading: true, open: true, action: "Add", open_nf: false })
+      const { nf_prf_number } = this.state
+      
+      await api.insertNF_PRF({nf_prf_number})
+      this.setState({ isLoading: false, success: true })
+    } catch (error) {
+      this.setState({ isLoading: false, success: false })
+    }
+  }
+
   render() {
     return (
       <div className="content">
@@ -89,34 +116,57 @@ class PRFListFolders extends Component {
                 ctTableResponsive
                 content={     
                     <div>
-                         <Col md={12}><Button bsStyle="info" className="block pull-right"><i className="pe-7s-plus"/>New Folder</Button></Col>
-                        <Table striped hover>
-                            {/* <thead>
-                            <tr>
-                                {poHArray.map((prop, key) => {
-                                return <th key={key}>{prop}</th>;
-                                })}
-                            </tr>
-                            </thead> */}
-                            <tbody>
-                            {this.state.prfFolder.map((prop, key) => {
-                                return (
-                                <tr key={key}>
+                        <Col md={12}><Button bsStyle="info" className="block pull-right" onClick={() => this.setState({ open_nf:true })}><i className="pe-7s-plus"/>New Folder</Button></Col>
+                        {
+                          this.state.isLoading ?
+                          <div style={{padding: "100px 0", textAlign: "center"}}>
+                            <CircularProgress />
+                          </div> : 
 
-                                    <td key={key}>{prop.nf_prf_number}</td>
+                          <Table striped hover>
+                              {/* <thead>
+                              <tr>
+                                  {poHArray.map((prop, key) => {
+                                  return <th key={key}>{prop}</th>;
+                                  })}
+                              </tr>
+                              </thead> */}
+                              <tbody>
+                              {this.state.prfFolder.map((prop, key) => {
+                                  return (
+                                  <tr key={key}>
 
-                                    <td>
-                                    <Button variant="outline-secondary" bsStyle="danger" className="pull-right"><i className="pe-7s-close-circle"/>Delete</Button>
-                                    <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
-                                    <Link to={{pathname: '/admin/PRF-List', state: {NF_PRF_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
-                                    </td>
-                                </tr>
-                                
-                                );
-                            })}
-                            
-                            </tbody>
-                        </Table>
+                                      <td key={key}>{prop.nf_prf_number}</td>
+
+                                      <td>
+                                      <Button variant="outline-secondary" bsStyle="danger" className="pull-right" ><i className="pe-7s-close-circle"/>Delete</Button>
+                                      <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
+                                      <Link to={{pathname: '/admin/PRF-List', state: {NF_PRF_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
+                                      </td>
+                                  </tr>
+                                  
+                                  );
+                              })}
+                              
+                              </tbody>
+                          </Table>
+                        }
+                        <ConfirmationDialog
+                          open={this.state.open}
+                          handleClose={this.handleClose}
+                          success={this.state.success}
+                          isLoading={this.state.isLoading}
+                          action={this.state.action}
+                          />
+                        <FormDialog
+                          open={this.state.open_nf}
+                          type={"number"}
+                          value={this.state.nf_prf_number}
+                          handleChange={this.handleChange}
+                          handleEvent={this.handleAddNF}
+                          handleClose={this.handleClose}
+                          message={"Input PRF Initials"}
+                          />
                     </div>    
                 }
               />
