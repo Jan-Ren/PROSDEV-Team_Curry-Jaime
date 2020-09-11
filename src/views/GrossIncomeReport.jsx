@@ -79,7 +79,15 @@ class AdminPOTableList extends Component {
                     </tbody>
                   
                   </Table>
-                    
+                  <Col md={2}>
+                    <Form inline>
+                        <FormGroup controlId="total">
+                          <ControlLabel>Total</ControlLabel>{' '}
+                        <FormControl type="number" />
+                        </FormGroup>{' '}
+                    </Form>
+                </Col>
+        <div className="clearfix" />
                   </div>
                 }
               />
