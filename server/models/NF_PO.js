@@ -7,7 +7,8 @@ const NF_PO = new Schema({
         required: true
     },
     total_documents:{
-        type: Number
+        type: Number,
+        default: 0
     },
     po: [{type : Schema.Types.ObjectId, ref : 'po'}],
 })

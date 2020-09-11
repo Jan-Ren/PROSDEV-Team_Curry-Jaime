@@ -7,7 +7,8 @@ const NF_PRF = new Schema({
         required: true
     },
     total_documents:{
-        type: Number
+        type: Number,
+        default: 0
     },
     prf: [{type : Schema.Types.ObjectId, ref : 'prf'}],
 })
