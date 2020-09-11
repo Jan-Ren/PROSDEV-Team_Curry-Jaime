@@ -138,7 +138,7 @@ class AdminCancelledPRF extends Component {
                         <ControlLabel>to</ControlLabel>{' '}
                           <FormControl type="date" />
                         </FormGroup>{' '}
-                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-filter"/> Filter</Button>{' '}
+                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-filter"/> Filter Date</Button>{' '}
 
                         <FormGroup className="pull-right">
                         <InputGroup>
@@ -175,7 +175,7 @@ class AdminCancelledPRF extends Component {
                                   
                                   <td key={key+1}>{prop.prf_number}</td>
                                   <td key={key+2}>{prop.recipient}</td>
-                                  <td key={key+4}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                                  <td key={key+4}>{prop.paid_date ? moment(prop.paid_date).format('MM-DD-YYYY') : ''}</td>
                                   <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                   <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                   <td>
