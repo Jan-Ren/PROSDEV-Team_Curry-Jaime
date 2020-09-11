@@ -23,6 +23,9 @@ import Card from "components/Card/Card.jsx";
 import { Link } from 'react-router-dom'
 import users from '../api/users'
 import api from '../api'
+import ConfirmationDialog from "components/ConfirmationDialog/ConfirmationDialog";
+import FormDialog from "components/FormDialog/FormDialog";
+import { CircularProgress } from "@material-ui/core";
 
 class POListFolders extends Component {
   constructor(props) {
@@ -32,6 +35,9 @@ class POListFolders extends Component {
         poFolder: [],
         columns: [],
         isLoading: false,
+        open: false,
+        open_nf: false,
+        nf_po_number: ''
     }    
   }
 
@@ -84,6 +90,32 @@ class POListFolders extends Component {
     }
   }
 
+  handleClose = () => {
+    this.setState({ open:false });
+    window.location.reload()
+  }
+
+  handleChange = (e) => {
+    this.setState({ nf_po_number: e.target.value })
+  }
+
+  handleAddNF = async () => {
+    try {
+      this.setState({ isLoading: true, open: true, action: "Add", open_nf: false })
+      const { nf_po_number } = this.state
+      
+      if (nf_po_number/100 > 0 && nf_po_number/100 <= 9) {
+        await api.insertNF_PO({nf_po_number})
+        this.setState({ isLoading: false, success: true })
+      }
+      else {
+        this.setState({ isLoading: false, success: false })
+      }
+    } catch (error) {
+      this.setState({ isLoading: false, success: false })
+    }
+  }
+
   render() {
     return (
       <div className="content">
@@ -95,34 +127,57 @@ class POListFolders extends Component {
                 ctTableResponsive
                 content={     
                     <div>
-                         <Col md={12}><Button bsStyle="info" className="block pull-right"><i className="pe-7s-plus"/>New Folder</Button></Col>
-                        <Table striped hover>
-                            {/* <thead>
-                            <tr>
-                                {poHArray.map((prop, key) => {
-                                return <th key={key}>{prop}</th>;
-                                })}
-                            </tr>
-                            </thead> */}
-                            <tbody>
-                            {this.state.poFolder.map((prop, key) => {
-                                return (
-                                <tr key={key}>
+                         <Col md={12}><Button bsStyle="info" className="block pull-right" onClick={() => this.setState({ open_nf:true })}><i className="pe-7s-plus"/>New Folder</Button></Col>
+                         {
+                            this.state.isLoading ?
+                            <div style={{padding: "100px 0", textAlign: "center"}}>
+                              <CircularProgress />
+                            </div> :
 
-                                    <td key={key}>{prop.nf_po_number}</td>
-
-                                    <td>
-                                    <Button variant="outline-secondary" bsStyle="danger" className="pull-right"><i className="pe-7s-close-circle"/>Delete</Button>
-                                    <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
-                                    <Link to={{pathname: '/admin/PO-List', state: {NF_PO_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
-                                    </td>
+                            <Table striped hover>
+                                {/* <thead>
+                                <tr>
+                                    {poHArray.map((prop, key) => {
+                                    return <th key={key}>{prop}</th>;
+                                    })}
                                 </tr>
+                                </thead> */}
+                                <tbody>
+                                {this.state.poFolder.map((prop, key) => {
+                                    return (
+                                    <tr key={key}>
+
+                                        <td key={key}>{prop.nf_po_number}</td>
+
+                                        <td>
+                                        <Button variant="outline-secondary" bsStyle="danger" className="pull-right"><i className="pe-7s-close-circle"/>Delete</Button>
+                                        <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
+                                        <Link to={{pathname: '/admin/PO-List', state: {NF_PO_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
+                                        </td>
+                                    </tr>
+                                    
+                                    );
+                                })}
                                 
-                                );
-                            })}
-                            
-                            </tbody>
-                        </Table>
+                                </tbody>
+                            </Table>
+                          }
+                          <ConfirmationDialog
+                            open={this.state.open}
+                            handleClose={this.handleClose}
+                            success={this.state.success}
+                            isLoading={this.state.isLoading}
+                            action={this.state.action}
+                            />
+                          <FormDialog
+                            open={this.state.open_nf}
+                            type={"number"}
+                            value={this.state.nf_po_number}
+                            handleChange={this.handleChange}
+                            handleEvent={this.handleAddNF}
+                            handleClose={this.handleClose}
+                            message={"Input PO Initials"}
+                            />
                     </div>    
                 }
               />

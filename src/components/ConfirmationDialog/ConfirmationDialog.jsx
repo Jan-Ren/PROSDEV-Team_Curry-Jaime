@@ -85,7 +85,7 @@ class ConfirmationDialog extends Component {
                         </Fab>
                         {this.props.isLoading && <CircularProgress size={68} className={classes.fabProgress} />}
                       </div>
-                      {this.props.isLoading ? '' : `${this.props.action} Successfully`}
+                      {this.props.isLoading ? '' : this.props.success ? `${this.props.action} Successfully` : `${this.props.action} Failed`}
                     </div>
                     </DialogContentText>
                   </DialogContent>
