@@ -113,9 +113,9 @@ class POTableList extends Component {
       const res = await api.updatePOById(po._id, po)
       console.log(res.data)
       // alert("Success")
-      setTimeout(() => {
-        this.setState({ isLoading: false, success: true })
-      }, 1500)
+      this.setState({ isLoading: false, success: true })
+      // setTimeout(() => {
+      // }, 1500)
     } catch (error) {
       alert(error)
     }
@@ -205,10 +205,9 @@ class POTableList extends Component {
                             :
                             this.state.PO.map((prop, key) => {
                               return (
-                                <tr key={key}>
-                                  {/* {prop.map((prop, key) => {
-                                    return <td key={key}>{prop}</td>;
-                                  })} */}
+                                !prop.is_cancelled ?
+
+                                (<tr key={key}>                                  
                                   <td key={key+1}>{prop.po_number}</td>
                                   <td key={key+2}>{prop.recipient}</td>
                                   <td key={key+3}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
@@ -220,7 +219,9 @@ class POTableList extends Component {
                                     <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                     <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
                                   </td>
-                                </tr>
+                                </tr>)
+                                :
+                                ''
                               );
                           })}
                         </tbody>
