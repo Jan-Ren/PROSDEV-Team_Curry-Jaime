@@ -126,16 +126,19 @@ class AdminPOTableList extends Component {
                 ctTableResponsive
                 content={
                   <div>
-                    <Col md={8}>
+                    <Col md={12}>
                     <Form inline>
                       <FormGroup controlId="formInlineDateFrom">
-                          <ControlLabel>Dates</ControlLabel>{' '}
+                          <ControlLabel>Date from</ControlLabel>{' '}
                         <FormControl type="date" />
                         </FormGroup>{' '}
-                        <FormGroup controlId="formInlineDateFrom">  
+                        <FormGroup controlId="formInlineDateTo">  
+                        <ControlLabel>to</ControlLabel>{' '}
                           <FormControl type="date" />
                         </FormGroup>{' '}
-                        <FormGroup>
+                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-filter"/> Filter</Button>{' '}
+
+                        <FormGroup className="pull-right">
                         <InputGroup>
                           <FormControl type="number" placeholder="Search PO#" />
                           <InputGroup.Addon>
@@ -143,6 +146,14 @@ class AdminPOTableList extends Component {
                           </InputGroup.Addon>
                         </InputGroup>
                       </FormGroup>
+                      <FormGroup className="pull-right">
+                        <InputGroup>
+                          <FormControl type="number" placeholder="Search PRF#" />
+                          <InputGroup.Addon>
+                            <Glyphicon glyph="search" />
+                          </InputGroup.Addon>
+                        </InputGroup>
+                        </FormGroup>
                     </Form>
                   </Col>
                     {
