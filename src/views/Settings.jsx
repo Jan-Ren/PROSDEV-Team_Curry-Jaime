@@ -28,25 +28,101 @@ import {
 import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
-
+import users from "api/users";
 
 class NewPO extends Component {
 
-  state = {
-    PAXNames:[],
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      isLoading:'',
+      admin_new_password:'',
+      admin_curr_password:'',
+      admin_retype_password:'',
+      employee_new_password:'',
+      employee_curr_password:'',
+      employee_retype_password:''
+    }    
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSaveAdminPassword = this.handleSaveAdminPassword.bind(this)
+    this.handleSaveEmployeePassword = this.handleSaveEmployeePassword.bind(this)
   }
 
-  addName(){
-    this.setState({PAXNames: [...this.state.PAXNames, ""]})
+  handleSaveAdminPassword = async (e) => {
+    e.preventDefault()
+    this.setState({ isLoading: true, open: true })
+    const payload = {
+      isAdmin : true,
+      password: this.state.admin_curr_password,
+      new_password: this.state.admin_new_password
+    }
+      console.log(this.state)
+      // alert("saving please wait")      
+      try {
+        await users.updatePassword(payload).then(res => {   
+          alert("saving done")
+        })
+        this.setState({
+          admin_new_password:'',
+          admin_curr_password:'',
+          admin_retype_password:'',
+          employee_new_password:'',
+          employee_curr_password:'',
+          employee_retype_password:''
+        })
+        // alert("saving done")
+        setTimeout(() => {
+          this.setState({ isLoading: false, success: true })    
+        }, 1500)
+        
+      } catch (error) {
+        console.log(error.message)
+        alert(error.message)
+      }
+    
   }
-  handleChange(e, index){
-    this.state.PAXNames[index] = e.target.value
-    this.setState({PAXNames:this.state.PAXNames})
+
+  handleChange(e){
+    e.preventDefault()
+    const {name, value} = e.target
+    this.setState({[name]: value})
   }
-  handleRemove(index){
-    this.state.PAXNames.splice(index,1)
-    this.setState({PAXNames: this.state.PAXNames})
+
+  handleSaveEmployeePassword = async (e) => {
+    e.preventDefault()
+    this.setState({ isLoading: true, open: true })
+    const payload = {
+      isAdmin : false,
+      password: this.state.employee_curr_password,
+      new_password: this.state.employee_new_password
+    }
+      console.log(this.state)
+      // alert("saving please wait")      
+      try {
+        await users.updatePassword(payload).then(res => {   
+          alert("saving done")
+        })
+        this.setState({
+          admin_new_password:'',
+          admin_curr_password:'',
+          admin_retype_password:'',
+          employee_new_password:'',
+          employee_curr_password:'',
+          employee_retype_password:''
+        })
+        // alert("saving done")
+        setTimeout(() => {
+          this.setState({ isLoading: false, success: true })    
+        }, 1500)
+        
+      } catch (error) {
+        console.log(error.message)
+        alert(error.message)
+      }
+    
   }
+
   render() {
     return (
       <div className="content">
@@ -56,7 +132,7 @@ class NewPO extends Component {
             <Card
                 title="Admin"
                 content={
-                <form>
+                <form onSubmit={this.handleSaveAdminPassword.bind(this)}>
                     <FormInputs
                     ncols={["col-md-5"]}
                     properties={[
@@ -64,6 +140,9 @@ class NewPO extends Component {
                         label: "Current Password: ",
                         type: "password",
                         bsClass: "form-control",
+                        name:"admin_curr_password",
+                        value:this.state.admin_curr_password,
+                        onChange: this.handleChange
                         }
 
                     ]}
@@ -75,6 +154,9 @@ class NewPO extends Component {
                         label: "New Password: ",
                         type: "password",
                         bsClass: "form-control",
+                        name:"admin_new_password",
+                        value:this.state.admin_new_password,
+                        onChange: this.handleChange
                         }
 
                     ]}
@@ -86,11 +168,14 @@ class NewPO extends Component {
                         label: "Re-Type ",
                         type: "password",
                         bsClass: "form-control",
+                        name:"admin_retype_password",
+                        value:this.state.admin_retype_password,
+                        onChange: this.handleChange
                         }
 
                     ]}
                     />
-                     <Button pullRight bsStyle="success" fill> <i className="pe-7s-diskette" /> Save</Button>
+                     <Button pullRight bsStyle="success" fill type="submit"> <i className="pe-7s-diskette" /> Save</Button>
                     <div className="clearfix" />
                 </form>
                 }
@@ -101,7 +186,7 @@ class NewPO extends Component {
             <Card
                 title="Employee"
                 content={
-                <form>
+                <form onSubmit={this.handleSaveEmployeePassword.bind(this)}>
                     <FormInputs
                     ncols={["col-md-5"]}
                     properties={[
@@ -109,6 +194,9 @@ class NewPO extends Component {
                         label: "Current Password: ",
                         type: "password",
                         bsClass: "form-control",
+                        name:"employee_curr_password",
+                        value:this.state.employee_curr_password,
+                        onChange: this.handleChange
                         }
 
                     ]}
@@ -120,6 +208,9 @@ class NewPO extends Component {
                         label: "New Password: ",
                         type: "password",
                         bsClass: "form-control",
+                        name:"employee_new_password",
+                        value:this.state.employee_new_password,
+                        onChange: this.handleChange
                         }
 
                     ]}
@@ -131,11 +222,14 @@ class NewPO extends Component {
                         label: "Re-Type ",
                         type: "password",
                         bsClass: "form-control",
+                        name:"employee_retype_password",
+                        value:this.state.employee_retype_password,
+                        onChange: this.handleChange
                         }
 
                     ]}
                     />
-                    <Button pullRight bsStyle="success" fill> <i className="pe-7s-diskette" /> Save</Button>
+                    <Button pullRight bsStyle="success" fill type="submit"> <i className="pe-7s-diskette" /> Save</Button>
                     <div className="clearfix" />
                 </form>
                 }

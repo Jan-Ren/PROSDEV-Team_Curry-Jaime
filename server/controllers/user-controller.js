@@ -146,8 +146,8 @@ getUser = async (req, res) => {
 }
 
 updatePassword = async (req, res) => {
-    const { password, isAdmin } = req.body
-
+    const { password, isAdmin, new_password } = req.body
+    
     if (!req.body) {
         return res.status(400).json({
             success: false,
@@ -155,35 +155,44 @@ updatePassword = async (req, res) => {
         })
     }
 
-    User.findOne({isAdmin: isAdmin}, (err, user) => {
+    await User.findOne({isAdmin: isAdmin}, async (err, user) => {
         if (err) {
             return res.status(404).json({
                 err,
                 message: 'User not found!',
             })
         }
-
-        bcrypt.genSalt(10, (err, salt) => {
-            bcrypt.hash(password, salt, (err, hash) => {
-                if (err) throw err;
-                user.password = hash;
-                user
-            .save()
-            .then(() => {
-                return res.status(200).json({
-                    success: true,
-                    id: user._id,
-                    message: 'User updated!',
-                })
+        //Check if passwords match
+        const isMatch = await bcrypt.compare(password, user.password);     
+        
+        if (isMatch) {
+            bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(new_password, salt, (err, hash) => {
+                    if (err) throw err;
+                    user.password = hash;
+                    user
+                .save()
+                .then(() => {
+                    return res.status(200).json({
+                        success: true,
+                        id: user._id,
+                        message: 'User updated!',
+                    })
+                                })
+                                .catch(error => {
+                                return res.status(404).json({
+                                error,
+                                message: 'User not updated!',
+                                })
                             })
-                            .catch(error => {
-                            return res.status(404).json({
-                            error,
-                            message: 'User not updated!',
-                            })
-                        })
-                })
-            });
+                    })
+                });
+        } else {
+            return res
+            .status(400)
+            .json({ passwordincorrect: "Password incorrect" });
+        }
+        
         });    
 }
 
