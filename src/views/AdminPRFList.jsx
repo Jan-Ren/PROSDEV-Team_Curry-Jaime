@@ -98,8 +98,13 @@ class PRFListFolders extends Component {
       this.setState({ isLoading: true, open: true, action: "Add", open_nf: false })
       const { nf_prf_number } = this.state
       
-      await api.insertNF_PRF({nf_prf_number})
-      this.setState({ isLoading: false, success: true })
+      if (nf_prf_number/100 > 0 && nf_prf_number/100 <= 9) {
+        await api.insertNF_PRF({nf_prf_number})
+        this.setState({ isLoading: false, success: true })
+      }
+      else {
+        this.setState({ isLoading: false, success: false })
+      }
     } catch (error) {
       this.setState({ isLoading: false, success: false })
     }
