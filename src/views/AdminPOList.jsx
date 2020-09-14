@@ -58,7 +58,42 @@ class POListFolders extends Component {
       console.log(error)
     }
   }
+  deleteWorkingDirectory = async (working_directory) => {
+    this.setState({ isLoading: true})
+    try{
+        let temp = working_directory.po.map(async po_id => {
+          try {          
+            // alert(prf_id)
+            // get prf's id
+            const prf_id = await (await api.getPOById(po_id)).data.data.prf
 
+            // get prf
+            const prf = await (await api.getPRFById(prf_id)).data.data
+            
+
+            const index = prf.po.indexOf(po_id)
+            prf.po.splice(index, 1)
+
+            await api.updatePRFById(prf_id, prf)
+          
+            await api.deletePOById(po_id)
+          } catch (error) {
+            console.log(`hehe ${error}`)
+            alert(error)
+          }
+        })
+        await api.deleteNF_POById(working_directory._id)
+        temp = await Promise.all(temp)
+
+        this.setState({ isLoading: false, success: true })
+        window.location.reload()
+      }catch (error) {
+        alert(error)
+        this.setState({ isLoading: false, success: false })
+        window.location.reload()
+      }
+
+  }
   setWorkingDirectory = async (curr_working_directory) => {
     //FOR EMPLOYEE
     const payload = {
@@ -150,7 +185,7 @@ class POListFolders extends Component {
                                         <td key={key}>{prop.nf_po_number}</td>
 
                                         <td>
-                                        <Button variant="outline-secondary" bsStyle="danger" className="pull-right"><i className="pe-7s-close-circle"/>Delete</Button>
+                                        <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.deleteWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-close-circle"/>Delete</Button>
                                         <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
                                         <Link to={{pathname: '/admin/PO-List', state: {NF_PO_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
                                         </td>
