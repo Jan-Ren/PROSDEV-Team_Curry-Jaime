@@ -57,11 +57,7 @@ class PRFListFolders extends Component {
   }
 
   deleteWorkingDirectory = async (working_directory) => {
-    //FOR EMPLOYEE
-    const payload = {
-      prf_folder: working_directory
-    }
-    
+    this.setState({ isLoading: true})
     try{
         let temp = working_directory.prf.map(async prf_id => {
           try {          
@@ -89,8 +85,13 @@ class PRFListFolders extends Component {
         })
         await api.deleteNF_PRFById(working_directory._id)
         temp = await Promise.all(temp)
+
+        this.setState({ isLoading: false, success: true })
+        window.location.reload()
       }catch (error) {
         alert(error)
+        this.setState({ isLoading: false, success: false })
+        window.location.reload()
       }
 
   }
