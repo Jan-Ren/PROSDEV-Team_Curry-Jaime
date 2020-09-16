@@ -50,63 +50,69 @@ class AdminPOTableList extends Component {
     this.setState({ isLoading: true })
     const NF = e.target.value
     console.log(NF)
-    try {
-      const NF_PRF = await (await api.getNF_PRFById(NF)).data.data
-      let prf = NF_PRF.prf.map(async prf_reference => {
-        try {
-          return await (await api.getPRFById(prf_reference)).data.data
-        } catch (error) {
-          console.log(error)
-          alert(error)
-        }
-      })
-
-      prf = await Promise.all(prf)
-      prf = prf.filter(p => {
-        if (!p.is_cancelled)
-          return p
-      })
-      console.log(prf)
-      
-      let po
-      let temp = prf.map( async (p, index) => {
-
-        po = p.po.map(async po_reference => {
+    
+    if (NF === "Select PRF Folder")
+    this.setState({ PRF: [], isLoading: false })
+    
+    else {      
+      try {
+        const NF_PRF = await (await api.getNF_PRFById(NF)).data.data
+        let prf = NF_PRF.prf.map(async prf_reference => {
           try {
-            const val = await (await api.getPOById(po_reference)).data.data
-            console.log(val)
-            return val
+            return await (await api.getPRFById(prf_reference)).data.data
           } catch (error) {
             console.log(error)
+            alert(error)
           }
         })
+  
+        prf = await Promise.all(prf)
+        prf = prf.filter(p => {
+          if (!p.is_cancelled)
+            return p
+        })
+        console.log(prf)
         
-        po = await Promise.all(po)
-        console.log(po)
-
-        // add all po total
-        if (po.length > 0) {
-          const total = po.reduce((prev, next) => prev.total + next.total)
-          console.log(total)
-          alert(total)
-          // assign prf po_amount
-          p.po_amount = total
-          // assugn prf gross
-          p.gross = p.total - total
-          alert(p.po_amount + " " + p.gross)
-        }
-
-        return p
-      })
-      temp = await Promise.all(temp)
-      console.log(temp)
-      alert(temp)
-      this.setState({ PRF: prf }, () => console.log(this.state.PRF))
-    } catch (error) {
-      console.log(`getting prf ${error}`)
-      alert(error)
+        let po
+        let temp = prf.map( async (p, index) => {
+  
+          po = p.po.map(async po_reference => {
+            try {
+              const val = await (await api.getPOById(po_reference)).data.data
+              console.log(val)
+              return val
+            } catch (error) {
+              console.log(error)
+            }
+          })
+          
+          po = await Promise.all(po)
+          console.log(po)
+  
+          // add all po total
+          if (po.length > 0) {
+            const total = po.reduce((prev, next) => prev.total + next.total)
+            console.log(total)
+            alert(total)
+            // assign prf po_amount
+            p.po_amount = total
+            // assugn prf gross
+            p.gross = p.total - total
+            alert(p.po_amount + " " + p.gross)
+          }
+  
+          return p
+        })
+        temp = await Promise.all(temp)
+        console.log(temp)
+        alert(temp)
+        this.setState({ PRF: prf }, () => console.log(this.state.PRF))
+      } catch (error) {
+        console.log(`getting prf ${error}`)
+        alert(error)
+      }
+      this.setState({ isLoading: false })
     }
-    this.setState({ isLoading: false })
   }
 
   render() {

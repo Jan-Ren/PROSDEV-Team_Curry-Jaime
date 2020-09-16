@@ -54,7 +54,6 @@ class POTableList extends Component {
       const { NF_PO_id } = this.props.location.state
       const nf_po = await (await api.getNF_POById(NF_PO_id)).data.data
       this.setState({ NF_PO: nf_po })
-      // alert(PO.length)
 
       try {
         let po = this.state.NF_PO.po.map(async po_reference => {
@@ -70,8 +69,11 @@ class POTableList extends Component {
         })
     
         po = await Promise.all(po)
-          
-        // console.log(this.state.PRF)
+
+        po = po.filter(p => {
+          if (!p.is_cancelled)
+            return p
+        })
         
         let prf = po.map(async po_reference => {
           if ( po_reference.prf) {
@@ -87,7 +89,7 @@ class POTableList extends Component {
             console.log(index)
             po[index].prf = p
           }
-        })
+        })        
   
         this.setState({ PO: po, loading: false})
         
@@ -109,17 +111,14 @@ class POTableList extends Component {
   
   handleCancel = async (po) => {
     this.setState({ isLoading: true, open: true, action: 'Cancel' })
-    console.log(po)
-    // alert(po._id)
+    
     po.is_cancelled = true
     po.last_modified = Date.now()
     try {
       const res = await api.updatePOById(po._id, po)
-      console.log(res.data)
-      // alert("Success")
+      
       this.setState({ isLoading: false, success: true })
-      // setTimeout(() => {
-      // }, 1500)
+      
     } catch (error) {
       alert(error)
     }
@@ -232,9 +231,9 @@ class POTableList extends Component {
                                   <td key={key+2}>{prop.recipient}</td>
                                   <td key={key+4}>
                                     {!prop.paid_date ? 
-                                      <Button bsStyle="info" onClick={() => { this.setState({ open_paiddate:true, po_edit:prop }) }}>Add Paid Date</Button>
+                                      <Button onClick={() => { this.setState({ open_paiddate:true, po_edit:prop }) }}>Add Paid Date</Button>
                                       : 
-                                      <Button bsStyle="info" onClick={() => { this.setState({ open_paiddate:true, po_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
+                                      <Button bsStyle="success" onClick={() => { this.setState({ open_paiddate:true, po_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
                                     }</td>
                                   <td key={key+4}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
                                   <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>

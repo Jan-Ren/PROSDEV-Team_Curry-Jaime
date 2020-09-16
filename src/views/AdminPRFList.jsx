@@ -60,8 +60,7 @@ class PRFListFolders extends Component {
     this.setState({ isLoading: true})
     try{
         let temp = working_directory.prf.map(async prf_id => {
-          try {          
-            // alert(po_id)
+          try {
             // get po's id
             const po_id = await (await api.getPRFById(prf_id)).data.data.po
             let temp1 = po_id.map(async poid => {
