@@ -42,15 +42,58 @@ class PRFListFolders extends Component {
 
   componentDidMount = async () => {
     this.setState({ isLoading: true })
-
-    await api.getAllNF_PRF().then(prfFolder => {
-        this.setState({
-            prfFolder: prfFolder.data.data,
-            isLoading: false,
-        }, () => {
+    try{
+      await api.getAllNF_PRF().then(prfFolder => {
+      this.setState({
+        prfFolder: prfFolder.data.data,
+        isLoading: false,
+      }, () => {
           console.log(this.state.prfFolder)
         })
-    })
+      })
+    }catch(e){
+      console.log(e)
+    }
+  }
+
+  deleteWorkingDirectory = async (working_directory) => {
+    this.setState({ isLoading: true})
+    try{
+        let temp = working_directory.prf.map(async prf_id => {
+          try {          
+            // alert(po_id)
+            // get po's id
+            const po_id = await (await api.getPRFById(prf_id)).data.data.po
+            let temp1 = po_id.map(async poid => {
+               // get po's folder id
+              const NFPO_id = await (await api.getPOById(poid)).data.data.po_folder
+              // get po folder
+              const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
+
+              const index = NFPO.po.indexOf(po_id)
+             NFPO.po.splice(index, 1)
+
+             await api.deletePOById(po_id)
+              await api.updateNF_POById(NFPO_id, NFPO)
+            })
+            await api.deletePRFById(prf_id)
+            temp1 = await Promise.all(temp)
+          } catch (error) {
+            console.log(`hehe ${error}`)
+            alert(error)
+          }
+        })
+        await api.deleteNF_PRFById(working_directory._id)
+        temp = await Promise.all(temp)
+
+        this.setState({ isLoading: false, success: true })
+        window.location.reload()
+      }catch (error) {
+        alert(error)
+        this.setState({ isLoading: false, success: false })
+        window.location.reload()
+      }
+
   }
 
   setWorkingDirectory = async (curr_working_directory) => {
@@ -144,7 +187,7 @@ class PRFListFolders extends Component {
                                       <td key={key}>{prop.nf_prf_number}</td>
 
                                       <td>
-                                      <Button variant="outline-secondary" bsStyle="danger" className="pull-right" ><i className="pe-7s-close-circle"/>Delete</Button>
+                                      <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.deleteWorkingDirectory(prop)} className="pull-right" ><i className="pe-7s-close-circle"/>Delete</Button>
                                       <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
                                       <Link to={{pathname: '/admin/PRF-List', state: {NF_PRF_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
                                       </td>
