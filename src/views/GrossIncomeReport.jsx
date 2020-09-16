@@ -52,8 +52,16 @@ class AdminPOTableList extends Component {
 
   handleTotal () {
     let total = 0
-    if (this.state.PRF.length > 0)
-      total = this.state.PRF.reduce((prev, next) => prev.gross + next.gross)
+    if (this.state.PRF.length > 0) {
+      total = this.state.PRF.reduce((prev, next) => {
+        console.log(prev, next)
+        if (!prev.gross)
+          return prev + next.gross
+        
+        return prev.gross + next.gross
+      })
+      
+    }
     
     this.setState({ total })
   }
@@ -61,7 +69,7 @@ class AdminPOTableList extends Component {
   handleSelect = async (e) => {
     this.setState({ isLoading: true })
     const NF = e.target.value
-    console.log(NF)
+    
     
     if (NF === "Select PRF Folder")
     this.setState({ PRF: [], isLoading: false })
@@ -83,7 +91,6 @@ class AdminPOTableList extends Component {
           if (!p.is_cancelled)
             return p
         })
-        console.log(prf)
         
         let po
         let temp = prf.map( async (p, index) => {
@@ -91,7 +98,6 @@ class AdminPOTableList extends Component {
           po = p.po.map(async po_reference => {
             try {
               const val = await (await api.getPOById(po_reference)).data.data
-              console.log(val)
               return val
             } catch (error) {
               console.log(error)
@@ -99,7 +105,6 @@ class AdminPOTableList extends Component {
           })
           
           po = await Promise.all(po)
-          console.log(po)
   
           // add all po total
           if (po.length > 0) {
@@ -112,10 +117,8 @@ class AdminPOTableList extends Component {
             // assign prf po_amount
             p.po_amount = total
             // assugn prf gross
-            console.log(p.total, total)
             p.gross = p.total - total            
           } else {
-            console.log(p.total)
             p.po_amount = 0
             p.gross = p.total
           }
@@ -123,8 +126,8 @@ class AdminPOTableList extends Component {
           return p
         })
         temp = await Promise.all(temp)
-        this.handleTotal()
         this.setState({ PRF: prf })
+        this.handleTotal()        
       } catch (error) {
         console.log(`getting prf ${error}`)
         alert(error)
