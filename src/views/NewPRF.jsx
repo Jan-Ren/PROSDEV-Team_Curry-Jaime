@@ -56,7 +56,7 @@ class NewPRF extends Component {
     if (this.props.location.state) {
       console.log(this.props.location.state.PRF)
       // alert('waw')
-      const { prf_number, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = this.props.location.state.PRF
+      const { prf_number, po, pax, recipient, particulars, php, usd, total, conversion_rate, prepared_by, approved_by, received_by} = this.props.location.state.PRF
       this.setState({
           prf_number,
           pax,
@@ -69,6 +69,7 @@ class NewPRF extends Component {
           prepared_by,
           approved_by,
           received_by,
+          po,
       })
 
       if (this.props.location.state.is_cancelled)
@@ -256,7 +257,7 @@ class NewPRF extends Component {
           <Row>
             <Col md={8}>
               <Card
-                title="New PRF"
+                title={this.props.location.state ? `View PRF` : `New PRF`}
                 content={
                   <form onSubmit={this.handleSave.bind(this)}>
                     

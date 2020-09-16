@@ -55,6 +55,7 @@ class POListFolders extends Component {
         })
       })
     } catch (error) {
+      this.setState({ poFolder: [], isLoading: false })
       console.log(error)
     }
   }
@@ -178,21 +179,27 @@ class POListFolders extends Component {
                                 </tr>
                                 </thead> */}
                                 <tbody>
-                                {this.state.poFolder.map((prop, key) => {
-                                    return (
-                                    <tr key={key}>
+                                {
+                                  !this.state.poFolder.length ?
+                                  <tr><td>
+                                    This list is empty.
+                                  </td></tr> :
+                                  this.state.poFolder.map((prop, key) => {
+                                      return (
+                                      <tr key={key}>
 
-                                        <td key={key}>{prop.nf_po_number}</td>
+                                          <td key={key}>{prop.nf_po_number}</td>
 
-                                        <td>
-                                        <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.deleteWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-close-circle"/>Delete</Button>
-                                        <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
-                                        <Link to={{pathname: '/admin/PO-List', state: {NF_PO_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
-                                        </td>
-                                    </tr>
-                                    
-                                    );
-                                })}
+                                          <td>
+                                          <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.deleteWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-close-circle"/>Delete</Button>
+                                          <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
+                                          <Link to={{pathname: '/admin/PO-List', state: {NF_PO_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
+                                          </td>
+                                      </tr>
+                                      
+                                      );
+                                  })
+                                }
                                 
                                 </tbody>
                             </Table>

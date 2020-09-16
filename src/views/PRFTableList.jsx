@@ -154,10 +154,11 @@ class PRFTableList extends Component {
                       <tbody>
                         {
                           !this.state.PRF.length ?
-                            <p>
-                              This list is empty.
-                            </p>
-                          :
+                          
+                          <Row><Col md={12}>
+                            This list is empty.
+                          </Col></Row> :
+
                           this.state.PRF.map((prop, key) => {
                             return (
                               <tr key={key}>

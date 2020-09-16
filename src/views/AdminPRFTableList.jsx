@@ -68,13 +68,13 @@ class PRFTableList extends Component {
         })
   
         prf = await Promise.all(prf)
+
+        prf = prf.filter( p => {
+          if (!p.is_cancelled)
+            return p
+        })
   
-        this.setState({ PRF: prf, loading: false }, () => console.log(this.state.PRF) )
-  
-        // const user = await (await users.getUser({ token: window.localStorage.getItem('token')})).data.data
-        
-        // const NF_PO = await (await api.getNF_POById(user.po_folder)).data.data
-        // this.setState({ NF_PO }, () => console.log(this.state.NF_PO))
+        this.setState({ PRF: prf, loading: false }, () => console.log(this.state.PRF) )  
         
       } catch (error) {
         console.log(error.message)
@@ -87,23 +87,19 @@ class PRFTableList extends Component {
   }
 
   handleCancel = async (prf) => {
-    this.setState({ isLoading: true, open: true, action: 'Cancel' })
-    console.log(prf)
-    // alert(prf._id)
+    this.setState({ isLoading: true, open: true, action: 'Cancel' })    
+    
     prf.is_cancelled = true
     prf.last_modified = Date.now()
     try {
       const res = await api.updatePRFById(prf._id, prf)
-      // alert(prf.po.length)
+      
       prf.po.map(async po_id => {
-        const po = await (await api.cancelPOById(po_id)).data.data
-        // alert(po.is_cancelled)
+        const po = await (await api.cancelPOById(po_id)).data.data        
       })
-      console.log(res.data)
-      // alert("Success")
+      
       this.setState({ isLoading: false, success: true })
-      // setTimeout(() => {
-      // }, 1500)
+      
     } catch (error) {
       alert(error)
     }
@@ -234,10 +230,10 @@ class PRFTableList extends Component {
                       <tbody>
                         {
                           !this.state.PRF.length ?
-                            <p>
-                              This list is empty.
-                            </p>
-                          :
+                          <Row><Col md={12}>
+                            This list is empty.
+                          </Col></Row> :
+                          
                           this.state.PRF.map((prop, key) => {
                             return (
                               !prop.is_cancelled ?
@@ -248,9 +244,9 @@ class PRFTableList extends Component {
                                 <td key={key+2}>{prop.recipient}</td>
                                 <td key={key+4}>
                                   {!prop.paid_date ? 
-                                    <Button bsStyle="info" onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>Add Paid Date</Button>
+                                    <Button  onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>Add Paid Date</Button>
                                      : 
-                                     <Button bsStyle="info" onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
+                                     <Button bsStyle="success" onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
                                   }</td>
                                 <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                 <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
