@@ -182,25 +182,25 @@ class POTableList extends Component {
                 content={
                   <div>
                     <Col md={12}>
-                    <Form inline>
-                      <FormGroup controlId="formInlineDateFrom">
-                          <ControlLabel>Dates From</ControlLabel>{' '}
-                        <FormControl type="date" />
-                        </FormGroup>{' '}
-                        <FormGroup controlId="formInlineDateFrom">  
-                        <ControlLabel>to</ControlLabel>{' '}
+                      <Form inline>
+                        <FormGroup controlId="formInlineDateFrom">
+                            <ControlLabel>Dates From</ControlLabel>{' '}
                           <FormControl type="date" />
-                        </FormGroup>{' '}
-                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/>Filter Date</Button>{' '}
-                        
-                        <InputGroup className="pull-right">
-                          <FormControl type="number" placeholder="Search PO#" />
-                          <InputGroup.Addon>
-                            <Glyphicon glyph="search" />
-                          </InputGroup.Addon>
-                        </InputGroup>                        
-                    </Form>
-                  </Col>
+                          </FormGroup>{' '}
+                          <FormGroup controlId="formInlineDateFrom">  
+                          <ControlLabel>to</ControlLabel>{' '}
+                            <FormControl type="date" />
+                          </FormGroup>{' '}
+                          <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/>Filter Date</Button>{' '}
+                          
+                          <InputGroup className="pull-right">
+                            <FormControl type="number" placeholder="Search PO#" />
+                            <InputGroup.Addon>
+                              <Glyphicon glyph="search" />
+                            </InputGroup.Addon>
+                          </InputGroup>                        
+                      </Form>
+                    </Col>
                     {
                       this.state.loading ?
                       <div style={{padding: "100px 0", textAlign: "center"}}>
@@ -218,10 +218,9 @@ class POTableList extends Component {
                         <tbody>
                           {                        
                             !this.state.PO.length ?
-                              <p>
-                                This list is empty.
-                              </p>
-                            :
+                            <Row><Col md={12}>
+                              This list is empty.
+                            </Col></Row> :
                             this.state.PO.map((prop, key) => {
                               return (
                                 !prop.is_cancelled ?

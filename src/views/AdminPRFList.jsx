@@ -171,29 +171,30 @@ class PRFListFolders extends Component {
                           </div> : 
 
                           <Table striped hover>
-                              {/* <thead>
-                              <tr>
-                                  {poHArray.map((prop, key) => {
-                                  return <th key={key}>{prop}</th>;
-                                  })}
-                              </tr>
-                              </thead> */}
                               <tbody>
-                              {this.state.prfFolder.map((prop, key) => {
-                                  return (
-                                  <tr key={key}>
+                              {
+                                !this.state.prfFolder.length ?
 
-                                      <td key={key}>{prop.nf_prf_number}</td>
+                                <Row><Col md={12}>
+                                  This list is empty.
+                                </Col></Row> :
 
-                                      <td>
-                                      <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.deleteWorkingDirectory(prop)} className="pull-right" ><i className="pe-7s-close-circle"/>Delete</Button>
-                                      <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
-                                      <Link to={{pathname: '/admin/PRF-List', state: {NF_PRF_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
-                                      </td>
-                                  </tr>
-                                  
-                                  );
-                              })}
+                                this.state.prfFolder.map((prop, key) => {
+                                    return (
+                                    <tr key={key}>
+
+                                        <td key={key}>{prop.nf_prf_number}</td>
+
+                                        <td>
+                                        <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.deleteWorkingDirectory(prop)} className="pull-right" ><i className="pe-7s-close-circle"/>Delete</Button>
+                                        <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
+                                        <Link to={{pathname: '/admin/PRF-List', state: {NF_PRF_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
+                                        </td>
+                                    </tr>
+                                    
+                                    );
+                                })
+                              }
                               
                               </tbody>
                           </Table>

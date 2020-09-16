@@ -161,10 +161,10 @@ class POTableList extends Component {
                         <tbody>
                           {
                             !this.state.PO.length ?
-                              <p>
-                                This list is empty.
-                              </p>
-                            :
+                            <Row><Col md={12}>
+                              This list is empty.
+                            </Col></Row> :
+                            
                             this.state.PO.map((prop, key) => {
                               return (
                                 <tr key={key}>

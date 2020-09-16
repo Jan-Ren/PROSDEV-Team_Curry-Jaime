@@ -23,6 +23,7 @@ import { grossHArray, grossDArray } from "variables/Variables.jsx";
 import FormInputs from "components/FormInputs/FormInputs";
 import api from "api";
 import moment from 'moment'
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 
 class AdminPOTableList extends Component {
@@ -92,20 +93,17 @@ class AdminPOTableList extends Component {
           // add all po total
           if (po.length > 0) {
             const total = po.reduce((prev, next) => prev.total + next.total)
-            console.log(total)
-            alert(total)
+            
             // assign prf po_amount
             p.po_amount = total
             // assugn prf gross
-            p.gross = p.total - total
-            alert(p.po_amount + " " + p.gross)
+            p.gross = p.total - total            
           }
   
           return p
         })
         temp = await Promise.all(temp)
-        console.log(temp)
-        alert(temp)
+        
         this.setState({ PRF: prf }, () => console.log(this.state.PRF))
       } catch (error) {
         console.log(`getting prf ${error}`)
@@ -155,7 +153,9 @@ class AdminPOTableList extends Component {
                   </Col>
                   {
                     this.state.isLoading ?
-                    '' :
+                    <div style={{padding: "100px 0", textAlign: "center"}}>
+                      <CircularProgress />
+                    </div> :
 
                     <Table striped hover>
                     <thead>
@@ -166,18 +166,14 @@ class AdminPOTableList extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      {/* {grossDArray.map((prop, key) => {
-                        return (
-                          <tr key={key}>
-                            {prop.map((prop, key) => {
-                              return <td key={key}>{prop}</td>;
-                            })}
-                            
-                          </tr>
-                        );
-                      })} */}
 
                       {
+                        !this.state.PRF.length ?
+
+                        <Row><Col md={12}>
+                          This list is empty.
+                        </Col></Row> :
+
                         this.state.PRF.map((prop, key) => {
                           return (
                             <tr>
