@@ -21,9 +21,90 @@ import { FormControl,  Form, FormGroup, ControlLabel, Grid, Row, Col, Table} fro
 import Card from "components/Card/Card.jsx";
 import { grossHArray, grossDArray } from "variables/Variables.jsx";
 import FormInputs from "components/FormInputs/FormInputs";
+import api from "api";
+import moment from 'moment'
 
 
 class AdminPOTableList extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      NF_PRF: [],
+      currentNF: {},
+      PRF: [],
+      isLoading: false
+    }
+  }
+
+  componentDidMount = async () => {
+    try {
+      const NF_PRF = await (await api.getAllNF_PRF()).data.data
+      this.setState({ NF_PRF })
+    } catch (error) {
+      alert(error)
+    }
+  }
+
+  handleSelect = async (e) => {
+    this.setState({ isLoading: true })
+    const NF = e.target.value
+    console.log(NF)
+    try {
+      const NF_PRF = await (await api.getNF_PRFById(NF)).data.data
+      let prf = NF_PRF.prf.map(async prf_reference => {
+        try {
+          return await (await api.getPRFById(prf_reference)).data.data
+        } catch (error) {
+          console.log(error)
+          alert(error)
+        }
+      })
+
+      prf = await Promise.all(prf)
+      console.log(prf)
+      
+      let po
+      let temp = prf.map( async (p, index) => {
+
+        po = p.po.map(async po_reference => {
+          try {
+            const val = await (await api.getPOById(po_reference)).data.data
+            console.log(val)
+            return val
+          } catch (error) {
+            console.log(error)
+          }
+        })
+        
+        po = await Promise.all(po)
+        console.log(po)
+
+        // add all po total
+        if (po.length > 0) {
+          const total = po.reduce((prev, next) => prev.total + next.total)
+          console.log(total)
+          alert(total)
+          // assign prf po_amount
+          p.po_amount = total
+          // assugn prf gross
+          p.gross = p.total - total
+          alert(p.po_amount + " " + p.gross)
+        }
+
+        return p
+      })
+      temp = await Promise.all(temp)
+      console.log(temp)
+      alert(temp)
+      this.setState({ PRF: prf }, () => console.log(this.state.PRF))
+    } catch (error) {
+      console.log(`getting prf ${error}`)
+      alert(error)
+    }
+    this.setState({ isLoading: false })
+  }
+
   render() {
     return (
       <div className="content">
@@ -40,10 +121,16 @@ class AdminPOTableList extends Component {
                         
                     <Form inline>
                     <FormGroup controlId="selectPRFFolder">
-                       <FormControl componentClass="select">
-                           <option>Select PRF Folder</option>
-                           <option>...</option>
-                        </FormControl>
+                      <FormControl componentClass="select" onChange={this.handleSelect}>
+                          <option>Select PRF Folder</option>
+                            {
+                              this.state.NF_PRF.map((prop, key) => {
+                                return (        
+                                <option value={prop._id} key={key}>{prop.nf_prf_number}</option>
+                                    )
+                                  })
+                            }
+                                  </FormControl>
                        </FormGroup>{' '}
                       
                         <FormGroup controlId="formInlineDateTo" className="pull-right">  
@@ -56,6 +143,9 @@ class AdminPOTableList extends Component {
 
                     </Form>
                   </Col>
+                  {
+                    this.state.isLoading ?
+                    '' :
 
                     <Table striped hover>
                     <thead>
@@ -66,7 +156,7 @@ class AdminPOTableList extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      {grossDArray.map((prop, key) => {
+                      {/* {grossDArray.map((prop, key) => {
                         return (
                           <tr key={key}>
                             {prop.map((prop, key) => {
@@ -75,10 +165,28 @@ class AdminPOTableList extends Component {
                             
                           </tr>
                         );
-                      })}
+                      })} */}
+
+                      {
+                        this.state.PRF.map((prop, key) => {
+                          return (
+                            <tr>
+
+                              <td key={key}>{prop.prf_number}</td>
+                              <td key={key}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                              <td key={key}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                              <td key={key}>{prop.total}</td>
+                              <td key={key}>{prop.po_amount}</td>
+                              <td key={key}>{prop.gross}</td>
+                            </tr>
+                          )
+                        })
+                      }
                     </tbody>
                   
                   </Table>
+                  }
+
                   <Col md={2}>
                     <Form inline>
                         <FormGroup controlId="total">

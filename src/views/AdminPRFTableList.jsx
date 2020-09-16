@@ -248,9 +248,9 @@ class PRFTableList extends Component {
                                 <td key={key+2}>{prop.recipient}</td>
                                 <td key={key+4}>
                                   {!prop.paid_date ? 
-                                    <Button bsStyle="info" onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>Add Paid Date</Button>
+                                    <Button  onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>Add Paid Date</Button>
                                      : 
-                                     <Button bsStyle="info" onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
+                                     <Button bsStyle="success" onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
                                   }</td>
                                 <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                 <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
