@@ -257,7 +257,7 @@ class NewPRF extends Component {
           <Row>
             <Col md={8}>
               <Card
-                title="New PRF"
+                title={this.props.location.state ? `View PRF` : `New PRF`}
                 content={
                   <form onSubmit={this.handleSave.bind(this)}>
                     
