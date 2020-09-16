@@ -62,6 +62,10 @@ class AdminPOTableList extends Component {
       })
 
       prf = await Promise.all(prf)
+      prf = prf.filter(p => {
+        if (!p.is_cancelled)
+          return p
+      })
       console.log(prf)
       
       let po
