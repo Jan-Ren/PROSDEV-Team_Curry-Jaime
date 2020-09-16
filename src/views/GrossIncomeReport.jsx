@@ -34,8 +34,11 @@ class AdminPOTableList extends Component {
       NF_PRF: [],
       currentNF: {},
       PRF: [],
-      isLoading: false
+      isLoading: false,
+      total: 0
     }
+
+    this.handleTotal = this.handleTotal.bind(this)
   }
 
   componentDidMount = async () => {
@@ -45,6 +48,14 @@ class AdminPOTableList extends Component {
     } catch (error) {
       alert(error)
     }
+  }
+
+  handleTotal () {
+    let total = 0
+    if (this.state.PRF.length > 0)
+      total = this.state.PRF.reduce((prev, next) => prev.gross + next.gross)
+    
+    this.setState({ total })
   }
 
   handleSelect = async (e) => {
@@ -92,26 +103,35 @@ class AdminPOTableList extends Component {
   
           // add all po total
           if (po.length > 0) {
-            const total = po.reduce((prev, next) => prev.total + next.total)
+            let total
+            if (po.length === 1)
+              total = po[0].total
+            else 
+              total = po.reduce((prev, next) => prev.total + next.total)
             
             // assign prf po_amount
             p.po_amount = total
             // assugn prf gross
+            console.log(p.total, total)
             p.gross = p.total - total            
+          } else {
+            console.log(p.total)
+            p.po_amount = 0
+            p.gross = p.total
           }
   
           return p
         })
         temp = await Promise.all(temp)
-        
-        this.setState({ PRF: prf }, () => console.log(this.state.PRF))
+        this.handleTotal()
+        this.setState({ PRF: prf })
       } catch (error) {
         console.log(`getting prf ${error}`)
         alert(error)
       }
       this.setState({ isLoading: false })
     }
-  }
+  }  
 
   render() {
     return (
@@ -197,7 +217,7 @@ class AdminPOTableList extends Component {
                     <Form inline>
                         <FormGroup controlId="total">
                           <ControlLabel>Total</ControlLabel>{' '}
-                        <FormControl type="number" />
+                        <FormControl type="number" value={this.state.total} disabled/>
                         </FormGroup>{' '}
                     </Form>
                 </Col>
