@@ -10,7 +10,7 @@ export const updatePRFById = (id, payload) => api.put(`/PRF/${id}`, payload)
 export const deletePRFById = id => api.delete(`/PRF/${id}`)
 export const getPRFById = id => api.get(`/PRF/${id}`)
 export const getCancelledPRF = () => api.get(`/cancelled-PRF`)
-export const getPRFDateRange = payload => api.post(`/dates/`, payload)
+export const getPRFDateRange = payload => api.post(`/PRF-dates`, payload)
 
 export const insertPO = payload => api.post(`/PO`, payload)
 export const getAllPO = () => api.get(`/All-PO`)
@@ -19,6 +19,7 @@ export const deletePOById = id => api.delete(`/PO/${id}`)
 export const getPOById = id => api.get(`/PO/${id}`)
 export const cancelPOById = id => api.get(`/PO/cancel/${id}`)
 export const getCancelledPO = () => api.get(`/cancelled-PO`)
+export const getPODateRange = payload => api.post(`/PO-dates`, payload)
 
 export const insertNF_PRF = payload => api.post(`/NF_PRF`, payload)
 export const getAllNF_PRF = () => api.get(`/All-NF_PRF`)
@@ -47,6 +48,7 @@ const apis = {
     getPOById,
     cancelPOById,
     getCancelledPO,
+    getPODateRange,
     insertNF_PRF,
     getAllNF_PRF,
     updateNF_PRFById,
