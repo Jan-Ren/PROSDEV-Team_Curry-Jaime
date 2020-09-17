@@ -196,7 +196,7 @@ class PRFTableList extends Component {
       })
       this.setState({ PRF })
     } catch (error)  {
-      alert(error)
+      this.setState({ PRF: [] })
     }
     this.setState({ loading: false })
   }

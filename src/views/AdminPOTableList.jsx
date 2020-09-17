@@ -184,7 +184,7 @@ class POTableList extends Component {
       })
       this.setState({ PO })
     } catch (error)  {
-      alert(error)
+      this.setState({ PO: [] })
     }
     this.setState({ loading: false })
   }
@@ -206,7 +206,7 @@ class POTableList extends Component {
                       <Form inline>
                         <FormGroup controlId="formInlineDateFrom">
                             <ControlLabel>Dates From</ControlLabel>{' '}
-                          <FormControl type="date"  value={this.state.from} onChange={(e) => this.setState({ from: e.target.value })} />
+                          <FormControl type="date" value={this.state.from} onChange={(e) => this.setState({ from: e.target.value })} />
                           </FormGroup>{' '}
                           <FormGroup controlId="formInlineDateFrom">  
                           <ControlLabel>to</ControlLabel>{' '}
