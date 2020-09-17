@@ -27,6 +27,7 @@ import users from "api/users";
 //import { filter } from "core-js/fn/dict";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
+import FormDialog from "components/FormDialog/FormDialog";
 
 class POTableList extends Component {
 
@@ -39,6 +40,9 @@ class POTableList extends Component {
         NF_PO: {},
         open: false,
         success: false,
+        open_paiddate: false,
+        paid_date: '',
+        po_edit: '',
         from: '',
         to: '',
     }
@@ -111,6 +115,22 @@ class POTableList extends Component {
   handleClose = () => {
     this.setState({ open:false });
     window.location.reload()
+  }
+
+  handleChange = (e) => {
+    this.setState({ paid_date: e.target.value })
+  }
+
+  handlePaidDate = async () => {
+    try {
+      this.setState({ isLoading: true, open: true, action: "Update", open_paiddate: false })
+      const { po_edit: po, paid_date } = this.state
+      po.paid_date = paid_date
+      await api.updatePOById(po._id, po)
+      this.setState({ isLoading: false, success: true })
+    } catch (error) {
+      this.setState({ isLoading: false, success: false })
+    }
   }
 
   handleDateFilter = async () => {
@@ -194,7 +214,12 @@ class POTableList extends Component {
                                   })} */}
                                   <td key={key+1}>{prop.po_number}</td>
                                   <td key={key+2}>{prop.recipient}</td>
-                                  <td key={key+3}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                                  <td key={key+3}>
+                                    {!prop.paid_date ? 
+                                      <Button onClick={() => { this.setState({ open_paiddate:true, po_edit:prop }) }}>Add Paid Date</Button>
+                                      : 
+                                      <Button bsStyle="success" onClick={() => { this.setState({ open_paiddate:true, po_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
+                                    }</td>
                                   <td key={key+4}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
                                   <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                   <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
@@ -215,6 +240,15 @@ class POTableList extends Component {
                       success={this.state.success}
                       isLoading={this.state.isLoading}
                       action={this.state.action}
+                      />
+                    <FormDialog
+                      open={this.state.open_paiddate}
+                      type={"date"}
+                      value={this.state.paid_date}
+                      handleChange={this.handleChange}
+                      handleEvent={this.handlePaidDate}
+                      handleClose={this.handleClose}
+                      message={"Input Paid Date"}
                       />
                   </div>
                 }
