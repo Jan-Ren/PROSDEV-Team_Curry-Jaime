@@ -147,11 +147,24 @@ getCancelledPRF = async (req, res) => {
     }).catch(err => console.log(err))
 }
 
+getPRFDateRange = async (req, res) => {    
+    try {
+        const prfs = await PRF.find({ date_created: { $gte: req.body.from, $lte: req.body.to } }).sort({ date_created: 1 })
+        if (!prfs.length) 
+            return res.status(404).json({ success: false, error: `No PRF in these dates` })
+        
+        return res.status(200).json({ success: true, data: prfs })
+    } catch (error) {
+        return res.status(400).json({ success: false, error })
+    }
+}
+
 module.exports = {
     createPRF,
     updatePRF,
     deletePRF,
     getAllPRF,
     getPRFById,
-    getCancelledPRF
+    getCancelledPRF,
+    getPRFDateRange,
 }
