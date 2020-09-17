@@ -218,7 +218,7 @@ class PRFTableList extends Component {
                     <Form inline>
                       <FormGroup controlId="formInlineDateFrom">
                           <ControlLabel>Date From</ControlLabel>{' '}
-                        <FormControl type="date" value={this.state.from} onChange={(e) => this.setState({ from: e.target.value }, () => console.log(this.state.from))} />
+                        <FormControl type="date" value={this.state.from} onChange={(e) => this.setState({ from: e.target.value })} />
                         </FormGroup>{' '}
                         <FormGroup controlId="formInlineDateFrom">  
                         <ControlLabel>to</ControlLabel>{' '}

@@ -40,7 +40,9 @@ class PRFTableList extends Component {
         isLoading: false,
         NF_PRF: {},
         open: false,
-        success: false
+        success: false,
+        from: '',
+        to: ''
     }    
     this.handleCancel = this.handleCancel.bind(this)
   }
@@ -103,6 +105,25 @@ class PRFTableList extends Component {
     this.setState({ open:false });
     window.location.reload()
   }
+
+  handleDateFilter = async () => {
+    this.setState({ loading: true })
+    try {
+      let { from, to } = this.state
+      
+      from = moment(from).startOf('day').toDate()
+      to = moment(to).endOf('day').toDate()
+      const prf = await (await api.getPRFDateRange({ from, to })).data.data
+      const PRF = prf.filter(p => {
+        if (!p.is_cancelled && p.prf_folder === this.state.NF_PRF._id)
+          return p
+      })
+      this.setState({ PRF })
+    } catch (error)  {
+      this.setState({ PRF: [] })
+    }
+    this.setState({ loading: false })
+  }
   
   render() {
     return (
@@ -121,13 +142,13 @@ class PRFTableList extends Component {
                     <Form inline>
                       <FormGroup controlId="formInlineDateFrom">
                           <ControlLabel>Date From</ControlLabel>{' '}
-                        <FormControl type="date" />
+                        <FormControl type="date" value={this.state.from} onChange={(e) => this.setState({ from: e.target.value })}/>
                         </FormGroup>{' '}
                         <FormGroup controlId="formInlineDateFrom">  
                         <ControlLabel>to</ControlLabel>{' '}
-                          <FormControl type="date" />
+                          <FormControl type="date" value={this.state.to} onChange={(e) => this.setState({ to: e.target.value })}/>
                         </FormGroup>{' '}
-                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/>Filter Date</Button>{' '}
+                        <Button variant="outline-primary" bsStyle="primary" onClick={this.handleDateFilter}><i className="pe-7s-check"/>Filter Date</Button>{' '}
                         <InputGroup className="pull-right">
                           <FormControl type="number" placeholder="Search PRF#" />
                           <InputGroup.Addon>
