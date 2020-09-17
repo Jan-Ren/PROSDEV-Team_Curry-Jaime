@@ -35,6 +35,8 @@ class AdminPOTableList extends Component {
       isLoading: false,
       open: false,
       success: false,
+      from: '',
+      to: '',
     }
   }
 
@@ -114,6 +116,25 @@ class AdminPOTableList extends Component {
     window.location.reload()
   }
 
+  handleDateFilter = async () => {
+    this.setState({ loading: true })
+    try {
+      let { from, to } = this.state
+      
+      from = moment(from).startOf('day').toDate()
+      to = moment(to).endOf('day').toDate()
+      const po = await (await api.getPODateRange({ from, to })).data.data
+      const PO = po.filter(p => {
+        if (p.is_cancelled)
+          return p
+      })
+      this.setState({ PO })
+    } catch (error)  {
+      this.setState({ PO: [] })
+    }
+    this.setState({ loading: false })
+  }
+
   render() {
     return (
       <div className="content">
@@ -130,13 +151,13 @@ class AdminPOTableList extends Component {
                     <Form inline>
                       <FormGroup controlId="formInlineDateFrom">
                           <ControlLabel>Date from</ControlLabel>{' '}
-                        <FormControl type="date" />
+                        <FormControl type="date" value={this.state.from} onChange={(e) => this.setState({ from: e.target.value })}/>
                         </FormGroup>{' '}
                         <FormGroup controlId="formInlineDateTo">  
                         <ControlLabel>to</ControlLabel>{' '}
-                          <FormControl type="date" />
+                          <FormControl type="date" value={this.state.to} onChange={(e) => this.setState({ to: e.target.value })}/>
                         </FormGroup>{' '}
-                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-filter"/> Filter Date</Button>{' '}
+                        <Button variant="outline-primary" bsStyle="primary" onClick={this.handleDateFilter}><i className="pe-7s-filter"/> Filter Date</Button>{' '}
 
                         <FormGroup className="pull-right">
                         <InputGroup>
