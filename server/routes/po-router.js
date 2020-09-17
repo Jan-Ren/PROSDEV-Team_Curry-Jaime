@@ -11,5 +11,6 @@ router.get('/PO/:id', POCntrl.getPOById)
 router.get('/All-PO', POCntrl.getAllPO)
 router.get('/PO/cancel/:id', POCntrl.cancelPO)
 router.get('/cancelled-po', POCntrl.getCancelledPO)
+router.post('/PO-dates', POCntrl.getPODateRange)
 
 module.exports = router

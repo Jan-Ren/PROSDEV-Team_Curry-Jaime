@@ -55,7 +55,7 @@ class AdminPOTableList extends Component {
     if (this.state.PRF.length > 0) {
       total = this.state.PRF.reduce((prev, next) => {
         console.log(prev, next)
-        if (!prev.gross)
+        if (prev.gross !== 0 && !prev.gross)
           return prev + next.gross
         
         return prev.gross + next.gross
@@ -112,7 +112,12 @@ class AdminPOTableList extends Component {
             if (po.length === 1)
               total = po[0].total
             else 
-              total = po.reduce((prev, next) => prev.total + next.total)
+              total = po.reduce((prev, next) => {
+                console.log(prev, next)
+                if (prev.total !== 0 && !prev.total)
+                  return prev + next.total
+                return prev.total + next.total 
+              })
             
             // assign prf po_amount
             p.po_amount = total
