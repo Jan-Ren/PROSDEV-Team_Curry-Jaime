@@ -28,6 +28,7 @@ import moment from 'moment'
 import users from "api/users";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
+import FormDialog from "components/FormDialog/FormDialog";
 
 class PRFTableList extends Component {
 
@@ -41,6 +42,9 @@ class PRFTableList extends Component {
         NF_PRF: {},
         open: false,
         success: false,
+        open_paiddate: false,
+        paid_date: '',
+        prf_edit: '',
         from: '',
         to: ''
     }    
@@ -104,6 +108,22 @@ class PRFTableList extends Component {
   handleClose = () => {
     this.setState({ open:false });
     window.location.reload()
+  }
+
+  handleChange = (e) => {
+    this.setState({ paid_date: e.target.value })
+  }
+
+  handlePaidDate = async () => {
+    try {
+      this.setState({ isLoading: true, open: true, action: "Update", open_paiddate: false })
+      const { prf_edit: prf, paid_date } = this.state
+      prf.paid_date = paid_date
+      await api.updatePRFById(prf._id, prf)
+      this.setState({ isLoading: false, success: true })
+    } catch (error) {
+      this.setState({ isLoading: false, success: false })
+    }
   }
 
   handleDateFilter = async () => {
@@ -186,7 +206,12 @@ class PRFTableList extends Component {
                                 
                                 <td key={key+1}>{prop.prf_number}</td>
                                 <td key={key+2}>{prop.recipient}</td>
-                                <td key={key+4}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
+                                <td key={key+4}>
+                                  {!prop.paid_date ? 
+                                    <Button  onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>Add Paid Date</Button>
+                                     : 
+                                     <Button bsStyle="success" onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
+                                  }</td>
                                 <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                 <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                 <td>
@@ -209,6 +234,15 @@ class PRFTableList extends Component {
                     success={this.state.success}
                     isLoading={this.state.isLoading}
                     action={this.state.action}
+                    />
+                  <FormDialog
+                    open={this.state.open_paiddate}
+                    type={"date"}
+                    value={this.state.paid_date}
+                    handleChange={this.handleChange}
+                    handleEvent={this.handlePaidDate}
+                    handleClose={this.handleClose}
+                    message={"Input Paid Date"}
                     />
                   </div>
                 
