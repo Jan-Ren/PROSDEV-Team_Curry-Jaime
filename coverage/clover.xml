@@ -1,6 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1600059571948" clover="3.2.0">
-  <project timestamp="1600059571948" name="All files">
-    <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0" elements="0" coveredelements="0" complexity="0" loc="0" ncloc="0" packages="0" files="0" classes="0"/>
+<coverage generated="1600667214299" clover="3.2.0">
+  <project timestamp="1600667214299" name="All files">
+    <metrics statements="32" coveredstatements="2" conditionals="4" coveredconditionals="0" methods="8" coveredmethods="0" elements="44" coveredelements="2" complexity="0" loc="32" ncloc="32" packages="1" files="1" classes="1"/>
+    <file name="login.component.js" path="C:\Users\Nanette\Desktop\PROSDEV-Team_Curry-Jaime\src\components\Login\login.component.js">
+      <metrics statements="32" coveredstatements="2" conditionals="4" coveredconditionals="0" methods="8" coveredmethods="0"/>
+      <line num="10" count="3" type="stmt"/>
+      <line num="14" count="3" type="stmt"/>
+      <line num="18" count="0" type="stmt"/>
+      <line num="22" count="0" type="stmt"/>
+      <line num="28" count="0" type="stmt"/>
+      <line num="29" count="0" type="stmt"/>
+      <line num="30" count="0" type="stmt"/>
+      <line num="34" count="0" type="stmt"/>
+      <line num="35" count="0" type="stmt"/>
+      <line num="36" count="0" type="stmt"/>
+      <line num="37" count="0" type="stmt"/>
+      <line num="41" count="0" type="stmt"/>
+      <line num="45" count="0" type="stmt"/>
+      <line num="46" count="0" type="stmt"/>
+      <line num="48" count="0" type="stmt"/>
+      <line num="49" count="0" type="stmt"/>
+      <line num="50" count="0" type="stmt"/>
+      <line num="51" count="0" type="stmt"/>
+      <line num="52" count="0" type="stmt"/>
+      <line num="54" count="0" type="stmt"/>
+      <line num="55" count="0" type="stmt"/>
+      <line num="61" count="0" type="stmt"/>
+      <line num="62" count="0" type="stmt"/>
+      <line num="64" count="0" type="stmt"/>
+      <line num="65" count="0" type="stmt"/>
+      <line num="69" count="0" type="stmt"/>
+      <line num="70" count="0" type="stmt"/>
+      <line num="74" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="76" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="77" count="0" type="stmt"/>
+      <line num="79" count="0" type="stmt"/>
+      <line num="84" count="0" type="stmt"/>
+    </file>
   </project>
 </coverage>

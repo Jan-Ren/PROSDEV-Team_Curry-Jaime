@@ -98,7 +98,7 @@ export default class Login extends Component {
                         <div className="form-group">
                             <label>User</label>
                             {/* <input type="email" className="form-control" placeholder="name@example.com" /> */}
-                            <Select required options={options} onChange={this.handleIsAdmin} placeholder="Select an option" />
+                            <Select required options={options} onChange={this.handleIsAdmin} placeholder="Select an option" data-testid="user"/>
                         </div>
                 
                         <div className="form-group">
