@@ -169,11 +169,14 @@ class AdminPOTableList extends Component {
                                   </FormControl>
                        </FormGroup>{' '}
                       
+                       <Button variant="outline-primary" bsStyle="primary" className="pull-right"><i className="pe-7s-filter"/> Filter</Button>{' '}
                         <FormGroup controlId="formInlineDateTo" className="pull-right">  
+                        <ControlLabel>to</ControlLabel>{' '}
                           <FormControl type="date" />
                         </FormGroup>{' '}
+              
                         <FormGroup controlId="formInlineDateFrom" className="pull-right">
-                          <ControlLabel>Dates</ControlLabel>{' '}
+                          <ControlLabel>Date from</ControlLabel>{' '}
                         <FormControl type="date" />
                         </FormGroup>{' '}
 
