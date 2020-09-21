@@ -37,6 +37,7 @@ class PRFTableList extends Component {
 
       this.state = {
         PRF: [],
+        backup_prf:[],
         NF_PRF: {},
         NF_PO: {},
         columns: [],
@@ -51,6 +52,7 @@ class PRFTableList extends Component {
     }
 
     this.handleCancel = this.handleCancel.bind(this)
+    this.handleSearch = this.handleSearch.bind(this)
   }
   
   componentDidMount = async () => {
@@ -76,7 +78,7 @@ class PRFTableList extends Component {
             return p
         })
   
-        this.setState({ PRF: prf, loading: false }, () => console.log(this.state.PRF) )  
+        this.setState({ PRF: prf, loading: false , backup_prf: prf}, () => console.log(this.state.PRF) )  
         
       } catch (error) {
         console.log(error.message)
@@ -85,6 +87,26 @@ class PRFTableList extends Component {
 
     } else {
       this.setState({ redirect: true })
+    }
+  }
+
+  handleSearch = (e) => {
+    let searchQuery =  e.target.value
+    let backup_prfList = [...this.state.backup_prf]
+    if(searchQuery != ""){
+      console.log(searchQuery)
+      let prfList = [...this.state.backup_prf]
+      console.log(prfList)
+      let filteredPRF = prfList.filter(p => {
+        console.log(p.prf_number)
+        if((p.prf_number + '').includes(searchQuery))
+          return p
+      })
+      console.log(filteredPRF)
+      this.setState({ PRF: filteredPRF })
+    }else{
+      console.log("ds")
+      this.setState({ PRF: backup_prfList })
     }
   }
 
@@ -226,7 +248,7 @@ class PRFTableList extends Component {
                         </FormGroup>{' '}
                         <Button variant="outline-primary" bsStyle="primary" onClick={this.handleDateFilter}><i className="pe-7s-check"/>Filter Date</Button>{' '}
                         <InputGroup className="pull-right">
-                          <FormControl type="number" placeholder="Search PRF#" />
+                          <FormControl type="number" placeholder="Search PRF#" onChange={this.handleSearch}/>
                           <InputGroup.Addon>
                             <Glyphicon glyph="search" />
                           </InputGroup.Addon>
