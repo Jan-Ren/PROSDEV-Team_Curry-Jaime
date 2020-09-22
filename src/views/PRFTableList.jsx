@@ -37,6 +37,7 @@ class PRFTableList extends Component {
 
       this.state = {
         PRF: [],
+        backup_prf:[],
         columns: [],
         isLoading: false,
         NF_PRF: {},
@@ -68,7 +69,7 @@ class PRFTableList extends Component {
 
       prf = await Promise.all(prf)
 
-      this.setState({ PRF: prf, NF_PRF: folder })
+      this.setState({ PRF: prf, NF_PRF: folder, backup_prf: prf })
 
       console.log(this.state.PRF)
       this.setState({ loading: false })
@@ -76,6 +77,26 @@ class PRFTableList extends Component {
       
     }
 
+  }
+
+  handleSearch = (e) => {
+    let searchQuery =  e.target.value
+    let backup_prfList = [...this.state.backup_prf]
+    if(searchQuery != ""){
+      console.log(searchQuery)
+      let prfList = [...this.state.backup_prf]
+      console.log(prfList)
+      let filteredPRF = prfList.filter(p => {
+        console.log(p.prf_number)
+        if((p.prf_number + '').includes(searchQuery))
+          return p
+      })
+      console.log(filteredPRF)
+      this.setState({ PRF: filteredPRF })
+    }else{
+      console.log("ds")
+      this.setState({ PRF: backup_prfList })
+    }
   }
 
   handleCancel = async (prf) => {
@@ -170,7 +191,7 @@ class PRFTableList extends Component {
                         </FormGroup>{' '}
                         <Button variant="outline-primary" bsStyle="primary" onClick={this.handleDateFilter}><i className="pe-7s-check"/>Filter Date</Button>{' '}
                         <InputGroup className="pull-right">
-                          <FormControl type="number" placeholder="Search PRF#" />
+                          <FormControl type="number" placeholder="Search PRF#" onChange={this.handleSearch}/>
                           <InputGroup.Addon>
                             <Glyphicon glyph="search" />
                           </InputGroup.Addon>
