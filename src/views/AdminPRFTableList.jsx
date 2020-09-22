@@ -52,7 +52,6 @@ class PRFTableList extends Component {
     }
 
     this.handleCancel = this.handleCancel.bind(this)
-    this.handleSearch = this.handleSearch.bind(this)
   }
   
   componentDidMount = async () => {

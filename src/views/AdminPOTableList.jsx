@@ -34,6 +34,7 @@ class POTableList extends Component {
     super(props)
     this.state = {
         PO: [],
+        backup_po:[],
         NF_PO: {},
         columns: [],
         isLoading: false,
@@ -93,7 +94,7 @@ class POTableList extends Component {
           }
         })        
   
-        this.setState({ PO: po, loading: false})
+        this.setState({ PO: po, loading: false, backup_po: po})
         
       } catch (error) {
         console.log(error.message)
@@ -104,6 +105,26 @@ class POTableList extends Component {
       this.setState({ redirect: true })
     }
 
+  }
+
+  handleSearch = (e) => {
+    let searchQuery =  e.target.value
+    let backup_poList = [...this.state.backup_po]
+    if(searchQuery != ""){
+      console.log(searchQuery)
+      let poList = [...this.state.backup_po]
+      console.log(poList)
+      let filteredPO = poList.filter(p => {
+        console.log(p.po_number)
+        if((p.po_number + '').includes(searchQuery))
+          return p
+      })
+      console.log(filteredPO)
+      this.setState({ PO: filteredPO })
+    }else{
+      console.log("ds")
+      this.setState({ PO: backup_poList })
+    }
   }
 
   handleRedirect = () => {
@@ -215,7 +236,7 @@ class POTableList extends Component {
                           <Button variant="outline-primary" bsStyle="primary" onClick={this.handleDateFilter}><i className="pe-7s-check"/>Filter Date</Button>{' '}
                           
                           <InputGroup className="pull-right">
-                            <FormControl type="number" placeholder="Search PO#" />
+                            <FormControl type="number" placeholder="Search PO#" onChange={this.handleSearch}/>
                             <InputGroup.Addon>
                               <Glyphicon glyph="search" />
                             </InputGroup.Addon>
