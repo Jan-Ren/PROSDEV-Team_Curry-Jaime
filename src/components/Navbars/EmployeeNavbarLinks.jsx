@@ -16,18 +16,18 @@
 
 */
 import React, { Component } from "react";
-import {  Nav, Form, FormControl, Button } from "react-bootstrap";
+import {  Nav } from "react-bootstrap";
 
 class EmployeeNavbarLinks extends Component {
   render() {
-    const notification = (
-      <div>
-        <i className="fa fa-globe" />
-        <b className="caret" />
-        <span className="notification">5</span>
-        <p className="hidden-lg hidden-md">Notification</p>
-      </div>
-    );
+    // const notification = (
+    //   <div>
+    //     <i className="fa fa-globe" />
+    //     <b className="caret" />
+    //     <span className="notification">5</span>
+    //     <p className="hidden-lg hidden-md">Notification</p>
+    //   </div>
+    // );
     return (
       <div>
         <Nav>

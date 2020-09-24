@@ -16,11 +16,10 @@
 
 */
 import React, { Component } from "react";
-import { FormControl,  Form, FormGroup, ControlLabel, Grid, Row, Col, Table} from "react-bootstrap";
+import { FormControl,  Form, FormGroup, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { grossHArray, grossDArray } from "variables/Variables.jsx";
-import FormInputs from "components/FormInputs/FormInputs";
+import { grossHArray } from "variables/Variables.jsx";
 import api from "api";
 import moment from 'moment'
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -35,7 +34,9 @@ class AdminPOTableList extends Component {
       currentNF: {},
       PRF: [],
       isLoading: false,
-      total: 0
+      total: 0,
+      from: '',
+      to: '',
     }
 
     this.handleTotal = this.handleTotal.bind(this)
@@ -46,7 +47,7 @@ class AdminPOTableList extends Component {
       const NF_PRF = await (await api.getAllNF_PRF()).data.data
       this.setState({ NF_PRF })
     } catch (error) {
-      alert(error)
+      alert("No folders to be seen")
     }
   }
 
@@ -72,7 +73,7 @@ class AdminPOTableList extends Component {
     
     
     if (NF === "Select PRF Folder")
-    this.setState({ PRF: [], isLoading: false })
+      this.setState({ PRF: [], isLoading: false })
     
     else {      
       try {
@@ -93,7 +94,7 @@ class AdminPOTableList extends Component {
         })
         
         let po
-        let temp = prf.map( async (p, index) => {
+        prf = prf.map( async (p, index) => {
   
           po = p.po.map(async po_reference => {
             try {
@@ -130,16 +131,76 @@ class AdminPOTableList extends Component {
   
           return p
         })
-        temp = await Promise.all(temp)
-        this.setState({ PRF: prf })
-        this.handleTotal()        
+        prf = await Promise.all(prf)
+        this.setState({ PRF: prf, currentNF: NF_PRF })
+        this.handleTotal()
       } catch (error) {
         console.log(`getting prf ${error}`)
         alert(error)
       }
       this.setState({ isLoading: false })
     }
-  }  
+  }
+
+  handleDateFilter = async () => {
+    this.setState({ isLoading: true })
+    try {
+      let { from, to } = this.state
+      
+      from = moment(from).startOf('day').toDate()
+      to = moment(to).endOf('day').toDate()
+      let prf = await (await api.getPRFDateRange({ from, to })).data.data // filtered prf
+      const PRF = prf.filter(p => {
+        if (!p.is_cancelled && p.prf_folder === this.state.currentNF._id)
+          return p
+      })
+
+      let po
+      prf = PRF.map( async (p, index) => {
+
+        po = p.po.map(async po_reference => {
+          try {
+            const val = await (await api.getPOById(po_reference)).data.data
+            return val
+          } catch (error) {
+            console.log(error)
+          }
+        })
+        
+        po = await Promise.all(po)
+
+        // add all po total
+        if (po.length > 0) {
+          let total
+          if (po.length === 1)
+            total = po[0].total
+          else 
+            total = po.reduce((prev, next) => {
+              console.log(prev, next)
+              if (prev.total !== 0 && !prev.total)
+                return prev + next.total
+              return prev.total + next.total 
+            })
+          
+          // assign prf po_amount
+          p.po_amount = total
+          // assugn prf gross
+          p.gross = p.total - total            
+        } else {
+          p.po_amount = 0
+          p.gross = p.total
+        }
+
+        return p
+      })
+      prf = await Promise.all(prf)
+
+      this.setState({ PRF: prf })
+    } catch (error)  {
+      this.setState({ PRF: [] })
+    }
+    this.setState({ isLoading: false })
+  }
 
   render() {
     return (
@@ -169,24 +230,24 @@ class AdminPOTableList extends Component {
                                   </FormControl>
                        </FormGroup>{' '}
                       
-                       <Button variant="outline-primary" bsStyle="primary" className="pull-right"><i className="pe-7s-filter"/> Filter</Button>{' '}
+                       <Button variant="outline-primary" bsStyle="primary" className="pull-right" onClick={this.handleDateFilter}><i className="pe-7s-filter"/> Filter</Button>{' '}
                         <FormGroup controlId="formInlineDateTo" className="pull-right">  
                         <ControlLabel>to</ControlLabel>{' '}
-                          <FormControl type="date" />
+                          <FormControl type="date" value={this.state.to} onChange={(e) => this.setState({ to: e.target.value })}/>
                         </FormGroup>{' '}
               
                         <FormGroup controlId="formInlineDateFrom" className="pull-right">
                           <ControlLabel>Date from</ControlLabel>{' '}
-                        <FormControl type="date" />
+                        <FormControl type="date" value={this.state.from} onChange={(e) => this.setState({ from: e.target.value })}/>
                         </FormGroup>{' '}
 
                     </Form>
                   </Col>
                   {
                     this.state.isLoading ?
-                    <div style={{padding: "100px 0", textAlign: "center"}}>
+                    <Row style={{padding: "100px 0", textAlign: "center"}}>
                       <CircularProgress />
-                    </div> :
+                    </Row> : 
 
                     <Table striped hover>
                     <thead>
@@ -201,20 +262,20 @@ class AdminPOTableList extends Component {
                       {
                         !this.state.PRF.length ?
 
-                        <Row><Col md={12}>
+                        <tr><td>
                           This list is empty.
-                        </Col></Row> :
+                        </td></tr> :
 
-                        this.state.PRF.map((prop, key) => {
+                        this.state.PRF.map((prop, key) => {                          
                           return (
                             <tr>
 
-                              <td key={key}>{prop.prf_number}</td>
-                              <td key={key}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                              <td key={key}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
-                              <td key={key}>{prop.total}</td>
-                              <td key={key}>{prop.po_amount}</td>
-                              <td key={key}>{prop.gross}</td>
+                              <td key={`${prop._id} ${key+1}`}>{prop.prf_number}</td>
+                              <td key={`${prop._id} ${key+2}`}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                              <td key={`${prop._id} ${key+3}`}>{prop.paid_date ? moment(prop.paid_date).format('MM-DD-YYYY'): `N/A`}</td>
+                              <td key={`${prop._id} ${key+4}`}>{prop.total}</td>
+                              <td key={`${prop._id} ${key+5}`}>{prop.po_amount}</td>
+                              <td key={`${prop._id} ${key+6}`}>{prop.gross}</td>
                             </tr>
                           )
                         })

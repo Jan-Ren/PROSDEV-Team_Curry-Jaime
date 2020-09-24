@@ -22,7 +22,7 @@ import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
 import users from "api/users";
-import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
+import SuccessDialog from '../components/SuccessDialog/SuccessDialog'
 
 class NewPRF extends Component {
 
@@ -114,7 +114,8 @@ class NewPRF extends Component {
 
     } catch (error) {
       console.log(error)
-      alert(error)
+      alert("No working directory")
+      window.history.go(-1)
     }
   }
 
@@ -204,7 +205,7 @@ class NewPRF extends Component {
         // alert("edit done")
         setTimeout(() => {
           this.setState({ isLoading: false, success: true })
-        }, 1500)
+        }, 1000)
 
       } catch (error) {
         console.log(error.message)
@@ -242,7 +243,7 @@ class NewPRF extends Component {
         // alert("saving done")
         setTimeout(() => {
           this.setState({ isLoading: false, success: true })    
-        }, 1500)
+        }, 1000)
         
       } catch (error) {
         console.log(error.message)
@@ -433,7 +434,7 @@ class NewPRF extends Component {
               {/* <Backdrop className={classes.backdrop} open={this.state.isLoading}>
                 <CircularProgress color="inherit" />
               </Backdrop> */}
-              <ConfirmationDialog
+              <SuccessDialog
                 open={this.state.open}
                 handleClose={this.handleClose}
                 success={this.state.success}

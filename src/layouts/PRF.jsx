@@ -31,7 +31,7 @@ class PRF extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      _notificationSystem: null,
+      // _notificationSystem: null,
       color: "black",
       hasImage: true,
       fixedClasses: "dropdown show-dropdown open",
@@ -125,7 +125,7 @@ class PRF extends Component {
   }
   async componentDidMount() {
     this.setState({ _notificationSystem: this.refs.notificationSystem });
-    var _notificationSystem = this.refs.notificationSystem;
+    // var _notificationSystem = this.refs.notificationSystem;
     var color = Math.floor(Math.random() * 4 + 1);
     var level;
     switch (color) {

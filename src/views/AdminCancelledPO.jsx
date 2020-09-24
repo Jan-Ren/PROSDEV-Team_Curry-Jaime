@@ -16,15 +16,15 @@
 
 */
 import React, { Component } from "react";
-import { Link, Redirect } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { poHArray, poDArray } from "variables/Variables.jsx";
+import { poHArray } from "variables/Variables.jsx";
 import api from "../api";
 import moment from 'moment'
 import CircularProgress from '@material-ui/core/CircularProgress';
-import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
+import SuccessDialog from '../components/SuccessDialog/SuccessDialog'
 
 class AdminPOTableList extends Component {
 
@@ -54,13 +54,7 @@ class AdminPOTableList extends Component {
       })
       
       prf = await Promise.all(prf)
-      prf.map((p, index) => {
-        if (p) {
-          console.log(p)
-          console.log(index)
-          PO[index].prf = p
-        }
-      })
+      prf.map((p, index) => { PO[index].prf = p })
 
       this.setState({ PO, loading: false})
     } catch (error) {
@@ -68,7 +62,7 @@ class AdminPOTableList extends Component {
       this.setState({ loading: false })
     }
   }
-
+  
   handleDelete = async (po) => {
     try {
       this.setState({ isLoading: true, open: true, action: 'Delete' })            
@@ -89,12 +83,12 @@ class AdminPOTableList extends Component {
 
       setTimeout(() => {
         this.setState({ isLoading: false, success: true })
-      }, 1500)
+      }, 1000)
     } catch (error) {
       alert(error)
     }
   }
-
+  
   handleUncancel = async (po) => {
     this.setState({ isLoading: true, open: true, action: 'Uncancel' })
     
@@ -102,7 +96,7 @@ class AdminPOTableList extends Component {
     po.last_modified = Date.now()
     try {
       await api.updatePOById(po._id, po)
-
+      
       setTimeout(() => {
         this.setState({ isLoading: false, success: true })
       }, 1500)
@@ -110,12 +104,12 @@ class AdminPOTableList extends Component {
       alert(error)
     }
   }
-
+  
   handleClose = () => {
     this.setState({ open:false });
     window.location.reload()
   }
-
+  
   handleDateFilter = async () => {
     this.setState({ loading: true })
     try {
@@ -128,13 +122,24 @@ class AdminPOTableList extends Component {
         if (p.is_cancelled)
           return p
       })
+
+      let prf = PO.map(async po => {
+        if ( po.prf) {
+          const prf = await (await api.getPRFById(po.prf)).data.data
+          return prf
+        }
+      })
+      
+      prf = await Promise.all(prf)
+      prf.map((p, index) => { PO[index].prf = p })
+
       this.setState({ PO })
     } catch (error)  {
       this.setState({ PO: [] })
     }
     this.setState({ loading: false })
   }
-
+  
   render() {
     return (
       <div className="content">
@@ -179,9 +184,9 @@ class AdminPOTableList extends Component {
                   </Col>
                     {
                       this.state.loading ?
-                      <div style={{padding: "100px 0", textAlign: "center"}}>
+                      <Row style={{padding: "100px 0", textAlign: "center"}}>
                         <CircularProgress />
-                      </div> : 
+                      </Row> : 
 
                       <Table striped hover>
                       <thead>
@@ -194,18 +199,19 @@ class AdminPOTableList extends Component {
                       <tbody>
                         {
                           !this.state.PO.length ?
-                          <p>This list is empty.</p>
-                          :
+                          <Row><Col md={12}>
+                            This list is empty.
+                          </Col></Row> :
                           this.state.PO.map((prop, key) => {
                             return (
-                              <tr key={key}>
+                              <tr key={`${prop._id} ${key}`}>
                                   
-                                  <td key={key+1}>{prop.po_number}</td>
-                                  <td key={key+2}>{prop.recipient}</td>
-                                  <td key={key+4}>{prop.paid_date ? moment(prop.paid_date).format('MM-DD-YYYY') : ''}</td>
-                                  <td key={key+4}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
-                                  <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                                  <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                  <td key={`${prop._id} ${key+1}`}>{prop.po_number}</td>
+                                  <td key={`${prop._id} ${key+2}`}>{prop.recipient}</td>
+                                  <td key={`${prop._id} ${key+3}`}>{prop.paid_date ? moment(prop.paid_date).format('MM-DD-YYYY') : ''}</td>
+                                  <td key={`${prop._id} ${key+4}`}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
+                                  <td key={`${prop._id} ${key+5}`}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                  <td key={`${prop._id} ${key+6}`}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                   <td>
                                 <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit", is_cancelled: true}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
                                 <Button variant="outline-primary" bsStyle="success" onClick={() => this.handleUncancel(prop)}><i className="pe-7s-back-2"/> Uncancel</Button>{' '}
@@ -218,7 +224,7 @@ class AdminPOTableList extends Component {
                     
                     </Table>
                   }
-                    <ConfirmationDialog
+                    <SuccessDialog
                     open={this.state.open}
                     handleClose={this.handleClose}
                     success={this.state.success}

@@ -23,7 +23,7 @@ import Card from "components/Card/Card.jsx";
 import users from '../api/users'
 import api from '../api'
 import FormDialog from "components/FormDialog/FormDialog";
-import ConfirmationDialog from "components/ConfirmationDialog/ConfirmationDialog";
+import SuccessDialog from "components/SuccessDialog/SuccessDialog";
 import { CircularProgress } from "@material-ui/core";
 
 class PRFListFolders extends Component {
@@ -52,12 +52,13 @@ class PRFListFolders extends Component {
         })
       })
     }catch(e){
+      this.setState({ isLoading: false })
       console.log(e)
     }
   }
 
   deleteWorkingDirectory = async (working_directory) => {
-    this.setState({ isLoading: true})
+    this.setState({ loading: true, open: true, action: "Delete" })
     try{
         let temp = working_directory.prf.map(async prf_id => {
           try {
@@ -70,60 +71,60 @@ class PRFListFolders extends Component {
               const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
 
               const index = NFPO.po.indexOf(po_id)
-             NFPO.po.splice(index, 1)
+              NFPO.po.splice(index, 1)
 
-             await api.deletePOById(po_id)
+              await api.deletePOById(po_id)
               await api.updateNF_POById(NFPO_id, NFPO)
             })
             await api.deletePRFById(prf_id)
             temp1 = await Promise.all(temp)
           } catch (error) {
             console.log(`hehe ${error}`)
-            alert(error)
+            setTimeout(() => {
+              this.setState({ loading: false, success: false })
+            }, 1000)
           }
         })
         await api.deleteNF_PRFById(working_directory._id)
         temp = await Promise.all(temp)
 
-        this.setState({ isLoading: false, success: true })
-        window.location.reload()
-      }catch (error) {
-        alert(error)
-        this.setState({ isLoading: false, success: false })
-        window.location.reload()
-      }
+        setTimeout(() => {
+          this.setState({ loading: false, success: true })
+        }, 1000)
 
+      } catch (error) {    
+        console.log(error)
+        setTimeout(() => {
+          this.setState({ loading: false, success: false })
+        }, 1000)
+      }
+      console.log(this.state.success)
   }
 
   setWorkingDirectory = async (curr_working_directory) => {
+    this.setState({ loading: true, open: true, action: "Set" })
     //FOR EMPLOYEE
     const payload = {
       isAdmin : false,
       prf_folder: curr_working_directory
     }
     
-    console.log(payload)
     try {
-      await users.updatePRF_Folder(payload).then(res => {   
-        alert("saving done")
-      })
+      await users.updatePRF_Folder(payload)
+      
+      //FOR ADMIN
+      payload.isAdmin = true
+      await users.updatePRF_Folder(payload)
+      setTimeout(() => {
+        this.setState({ loading: false, success: true })
+      }, 1000)
     } catch (error) {
       console.log(error.message)
-      alert(error.message)
+      setTimeout(() => {
+        this.setState({ loading: false, success: false })
+      }, 1000)
     }
-    
-    //FOR ADMIN
-    payload.isAdmin = true
-    
-    console.log(payload)
-    try {
-      await users.updatePRF_Folder(payload).then(res => {   
-        alert("saving done")
-      })
-    } catch (error) {
-      console.log(error.message)
-      alert(error.message)
-    }
+
   }
 
   handleClose = () => {
@@ -137,18 +138,23 @@ class PRFListFolders extends Component {
 
   handleAddNF = async () => {
     try {
-      this.setState({ isLoading: true, open: true, action: "Add", open_nf: false })
+      this.setState({ loading: true, open: true, action: "Add", open_nf: false })
       const { nf_prf_number } = this.state
-      
-      if (nf_prf_number/100 > 0 && nf_prf_number/100 <= 9) {
+      if (nf_prf_number/100 >= 1 && nf_prf_number/100 <= 9) {
         await api.insertNF_PRF({nf_prf_number})
-        this.setState({ isLoading: false, success: true })
+        setTimeout(() => {          
+          this.setState({ loading: false, success: true })
+        }, 1000)
       }
       else {
-        this.setState({ isLoading: false, success: false })
+        setTimeout(() => {
+          this.setState({ loading: false, success: false })
+        }, 1000)
       }
     } catch (error) {
-      this.setState({ isLoading: false, success: false })
+      setTimeout(() => {
+        this.setState({ loading: false, success: false })
+      }, 1000)
     }
   }
 
@@ -161,29 +167,31 @@ class PRFListFolders extends Component {
               <Card
                 title="PRF List"
                 ctTableResponsive
-                content={     
+                content={
                     <div>
                         <Col md={12}><Button bsStyle="info" className="block pull-right" onClick={() => this.setState({ open_nf:true })}><i className="pe-7s-plus"/>New Folder</Button></Col>
                         {
                           this.state.isLoading ?
-                          <div style={{padding: "100px 0", textAlign: "center"}}>
+                          <Row style={{padding: "100px 0", textAlign: "center"}}>
                             <CircularProgress />
-                          </div> : 
+                          </Row> : 
 
                           <Table striped hover>
                               <tbody>
                               {
                                 !this.state.prfFolder.length ?
 
-                                <Row><Col md={12}>
-                                  This list is empty.
-                                </Col></Row> :
+                                <tr>
+                                  <td>
+                                    This list is empty.
+                                  </td>
+                                </tr> :
 
                                 this.state.prfFolder.map((prop, key) => {
                                     return (
-                                    <tr key={key}>
+                                    <tr key={`${prop._id} ${key}`}>
 
-                                        <td key={key}>{prop.nf_prf_number}</td>
+                                        <td key={`${prop._id} ${key+1}`}>{prop.nf_prf_number}</td>
 
                                         <td>
                                         <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.deleteWorkingDirectory(prop)} className="pull-right" ><i className="pe-7s-close-circle"/>Delete</Button>
@@ -199,11 +207,11 @@ class PRFListFolders extends Component {
                               </tbody>
                           </Table>
                         }
-                        <ConfirmationDialog
+                        <SuccessDialog
                           open={this.state.open}
                           handleClose={this.handleClose}
                           success={this.state.success}
-                          isLoading={this.state.isLoading}
+                          isLoading={this.state.loading}
                           action={this.state.action}
                           />
                         <FormDialog

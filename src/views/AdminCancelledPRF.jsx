@@ -16,17 +16,17 @@
 
 */
 import React, { Component } from "react";
-import { Link, Redirect } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { prfHArray, prfDArray } from "variables/Variables.jsx";
+import { prfHArray } from "variables/Variables.jsx";
 
-import DateInput from "components/DatePicker/DatePicker.jsx"
+// import DateInput from "components/DatePicker/DatePicker.jsx"
 import api from "../api";
 import moment from 'moment'
 import CircularProgress from '@material-ui/core/CircularProgress';
-import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
+import SuccessDialog from '../components/SuccessDialog/SuccessDialog'
 
 
 class AdminCancelledPRF extends Component {
@@ -57,20 +57,65 @@ class AdminCancelledPRF extends Component {
 
   handleDelete = async (prf) => {
     try {
+      // remove all po's of prf from db and from nf_po
       this.setState({ isLoading: true, open: true, action: 'Delete' })
       
-      // deleting all po's under this prf
-      let temp = prf.po.map(async po_id => {
-        try {
-          const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
-          // get po folder
-          const NFPO = await (await api.getNF_POById(NFPO_id)).data.data          
+      const nfpos = []
+      if (prf.po.length) {
+        const PO = await (await api.getPOById(prf.po[0])).data.data
+        const NFPO_id = PO.po_folder
+        const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
+        nfpos.push({
+          key: NFPO_id,
+          NFPO,
+          po_id: [PO._id],
+        })
+      }
 
-          const index = NFPO.po.indexOf(po_id)
-          NFPO.po.splice(index, 1)
+      let temp = prf.po.map(async (po_id, index) => {
+        try {          
+          // get po's folder id
+          if (index !== 0) {
+
+            const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
+            const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
+            if (nfpos.filter(nfpo => nfpo.key === NFPO_id)) {
+              nfpos.map(nfpo => {
+                if (nfpo.key === NFPO_id) {
+                  nfpo.po_id.push(po_id)
+                  nfpo.NFPO = NFPO
+                }
+              })
+            } else {
+              nfpos.push({
+                key: NFPO_id,
+                NFPO,
+                po_id: [po_id],
+              })
+              
+            }
+          }
   
           await api.deletePOById(po_id)
-          await api.updateNF_POById(NFPO_id, NFPO)
+          // await api.updateNF_POById(NFPO_id, NFPO)
+        } catch (error) {
+          console.log(`hehell ${error}`)
+          alert(error)
+        }
+      })
+      
+      temp = await Promise.all(temp)
+      
+      temp = nfpos.map(async object => {
+        try {
+          const { NFPO, po_id, key } = object
+
+          po_id.map( id => {
+            const index = NFPO.po.indexOf(id)
+            NFPO.po.splice(index, 1)
+          })
+
+          await api.updateNF_POById(key, NFPO)
           
         } catch (error) {
           console.log(`hehe ${error}`)
@@ -79,20 +124,23 @@ class AdminCancelledPRF extends Component {
       })
       
       temp = await Promise.all(temp)
+      // alert(`should be deleted ${new_NFPO.po.length}`)
+      // await api.updateNF_POById(new_NFPO._id, new_NFPO)
 
-      // removing from folder and deleting actual PRF
-      const NFPRF_id = prf.prf_folder
-      const NF_PRF = await (await api.getNF_PRFById(NFPRF_id)).data.data
-      const index = NF_PRF.prf.indexOf(prf._id)
-      NF_PRF.prf.splice(index, 1)
+      // alert(prf._id)
 
-      await api.updateNF_PRFById(NFPRF_id, NF_PRF)
+      const new_NFPRF = await (await api.getNF_PRFById(prf.prf_folder)).data.data      
+      const index = new_NFPRF.prf.indexOf(prf._id)
+      new_NFPRF.prf.splice(index, 1)
+
+      await api.updateNF_PRFById(new_NFPRF._id, new_NFPRF)
       await api.deletePRFById(prf._id)
 
       setTimeout(() => {
         this.setState({ isLoading: false, success: true })
-      }, 1500)
+      }, 1000)
     } catch (error) {
+      console.log(error)
       alert(error)
     }
   }
@@ -107,7 +155,7 @@ class AdminCancelledPRF extends Component {
 
       setTimeout(() => {
         this.setState({ isLoading: false, success: true })
-      }, 1500)
+      }, 1000)
     } catch (error) {
       alert(error)
     }
@@ -174,9 +222,9 @@ class AdminCancelledPRF extends Component {
                   <div>
                   {
                     this.state.loading ?
-                    <div style={{padding: "100px 0", textAlign: "center"}}>
-                        <CircularProgress />
-                    </div> : 
+                    <Row style={{padding: "100px 0", textAlign: "center"}}>
+                      <CircularProgress />
+                    </Row> : 
                     <Table striped hover>
                       <thead>
                         <tr>
@@ -188,17 +236,18 @@ class AdminCancelledPRF extends Component {
                       <tbody>
                         {
                           !this.state.PRF.length ?
-                          <p>This list is empty.</p>
-                          :
+                          <Row><Col md={12}>
+                            This list is empty.
+                          </Col></Row> :
                           this.state.PRF.map((prop, key) => {
                             return (
-                              <tr key={key}>
+                              <tr key={`${prop._id} ${key}`}>
                                   
-                                  <td key={key+1}>{prop.prf_number}</td>
-                                  <td key={key+2}>{prop.recipient}</td>
-                                  <td key={key+4}>{prop.paid_date ? moment(prop.paid_date).format('MM-DD-YYYY') : ''}</td>
-                                  <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                                  <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                  <td key={`${prop._id} ${key+1}`}>{prop.prf_number}</td>
+                                  <td key={`${prop._id} ${key+2}`}>{prop.recipient}</td>
+                                  <td key={`${prop._id} ${key+3}`}>{prop.paid_date ? moment(prop.paid_date).format('MM-DD-YYYY') : ''}</td>
+                                  <td key={`${prop._id} ${key+4}`}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                  <td key={`${prop._id} ${key+5}`}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                   <td>
                                 <Link to={{pathname: '/create/New-PRF', state: {PRF: prop, is_cancelled: true}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
                                 <Button variant="outline-primary" bsStyle="success" onClick={() => this.handleUncancel(prop)}><i className="pe-7s-back-2"/> Uncancel</Button>{' '}
@@ -211,7 +260,7 @@ class AdminCancelledPRF extends Component {
                       
                     </Table>
                   }
-                  <ConfirmationDialog
+                  <SuccessDialog
                     open={this.state.open}
                     handleClose={this.handleClose}
                     success={this.state.success}

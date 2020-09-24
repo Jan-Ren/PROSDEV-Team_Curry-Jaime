@@ -23,7 +23,7 @@ import Card from "components/Card/Card.jsx";
 import { Link } from 'react-router-dom'
 import users from '../api/users'
 import api from '../api'
-import ConfirmationDialog from "components/ConfirmationDialog/ConfirmationDialog";
+import SuccessDialog from "components/SuccessDialog/SuccessDialog";
 import FormDialog from "components/FormDialog/FormDialog";
 import { CircularProgress } from "@material-ui/core";
 
@@ -60,7 +60,7 @@ class POListFolders extends Component {
     }
   }
   deleteWorkingDirectory = async (working_directory) => {
-    this.setState({ isLoading: true})
+    this.setState({ loading: true, open: true, action: "Delete" })
     try{
         let temp = working_directory.po.map(async po_id => {
           try {          
@@ -86,44 +86,41 @@ class POListFolders extends Component {
         await api.deleteNF_POById(working_directory._id)
         temp = await Promise.all(temp)
 
-        this.setState({ isLoading: false, success: true })
-        window.location.reload()
+        setTimeout(() => {
+          this.setState({ loading: false, success: true })
+        }, 1000)
       }catch (error) {
         alert(error)
-        this.setState({ isLoading: false, success: false })
-        window.location.reload()
+        setTimeout(() => {
+          this.setState({ loading: false, success: false })
+        }, 1000)
       }
 
   }
   setWorkingDirectory = async (curr_working_directory) => {
+    this.setState({ loading: true, open: true, action: "Set" })
     //FOR EMPLOYEE
     const payload = {
       isAdmin : false,
       po_folder: curr_working_directory
     }
     
-    console.log(payload)
     try {
-      await users.updatePO_Folder(payload).then(res => {   
-        alert("saving done")
-      })
+      await users.updatePO_Folder(payload)
+
+      //FOR ADMIN
+      payload.isAdmin = true
+      await users.updatePO_Folder(payload)
+      setTimeout(() => {
+        this.setState({ loading: false, success: true })
+      }, 1000)
     } catch (error) {
       console.log(error.message)
-      alert(error.message)
+      setTimeout(() => {
+        this.setState({ loading: false, success: false })
+      }, 1000)
     }
 
-    //FOR ADMIN
-    payload.isAdmin = true
-    
-    console.log(payload)
-    try {
-      await users.updatePO_Folder(payload).then(res => {   
-        alert("saving done")
-      })
-    } catch (error) {
-      console.log(error.message)
-      alert(error.message)
-    }
   }
 
   handleClose = () => {
@@ -137,18 +134,24 @@ class POListFolders extends Component {
 
   handleAddNF = async () => {
     try {
-      this.setState({ isLoading: true, open: true, action: "Add", open_nf: false })
+      this.setState({ loading: true, open: true, action: "Add", open_nf: false })
       const { nf_po_number } = this.state
       
-      if (nf_po_number/100 > 0 && nf_po_number/100 <= 9) {
+      if (nf_po_number/100 >= 1 && nf_po_number/100 <= 9) {
         await api.insertNF_PO({nf_po_number})
-        this.setState({ isLoading: false, success: true })
+        setTimeout(() => {          
+          this.setState({ loading: false, success: true })
+        }, 1000)
       }
       else {
-        this.setState({ isLoading: false, success: false })
+        setTimeout(() => {
+          this.setState({ loading: false, success: false })
+        }, 1000)
       }
     } catch (error) {
-      this.setState({ isLoading: false, success: false })
+      setTimeout(() => {
+        this.setState({ loading: false, success: false })
+      }, 1000)
     }
   }
 
@@ -166,9 +169,9 @@ class POListFolders extends Component {
                          <Col md={12}><Button bsStyle="info" className="block pull-right" onClick={() => this.setState({ open_nf:true })}><i className="pe-7s-plus"/>New Folder</Button></Col>
                          {
                             this.state.isLoading ?
-                            <div style={{padding: "100px 0", textAlign: "center"}}>
+                            <Row style={{padding: "100px 0", textAlign: "center"}}>
                               <CircularProgress />
-                            </div> :
+                            </Row> : 
 
                             <Table striped hover>
                                 {/* <thead>
@@ -186,9 +189,9 @@ class POListFolders extends Component {
                                   </td></tr> :
                                   this.state.poFolder.map((prop, key) => {
                                       return (
-                                      <tr key={key}>
+                                      <tr key={`${prop._id} ${key}`}>
 
-                                          <td key={key}>{prop.nf_po_number}</td>
+                                          <td key={`${prop._id} ${key+1}`}>{prop.nf_po_number}</td>
 
                                           <td>
                                           <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.deleteWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-close-circle"/>Delete</Button>
@@ -204,11 +207,11 @@ class POListFolders extends Component {
                                 </tbody>
                             </Table>
                           }
-                          <ConfirmationDialog
+                          <SuccessDialog
                             open={this.state.open}
                             handleClose={this.handleClose}
                             success={this.state.success}
-                            isLoading={this.state.isLoading}
+                            isLoading={this.state.loading}
                             action={this.state.action}
                             />
                           <FormDialog
