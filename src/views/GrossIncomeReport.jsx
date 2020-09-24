@@ -34,7 +34,9 @@ class AdminPOTableList extends Component {
       currentNF: {},
       PRF: [],
       isLoading: false,
-      total: 0
+      total: 0,
+      from: '',
+      to: '',
     }
 
     this.handleTotal = this.handleTotal.bind(this)
@@ -71,7 +73,7 @@ class AdminPOTableList extends Component {
     
     
     if (NF === "Select PRF Folder")
-    this.setState({ PRF: [], isLoading: false })
+      this.setState({ PRF: [], isLoading: false })
     
     else {      
       try {
@@ -130,15 +132,75 @@ class AdminPOTableList extends Component {
           return p
         })
         prf = await Promise.all(prf)
-        this.setState({ PRF: prf })
-        this.handleTotal()        
+        this.setState({ PRF: prf, currentNF: NF_PRF })
+        this.handleTotal()
       } catch (error) {
         console.log(`getting prf ${error}`)
         alert(error)
       }
       this.setState({ isLoading: false })
     }
-  }  
+  }
+
+  handleDateFilter = async () => {
+    this.setState({ isLoading: true })
+    try {
+      let { from, to } = this.state
+      
+      from = moment(from).startOf('day').toDate()
+      to = moment(to).endOf('day').toDate()
+      let prf = await (await api.getPRFDateRange({ from, to })).data.data // filtered prf
+      const PRF = prf.filter(p => {
+        if (!p.is_cancelled && p.prf_folder === this.state.currentNF._id)
+          return p
+      })
+
+      let po
+      prf = PRF.map( async (p, index) => {
+
+        po = p.po.map(async po_reference => {
+          try {
+            const val = await (await api.getPOById(po_reference)).data.data
+            return val
+          } catch (error) {
+            console.log(error)
+          }
+        })
+        
+        po = await Promise.all(po)
+
+        // add all po total
+        if (po.length > 0) {
+          let total
+          if (po.length === 1)
+            total = po[0].total
+          else 
+            total = po.reduce((prev, next) => {
+              console.log(prev, next)
+              if (prev.total !== 0 && !prev.total)
+                return prev + next.total
+              return prev.total + next.total 
+            })
+          
+          // assign prf po_amount
+          p.po_amount = total
+          // assugn prf gross
+          p.gross = p.total - total            
+        } else {
+          p.po_amount = 0
+          p.gross = p.total
+        }
+
+        return p
+      })
+      prf = await Promise.all(prf)
+
+      this.setState({ PRF: prf })
+    } catch (error)  {
+      this.setState({ PRF: [] })
+    }
+    this.setState({ isLoading: false })
+  }
 
   render() {
     return (
@@ -168,15 +230,15 @@ class AdminPOTableList extends Component {
                                   </FormControl>
                        </FormGroup>{' '}
                       
-                       <Button variant="outline-primary" bsStyle="primary" className="pull-right"><i className="pe-7s-filter"/> Filter</Button>{' '}
+                       <Button variant="outline-primary" bsStyle="primary" className="pull-right" onClick={this.handleDateFilter}><i className="pe-7s-filter"/> Filter</Button>{' '}
                         <FormGroup controlId="formInlineDateTo" className="pull-right">  
                         <ControlLabel>to</ControlLabel>{' '}
-                          <FormControl type="date" />
+                          <FormControl type="date" value={this.state.to} onChange={(e) => this.setState({ to: e.target.value })}/>
                         </FormGroup>{' '}
               
                         <FormGroup controlId="formInlineDateFrom" className="pull-right">
                           <ControlLabel>Date from</ControlLabel>{' '}
-                        <FormControl type="date" />
+                        <FormControl type="date" value={this.state.from} onChange={(e) => this.setState({ from: e.target.value })}/>
                         </FormGroup>{' '}
 
                     </Form>
