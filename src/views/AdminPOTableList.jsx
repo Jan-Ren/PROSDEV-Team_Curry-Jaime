@@ -34,6 +34,7 @@ class POTableList extends Component {
     super(props)
     this.state = {
         PO: [],
+        backup_po:[],
         NF_PO: {},
         columns: [],
         isLoading: false,
@@ -42,6 +43,8 @@ class POTableList extends Component {
         open_paiddate: false,
         paid_date: '',
         po_edit: '',
+        from: '',
+        to: '',
     }
 
     this.handleCancel = this.handleCancel.bind(this)
@@ -54,7 +57,6 @@ class POTableList extends Component {
       const { NF_PO_id } = this.props.location.state
       const nf_po = await (await api.getNF_POById(NF_PO_id)).data.data
       this.setState({ NF_PO: nf_po })
-      // alert(PO.length)
 
       try {
         let po = this.state.NF_PO.po.map(async po_reference => {
@@ -70,8 +72,11 @@ class POTableList extends Component {
         })
     
         po = await Promise.all(po)
-          
-        // console.log(this.state.PRF)
+
+        po = po.filter(p => {
+          if (!p.is_cancelled)
+            return p
+        })
         
         let prf = po.map(async po_reference => {
           if ( po_reference.prf) {
@@ -87,9 +92,9 @@ class POTableList extends Component {
             console.log(index)
             po[index].prf = p
           }
-        })
+        })        
   
-        this.setState({ PO: po, loading: false})
+        this.setState({ PO: po, loading: false, backup_po: po})
         
       } catch (error) {
         console.log(error.message)
@@ -102,6 +107,26 @@ class POTableList extends Component {
 
   }
 
+  handleSearch = (e) => {
+    let searchQuery =  e.target.value
+    let backup_poList = [...this.state.backup_po]
+    if(searchQuery != ""){
+      console.log(searchQuery)
+      let poList = [...this.state.backup_po]
+      console.log(poList)
+      let filteredPO = poList.filter(p => {
+        console.log(p.po_number)
+        if((p.po_number + '').includes(searchQuery))
+          return p
+      })
+      console.log(filteredPO)
+      this.setState({ PO: filteredPO })
+    }else{
+      console.log("ds")
+      this.setState({ PO: backup_poList })
+    }
+  }
+
   handleRedirect = () => {
     if (this.state.redirect)
       return <Redirect to="/admin/PO-List-Folders" />      
@@ -109,17 +134,14 @@ class POTableList extends Component {
   
   handleCancel = async (po) => {
     this.setState({ isLoading: true, open: true, action: 'Cancel' })
-    console.log(po)
-    // alert(po._id)
+    
     po.is_cancelled = true
     po.last_modified = Date.now()
     try {
       const res = await api.updatePOById(po._id, po)
-      console.log(res.data)
-      // alert("Success")
+      
       this.setState({ isLoading: false, success: true })
-      // setTimeout(() => {
-      // }, 1500)
+      
     } catch (error) {
       alert(error)
     }
@@ -168,6 +190,25 @@ class POTableList extends Component {
       this.setState({ isLoading: false, success: false })
     }
   }
+
+  handleDateFilter = async () => {
+    this.setState({ loading: true })
+    try {
+      let { from, to } = this.state
+      
+      from = moment(from).startOf('day').toDate()
+      to = moment(to).endOf('day').toDate()
+      const po = await (await api.getPODateRange({ from, to })).data.data
+      const PO = po.filter(p => {
+        if (!p.is_cancelled && p.po_folder === this.state.NF_PO._id)
+          return p
+      })
+      this.setState({ PO })
+    } catch (error)  {
+      this.setState({ PO: [] })
+    }
+    this.setState({ loading: false })
+  }
   
   render() {
     return (
@@ -183,25 +224,25 @@ class POTableList extends Component {
                 content={
                   <div>
                     <Col md={12}>
-                    <Form inline>
-                      <FormGroup controlId="formInlineDateFrom">
-                          <ControlLabel>Dates From</ControlLabel>{' '}
-                        <FormControl type="date" />
-                        </FormGroup>{' '}
-                        <FormGroup controlId="formInlineDateFrom">  
-                        <ControlLabel>to</ControlLabel>{' '}
-                          <FormControl type="date" />
-                        </FormGroup>{' '}
-                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/>Filter Date</Button>{' '}
-                        
-                        <InputGroup className="pull-right">
-                          <FormControl type="number" placeholder="Search PO#" />
-                          <InputGroup.Addon>
-                            <Glyphicon glyph="search" />
-                          </InputGroup.Addon>
-                        </InputGroup>                        
-                    </Form>
-                  </Col>
+                      <Form inline>
+                        <FormGroup controlId="formInlineDateFrom">
+                            <ControlLabel>Dates From</ControlLabel>{' '}
+                          <FormControl type="date" value={this.state.from} onChange={(e) => this.setState({ from: e.target.value })} />
+                          </FormGroup>{' '}
+                          <FormGroup controlId="formInlineDateFrom">  
+                          <ControlLabel>to</ControlLabel>{' '}
+                            <FormControl type="date" value={this.state.to} onChange={(e) => this.setState({ to: e.target.value })}/>
+                          </FormGroup>{' '}
+                          <Button variant="outline-primary" bsStyle="primary" onClick={this.handleDateFilter}><i className="pe-7s-check"/>Filter Date</Button>{' '}
+                          
+                          <InputGroup className="pull-right">
+                            <FormControl type="number" placeholder="Search PO#" onChange={this.handleSearch}/>
+                            <InputGroup.Addon>
+                              <Glyphicon glyph="search" />
+                            </InputGroup.Addon>
+                          </InputGroup>                        
+                      </Form>
+                    </Col>
                     {
                       this.state.loading ?
                       <div style={{padding: "100px 0", textAlign: "center"}}>
@@ -219,10 +260,9 @@ class POTableList extends Component {
                         <tbody>
                           {                        
                             !this.state.PO.length ?
-                              <p>
-                                This list is empty.
-                              </p>
-                            :
+                            <Row><Col md={12}>
+                              This list is empty.
+                            </Col></Row> :
                             this.state.PO.map((prop, key) => {
                               return (
                                 !prop.is_cancelled ?
@@ -232,9 +272,9 @@ class POTableList extends Component {
                                   <td key={key+2}>{prop.recipient}</td>
                                   <td key={key+4}>
                                     {!prop.paid_date ? 
-                                      <Button bsStyle="info" onClick={() => { this.setState({ open_paiddate:true, po_edit:prop }) }}>Add Paid Date</Button>
+                                      <Button onClick={() => { this.setState({ open_paiddate:true, po_edit:prop }) }}>Add Paid Date</Button>
                                       : 
-                                      <Button bsStyle="info" onClick={() => { this.setState({ open_paiddate:true, po_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
+                                      <Button bsStyle="success" onClick={() => { this.setState({ open_paiddate:true, po_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
                                     }</td>
                                   <td key={key+4}>{prop.prf ? prop.prf.prf_number: prop.prf}</td>
                                   <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>

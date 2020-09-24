@@ -149,10 +149,29 @@ getCancelledPO = async (req, res) => {
         if (!po.length) {
             return res
                 .status(404)
-                .json({ success: false, error: `PRF not found` })
+                .json({ success: false, error: `PO not found` })
         }
         return res.status(200).json({ success: true, data: po })
     }).catch(err => console.log(err))
+}
+
+getPODateRange = async (req, res) => {    
+    try {
+        const { from, to } = req.body
+        if (!from || !to) {
+            const pos = await PO.find({})
+            return res.status(200).json({ success: true, data: pos })
+        }
+        else {
+            const pos = await PO.find({ date_created: { $gte: req.body.from, $lte: req.body.to } }).sort({ date_created: 1 })
+            if (!pos.length) 
+                return res.status(404).json({ success: false, error: `No PO in these dates` })
+            
+            return res.status(200).json({ success: true, data: pos })
+        }
+    } catch (error) {
+        return res.status(400).json({ success: false, error })
+    }
 }
 
 module.exports = {
@@ -162,5 +181,6 @@ module.exports = {
     getAllPO,
     getPOById,
     cancelPO,
-    getCancelledPO
+    getCancelledPO,
+    getPODateRange
 }

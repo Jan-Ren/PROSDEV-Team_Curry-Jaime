@@ -37,6 +37,7 @@ class PRFTableList extends Component {
 
       this.state = {
         PRF: [],
+        backup_prf:[],
         NF_PRF: {},
         NF_PO: {},
         columns: [],
@@ -46,6 +47,8 @@ class PRFTableList extends Component {
         open_paiddate: false,
         paid_date: '',
         prf_edit: '',
+        from: '',
+        to: ''
     }
 
     this.handleCancel = this.handleCancel.bind(this)
@@ -68,13 +71,13 @@ class PRFTableList extends Component {
         })
   
         prf = await Promise.all(prf)
+
+        prf = prf.filter( p => {
+          if (!p.is_cancelled)
+            return p
+        })
   
-        this.setState({ PRF: prf, loading: false }, () => console.log(this.state.PRF) )
-  
-        // const user = await (await users.getUser({ token: window.localStorage.getItem('token')})).data.data
-        
-        // const NF_PO = await (await api.getNF_POById(user.po_folder)).data.data
-        // this.setState({ NF_PO }, () => console.log(this.state.NF_PO))
+        this.setState({ PRF: prf, loading: false , backup_prf: prf}, () => console.log(this.state.PRF) )  
         
       } catch (error) {
         console.log(error.message)
@@ -86,24 +89,40 @@ class PRFTableList extends Component {
     }
   }
 
+  handleSearch = (e) => {
+    let searchQuery =  e.target.value
+    let backup_prfList = [...this.state.backup_prf]
+    if(searchQuery != ""){
+      console.log(searchQuery)
+      let prfList = [...this.state.backup_prf]
+      console.log(prfList)
+      let filteredPRF = prfList.filter(p => {
+        console.log(p.prf_number)
+        if((p.prf_number + '').includes(searchQuery))
+          return p
+      })
+      console.log(filteredPRF)
+      this.setState({ PRF: filteredPRF })
+    }else{
+      console.log("ds")
+      this.setState({ PRF: backup_prfList })
+    }
+  }
+
   handleCancel = async (prf) => {
-    this.setState({ isLoading: true, open: true, action: 'Cancel' })
-    console.log(prf)
-    // alert(prf._id)
+    this.setState({ isLoading: true, open: true, action: 'Cancel' })    
+    
     prf.is_cancelled = true
     prf.last_modified = Date.now()
     try {
       const res = await api.updatePRFById(prf._id, prf)
-      // alert(prf.po.length)
+      
       prf.po.map(async po_id => {
-        const po = await (await api.cancelPOById(po_id)).data.data
-        // alert(po.is_cancelled)
+        const po = await (await api.cancelPOById(po_id)).data.data        
       })
-      console.log(res.data)
-      // alert("Success")
+      
       this.setState({ isLoading: false, success: true })
-      // setTimeout(() => {
-      // }, 1500)
+      
     } catch (error) {
       alert(error)
     }
@@ -183,6 +202,25 @@ class PRFTableList extends Component {
       this.setState({ isLoading: false, success: false })
     }
   }
+
+  handleDateFilter = async () => {
+    this.setState({ loading: true })
+    try {
+      let { from, to } = this.state
+      
+      from = moment(from).startOf('day').toDate()
+      to = moment(to).endOf('day').toDate()
+      const prf = await (await api.getPRFDateRange({ from, to })).data.data
+      const PRF = prf.filter(p => {
+        if (!p.is_cancelled && p.prf_folder === this.state.NF_PRF._id)
+          return p
+      })
+      this.setState({ PRF })
+    } catch (error)  {
+      this.setState({ PRF: [] })
+    }
+    this.setState({ loading: false })
+  }
   
   render() {
     return (
@@ -201,15 +239,15 @@ class PRFTableList extends Component {
                     <Form inline>
                       <FormGroup controlId="formInlineDateFrom">
                           <ControlLabel>Date From</ControlLabel>{' '}
-                        <FormControl type="date" />
+                        <FormControl type="date" value={this.state.from} onChange={(e) => this.setState({ from: e.target.value })} />
                         </FormGroup>{' '}
                         <FormGroup controlId="formInlineDateFrom">  
                         <ControlLabel>to</ControlLabel>{' '}
-                          <FormControl type="date" />
+                          <FormControl type="date" value={this.state.to} onChange={(e) => this.setState({ to: e.target.value })}/>
                         </FormGroup>{' '}
-                        <Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-check"/>Filter Date</Button>{' '}
+                        <Button variant="outline-primary" bsStyle="primary" onClick={this.handleDateFilter}><i className="pe-7s-check"/>Filter Date</Button>{' '}
                         <InputGroup className="pull-right">
-                          <FormControl type="number" placeholder="Search PRF#" />
+                          <FormControl type="number" placeholder="Search PRF#" onChange={this.handleSearch}/>
                           <InputGroup.Addon>
                             <Glyphicon glyph="search" />
                           </InputGroup.Addon>
@@ -234,10 +272,10 @@ class PRFTableList extends Component {
                       <tbody>
                         {
                           !this.state.PRF.length ?
-                            <p>
-                              This list is empty.
-                            </p>
-                          :
+                          <Row><Col md={12}>
+                            This list is empty.
+                          </Col></Row> :
+                          
                           this.state.PRF.map((prop, key) => {
                             return (
                               !prop.is_cancelled ?
@@ -248,9 +286,9 @@ class PRFTableList extends Component {
                                 <td key={key+2}>{prop.recipient}</td>
                                 <td key={key+4}>
                                   {!prop.paid_date ? 
-                                    <Button bsStyle="info" onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>Add Paid Date</Button>
+                                    <Button  onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>Add Paid Date</Button>
                                      : 
-                                     <Button bsStyle="info" onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
+                                     <Button bsStyle="success" onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
                                   }</td>
                                 <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                 <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>

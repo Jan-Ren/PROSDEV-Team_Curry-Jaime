@@ -58,11 +58,31 @@ class NewPO extends Component {
       new_password: this.state.admin_new_password
     }
       console.log(this.state)
-      // alert("saving please wait")      
-      try {
-        await users.updatePassword(payload).then(res => {   
-          alert("saving done")
-        })
+      // alert("saving please wait")  
+      if(this.state.admin_new_password == this.state.admin_retype_password){
+        try {
+          await users.updatePassword(payload).then(res => {   
+            alert("saving done")
+          })
+          this.setState({
+            admin_new_password:'',
+            admin_curr_password:'',
+            admin_retype_password:'',
+            employee_new_password:'',
+            employee_curr_password:'',
+            employee_retype_password:''
+          })
+          // alert("saving done")
+          setTimeout(() => {
+            this.setState({ isLoading: false, success: true })    
+          }, 1500)
+          
+        } catch (error) {
+          console.log(error.message)
+          alert(error.message)
+        }
+      }else{
+        alert("New password does not match retype password")
         this.setState({
           admin_new_password:'',
           admin_curr_password:'',
@@ -71,15 +91,8 @@ class NewPO extends Component {
           employee_curr_password:'',
           employee_retype_password:''
         })
-        // alert("saving done")
-        setTimeout(() => {
-          this.setState({ isLoading: false, success: true })    
-        }, 1500)
-        
-      } catch (error) {
-        console.log(error.message)
-        alert(error.message)
       }
+      
     
   }
 
@@ -98,7 +111,8 @@ class NewPO extends Component {
       new_password: this.state.employee_new_password
     }
       console.log(this.state)
-      // alert("saving please wait")      
+      // alert("saving please wait")     
+    if(this.state.employee_new_password == this.state.employee_retype_password){
       try {
         await users.updatePassword(payload).then(res => {   
           alert("saving done")
@@ -120,6 +134,17 @@ class NewPO extends Component {
         console.log(error.message)
         alert(error.message)
       }
+    }else{
+      alert("New password does not match retype password")
+      this.setState({
+        admin_new_password:'',
+        admin_curr_password:'',
+        admin_retype_password:'',
+        employee_new_password:'',
+        employee_curr_password:'',
+        employee_retype_password:''
+      })
+    }
     
   }
 

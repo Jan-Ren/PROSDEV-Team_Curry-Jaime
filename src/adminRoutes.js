@@ -52,6 +52,7 @@ const adminDashboardRoutes = [
     NewPRF: true,
     path: "/Cancelled-PRF",
     name: " Cancelled PRF",
+    icon: "pe-7s-note2",
     component: AdminCancelledPRF,
     layout: "/admin"
   },
@@ -59,6 +60,7 @@ const adminDashboardRoutes = [
     NewPRF: true,
     path: "/Cancelled-PO",
     name: "  Cancelled PO ",
+    icon: "pe-7s-news-paper",
     component: AdminCancelledPO,
     layout: "/admin"
   },
