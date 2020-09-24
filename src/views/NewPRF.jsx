@@ -254,10 +254,10 @@ class NewPRF extends Component {
 
   handleConfirmSave = async () => {
     this.setState({ isLoading: true, open: true })
-    const { _id, date_created } = this.props.location.state.PRF
+    const { _id, date_created, prf_folder } = this.props.location.state.PRF
     const payload = {...this.state}
     payload.date_created = date_created
-    payload.prf_folder = undefined
+    payload.prf_folder = prf_folder
     console.log(payload.prf_folder)
 
     try {

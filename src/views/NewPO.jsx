@@ -279,10 +279,10 @@ class NewPO extends Component {
 
   handleConfirmSave = async () => {
     this.setState({ isLoading: true, open: true })
-    const { _id, date_created } = this.props.location.state.PO
+    const { _id, date_created, prf_folder } = this.props.location.state.PO
     const payload = {...this.state}
     payload.date_created = date_created
-    payload.po_folder = undefined
+    payload.po_folder = prf_folder
     console.log(payload.po_folder)
 
     try {

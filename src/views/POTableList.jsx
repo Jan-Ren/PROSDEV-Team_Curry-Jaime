@@ -191,6 +191,22 @@ class POTableList extends Component {
         if (!p.is_cancelled && p.po_folder === this.state.NF_PO._id)
           return p
       })
+      let prf = po.map(async po_reference => {
+        if ( po_reference.prf) {
+          const prf = await (await api.getPRFById(po_reference.prf)).data.data
+          return prf
+        }
+      })
+      
+      prf = await Promise.all(prf)
+      prf.map((p, index) => {
+        if (p) {
+          console.log(p)
+          console.log(index)
+          po[index].prf = p
+        }
+      })
+      
       this.setState({ PO })
     } catch (error)  {
       this.setState({ PO: [] })

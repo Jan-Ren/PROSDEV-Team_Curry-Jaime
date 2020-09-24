@@ -175,6 +175,8 @@ class PRFTableList extends Component {
       to = moment(to).endOf('day').toDate()
       const prf = await (await api.getPRFDateRange({ from, to })).data.data
       const PRF = prf.filter(p => {
+        console.log(p.prf_folder)
+        console.log(this.state.NF_PRF._id)
         if (!p.is_cancelled && p.prf_folder === this.state.NF_PRF._id)
           return p
       })
