@@ -221,7 +221,7 @@ class POListFolders extends Component {
                             handleChange={this.handleChange}
                             handleEvent={this.handleAddNF}
                             handleClose={this.handleClose}
-                            message={"Input PO Initials"}
+                            message={"PO Initials"}
                             />
                     </div>    
                 }

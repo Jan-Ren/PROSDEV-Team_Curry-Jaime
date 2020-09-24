@@ -319,7 +319,7 @@ class POTableList extends Component {
                     handleChange={this.handleChange}
                     handleEvent={this.handlePaidDate}
                     handleClose={this.handleClose}
-                    message={"Input Paid Date"}
+                    message={"Paid Date"}
                     />
                   </div>
                 }

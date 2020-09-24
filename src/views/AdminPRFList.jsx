@@ -221,7 +221,7 @@ class PRFListFolders extends Component {
                           handleChange={this.handleChange}
                           handleEvent={this.handleAddNF}
                           handleClose={this.handleClose}
-                          message={"Input PRF Initials"}
+                          message={"PRF Initials"}
                           />
                     </div>    
                 }

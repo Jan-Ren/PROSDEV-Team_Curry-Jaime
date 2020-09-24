@@ -42,7 +42,9 @@ class POTableList extends Component {
         open: false,
         success: false,
         open_paiddate: false,
+        open_admin: false,
         paid_date: '',
+        admin_pass: '',
         po_edit: '',
         from: '',
         to: '',
@@ -67,6 +69,11 @@ class POTableList extends Component {
       })
 
       po = await Promise.all(po)
+
+      po = po.filter(p => {
+        if (!p.is_cancelled)
+          return p
+      })
 
       let prf = po.map(async po_reference => {
         if ( po_reference.prf) {
@@ -116,10 +123,12 @@ class POTableList extends Component {
       return <Redirect to="/PO-List-Folders" />      
   }
   
-  handleCancel = async (po) => {
-    this.setState({ isLoading: true, open: true, action: 'Cancel' })
-    console.log(po)
+  handleCancel = async () => {
+    this.setState({ isLoading: true, open_admin: true, action: 'Cancel' })
+    // console.log(po)
     // alert(po._id)
+    const { currentPO: po } = this.state
+
     po.is_cancelled = true
     try {
       const res = await api.updatePOById(po._id, po)
@@ -131,15 +140,20 @@ class POTableList extends Component {
     } catch (error) {
       alert(error)
     }
+
   }
 
   handleClose = () => {
     this.setState({ open:false });
-    window.location.reload()
+    window.location.reload()    
+  }
+
+  handleFormClose = () => {
+    this.setState({ open_admin:false, open_paiddate: false });
   }
 
   handleChange = (e) => {
-    this.setState({ paid_date: e.target.value })
+    this.setState({ paid_date: e.target.value, admin_pass: e.target.value })
   }
 
   handlePaidDate = async () => {
@@ -149,6 +163,18 @@ class POTableList extends Component {
       po.paid_date = paid_date
       await api.updatePOById(po._id, po)
       this.setState({ isLoading: false, success: true })
+    } catch (error) {
+      this.setState({ isLoading: false, success: false })
+    }
+  }
+
+  handleAdminPassword = async () => {
+    try {
+      this.setState({ isLoading: true, open: true, action: "Cancel", open_admin: false })
+      const { admin_pass } = this.state
+      await users.login({ isAdmin: true, password: admin_pass })
+      this.handleCancel()
+      this.setState({ isLoading: false, success: true, open_admin: false })
     } catch (error) {
       this.setState({ isLoading: false, success: false })
     }
@@ -245,8 +271,8 @@ class POTableList extends Component {
                                   <td key={key+5}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                   <td key={key+6}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                   <td>
-                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                     <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button></Link>
+                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => { this.setState({ open_admin: true, currentPO: prop }) }}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                   </td>
                                 </tr>
                               );
@@ -268,8 +294,17 @@ class POTableList extends Component {
                       value={this.state.paid_date}
                       handleChange={this.handleChange}
                       handleEvent={this.handlePaidDate}
-                      handleClose={this.handleClose}
-                      message={"Input Paid Date"}
+                      handleClose={this.handleFormClose}
+                      message={"Paid Date"}
+                      />
+                    <FormDialog
+                      open={this.state.open_admin}
+                      type={"password"}
+                      value={this.state.admin_pass}
+                      handleChange={this.handleChange}
+                      handleEvent={this.handleAdminPassword}
+                      handleClose={this.handleFormClose}
+                      message={"admin password"}
                       />
                   </div>
                 }
