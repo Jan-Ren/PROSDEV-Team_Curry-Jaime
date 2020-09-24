@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - 12.13.0
+  - 12.18.3
 cache: npm
 
 install:
@@ -9,6 +9,13 @@ install:
 script:
   - npm test
   - npm run dev
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  on:
+    branch: github_pages
 
 services: mongodb
 
@@ -19,3 +26,6 @@ services: mongodb
 # after_success:
 # after_failure:
 # after_script:
+# before_deploy
+# deploy
+# after_deploy
