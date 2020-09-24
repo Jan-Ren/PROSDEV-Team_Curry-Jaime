@@ -23,7 +23,7 @@ import Card from "components/Card/Card.jsx";
 import { Link } from 'react-router-dom'
 import users from '../api/users'
 import api from '../api'
-import ConfirmationDialog from "components/ConfirmationDialog/ConfirmationDialog";
+import SuccessDialog from "components/SuccessDialog/SuccessDialog";
 import FormDialog from "components/FormDialog/FormDialog";
 import { CircularProgress } from "@material-ui/core";
 
@@ -204,7 +204,7 @@ class POListFolders extends Component {
                                 </tbody>
                             </Table>
                           }
-                          <ConfirmationDialog
+                          <SuccessDialog
                             open={this.state.open}
                             handleClose={this.handleClose}
                             success={this.state.success}

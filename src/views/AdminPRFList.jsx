@@ -23,7 +23,7 @@ import Card from "components/Card/Card.jsx";
 import users from '../api/users'
 import api from '../api'
 import FormDialog from "components/FormDialog/FormDialog";
-import ConfirmationDialog from "components/ConfirmationDialog/ConfirmationDialog";
+import SuccessDialog from "components/SuccessDialog/SuccessDialog";
 import { CircularProgress } from "@material-ui/core";
 
 class PRFListFolders extends Component {
@@ -202,7 +202,7 @@ class PRFListFolders extends Component {
                               </tbody>
                           </Table>
                         }
-                        <ConfirmationDialog
+                        <SuccessDialog
                           open={this.state.open}
                           handleClose={this.handleClose}
                           success={this.state.success}

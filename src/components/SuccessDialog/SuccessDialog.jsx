@@ -50,7 +50,7 @@ const styles = (theme) => ({
     },
   });
 
-class ConfirmationDialog extends Component {
+class SuccessDialog extends Component {
     constructor (props) {
         super(props)
         this.state = {
@@ -113,4 +113,4 @@ class ConfirmationDialog extends Component {
     }
 }
 
-export default withStyles(styles)(ConfirmationDialog);
+export default withStyles(styles)(SuccessDialog);

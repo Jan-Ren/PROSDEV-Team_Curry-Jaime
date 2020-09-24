@@ -30,7 +30,7 @@ import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
 import users from "api/users";
-import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
+import SuccessDialog from '../components/SuccessDialog/SuccessDialog'
 
 class NewPO extends Component {
 
@@ -464,7 +464,7 @@ class NewPO extends Component {
                   </form>
                 }
               />
-              <ConfirmationDialog
+              <SuccessDialog
                 open={this.state.open}
                 handleClose={this.handleClose}
                 success={this.state.success}

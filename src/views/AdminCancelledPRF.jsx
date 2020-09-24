@@ -26,7 +26,7 @@ import { prfHArray } from "variables/Variables.jsx";
 import api from "../api";
 import moment from 'moment'
 import CircularProgress from '@material-ui/core/CircularProgress';
-import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
+import SuccessDialog from '../components/SuccessDialog/SuccessDialog'
 
 
 class AdminCancelledPRF extends Component {
@@ -260,7 +260,7 @@ class AdminCancelledPRF extends Component {
                       
                     </Table>
                   }
-                  <ConfirmationDialog
+                  <SuccessDialog
                     open={this.state.open}
                     handleClose={this.handleClose}
                     success={this.state.success}

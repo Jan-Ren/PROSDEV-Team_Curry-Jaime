@@ -47,7 +47,7 @@ class AdminPOTableList extends Component {
       const NF_PRF = await (await api.getAllNF_PRF()).data.data
       this.setState({ NF_PRF })
     } catch (error) {
-      alert(error)
+      alert("No folders to be seen")
     }
   }
 

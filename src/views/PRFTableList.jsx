@@ -26,7 +26,7 @@ import api from '../api'
 import moment from 'moment'
 import users from "api/users";
 import CircularProgress from '@material-ui/core/CircularProgress';
-import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
+import SuccessDialog from '../components/SuccessDialog/SuccessDialog'
 import FormDialog from "components/FormDialog/FormDialog";
 
 class PRFTableList extends Component {
@@ -245,7 +245,7 @@ class PRFTableList extends Component {
                       
                     </Table>
                   }
-                  <ConfirmationDialog
+                  <SuccessDialog
                     open={this.state.open}
                     handleClose={this.handleClose}
                     success={this.state.success}
