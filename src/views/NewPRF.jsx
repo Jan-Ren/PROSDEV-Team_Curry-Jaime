@@ -289,6 +289,7 @@ class NewPRF extends Component {
       }, 1000)
     }
   }
+  
   render() {    
     return (
       <div className="content">

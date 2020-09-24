@@ -281,7 +281,7 @@ class PRFTableList extends Component {
                     value={this.state.paid_date}
                     handleChange={this.handleChange}
                     handleEvent={this.handlePaidDate}
-                    handleClose={this.handleClose}
+                    handleClose={this.handleFormClose}
                     message={"Input Paid Date"}
                     />
                   <FormDialog
