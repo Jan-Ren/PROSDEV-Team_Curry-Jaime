@@ -3,7 +3,8 @@ import App from './App';
 import ReactDOM from 'react-dom';
 import { fireEvent, render, wait, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import Login from './components/Login/login.component';
+import Login from './components/login.component';
+import Admin from './layouts/Admin';
 import NewPRF from './views/NewPRF';
 import NewPO from './views/NewPO';
 import PRFTableList from './views/PRFTableList';
@@ -11,6 +12,7 @@ import POTableList from './views/POTableList';
 import AdminPRFTableList from './views/AdminPRFTableList';
 import AdminPOTableList from './views/AdminPOTableList';
 import GrossIncomeReport from './views/GrossIncomeReport';
+import AdminPRFList from './views/AdminPRFList';
 
 import {BrowserRouter} from "react-router-dom";
 
@@ -20,11 +22,13 @@ import {BrowserRouter} from "react-router-dom";
 // expect(const_here).toHaveValue("value_here");    to change values
 
 
-// r u mocking me
+
 const mockCheckCredentials = (Login.checkCredentials = jest.fn());
 const mockIsAdmin = (Login.isAdmin = jest.fn());
 const mockPRFSave = (NewPRF.handleSave = jest.fn());
 const mockPOSave = (NewPO.handleSave = jest.fn()); 
+const mockNewFolder = (AdminPRFList.handleAddNF = jest.fn());
+const mockDeletePRF = (AdminPRFTableList.handleDelete = jest.fn());
 
 test("Grand Pacific Travel and Tours Corporations App renders without crashing", ()=>{
     const div = document.createElement('div');
@@ -41,22 +45,30 @@ test("Login page renders without crashing", ()=> {
    expect(getByText("Login")).not.toBeNull();
 });
 
-test("Testing Login Functionality", async ()=> {
-    const { getByText, getByPlaceholderText } = render(<Login/>);
-    const user = getByPlaceholderText("Select an option");
-    const password = getByPlaceholderText("********");
+
+test("Testing Login Functionality",  ()=> {
+
+    const { getByText, getByPlaceholderText } = render(<App/>); 
+    const password = getByText("********");
+    const testValues = {
+        password: 'password',
+        handleSubmit: jest.fn(),
+    };
+
     const loginButton = getByText("Login");
 
-    
-    fireEvent.change(user, {target:{value:"Admin"}});
-    expect(user).toHaveValue("Admin");
     fireEvent.change(password, {target:{value:"password"}});
     expect(password).toHaveValue("password");
 
     fireEvent.click(loginButton);
-    expect(mockCheckCredentials).toHaveBeenCalledTimes(1);
-    expect(mockIsAdmin).toHaveBeenCalledTimes(1);
-            await wait(() => mockCheckCredentials);
+    expect(mockCredentials).toHaveBeenCalledTimes(1);
+    expect(testValues.handleSubmit).toBeCalledWith({password: testValues.password});
+});
+
+test("Admin view rendering", ()=> {
+    const div = document.createElement('div');
+    render(<Admin/>, div);
+    ReactDOM.unmountComponentAtNode(div);
 });
 
 test("NewPRF view renders without crashing", ()=> {
@@ -164,6 +176,35 @@ test("I want to be able to save the PO", async ()=>{
         ReactDOM.unmountComponentAtNode(div);
     });
 
-    // test("Admin PRFTableList DELETE TEST", ()=>{
+    test("New Folder Functionality (handleAddNF)", async ()=>{
+        //mocks handleAddNF
 
-    // });
+        const {getByText} = render(<Admin/>);
+        const clickNF = getByText("New Folder");
+        
+        fireEvent.click(clickNF);
+        const input = getByText("Paid Date");
+
+        fireEvent.change(input, {target:{value:"803"}});
+        expect(input).toHaveValue("803");
+        fireEvent.click(screen.getByText("Confirm"));
+
+        expect(mockNewFolder).toHaveBeenCalledTimes(1);
+
+        await wait(() => mockNewFolder);
+
+    });
+
+    test("Delete PRF Functionality (handleDelete)", async ()=>{
+        //mocks handleDelete in AdminPRFTableList
+
+        const {getByText, getByTestId} = render(<AdminPRFTableList/>);
+
+       // const deleteButton = getByTestId("deletebutton");
+
+        fireEvent.click(deleteButton);
+
+        expect(mockDeletePRF).toHaveBeenCalledTimes(1);
+
+        await wait(()=> mockDeletePRF);
+    });
