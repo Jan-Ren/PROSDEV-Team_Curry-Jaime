@@ -29,8 +29,6 @@ import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
-import { AlertErrorOutline } from "material-ui/svg-icons";
-import { withRouter } from 'react-router-dom'
 import users from "api/users";
 import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog.jsx'
 

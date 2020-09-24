@@ -81,7 +81,7 @@ class PRFTableList extends Component {
   handleSearch = (e) => {
     let searchQuery =  e.target.value
     let backup_prfList = [...this.state.backup_prf]
-    if(searchQuery != ""){
+    if(searchQuery !== ""){
       console.log(searchQuery)
       let prfList = [...this.state.backup_prf]
       console.log(prfList)

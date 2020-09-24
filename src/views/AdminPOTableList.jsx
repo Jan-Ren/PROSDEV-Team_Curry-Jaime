@@ -110,7 +110,7 @@ class POTableList extends Component {
   handleSearch = (e) => {
     let searchQuery =  e.target.value
     let backup_poList = [...this.state.backup_po]
-    if(searchQuery != ""){
+    if(searchQuery !== ""){
       console.log(searchQuery)
       let poList = [...this.state.backup_po]
       console.log(poList)

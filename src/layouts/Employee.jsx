@@ -27,8 +27,6 @@ import { style } from "variables/Variables.jsx";
 import routes from "routes.js";
 import NewPO from "views/NewPO.jsx";
 import users from '../api/users'
-import PRFTableList from "views/PRFTableList.jsx";
-import POTableList from "views/POTableList.jsx";
 
 class Employee extends Component {
   constructor(props) {

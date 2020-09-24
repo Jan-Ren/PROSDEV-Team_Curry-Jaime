@@ -90,7 +90,7 @@ class PRFTableList extends Component {
   handleSearch = (e) => {
     let searchQuery =  e.target.value
     let backup_prfList = [...this.state.backup_prf]
-    if(searchQuery != ""){
+    if(searchQuery !== ""){
       console.log(searchQuery)
       let prfList = [...this.state.backup_prf]
       console.log(prfList)
@@ -143,7 +143,7 @@ class PRFTableList extends Component {
         })
       }
 
-      let temp = prf.po.map(async (po_id, index) => {
+      prf = prf.po.map(async (po_id, index) => {
         try {          
           // get po's folder id
           if (index !== 0) {
@@ -178,9 +178,9 @@ class PRFTableList extends Component {
         }
       })
       
-      temp = await Promise.all(temp)
+      prf = await Promise.all(prf)
       
-      temp = nfpos.map(async object => {
+      prf = nfpos.map(async object => {
         try {
           const { NFPO, po_id, key } = object
 
@@ -197,7 +197,7 @@ class PRFTableList extends Component {
         }
       })
       
-      temp = await Promise.all(temp)
+      prf = await Promise.all(prf)
       // alert(`should be deleted ${new_NFPO.po.length}`)
       // await api.updateNF_POById(new_NFPO._id, new_NFPO)
 

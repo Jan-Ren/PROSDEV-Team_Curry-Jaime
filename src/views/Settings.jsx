@@ -20,9 +20,6 @@ import {
   Grid,
   Row,
   Col,
-  FormGroup,
-  ControlLabel,
-  FormControl
 } from "react-bootstrap";
 
 import { Card } from "components/Card/Card.jsx";
@@ -59,7 +56,7 @@ class NewPO extends Component {
     }
       console.log(this.state)
       // alert("saving please wait")  
-      if(this.state.admin_new_password == this.state.admin_retype_password){
+      if(this.state.admin_new_password === this.state.admin_retype_password){
         try {
           await users.updatePassword(payload).then(res => {   
             alert("saving done")
@@ -112,7 +109,7 @@ class NewPO extends Component {
     }
       console.log(this.state)
       // alert("saving please wait")     
-    if(this.state.employee_new_password == this.state.employee_retype_password){
+    if(this.state.employee_new_password === this.state.employee_retype_password){
       try {
         await users.updatePassword(payload).then(res => {   
           alert("saving done")

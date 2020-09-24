@@ -52,6 +52,7 @@ class PRFListFolders extends Component {
         })
       })
     }catch(e){
+      this.setState({ isLoading: false })
       console.log(e)
     }
   }
@@ -161,7 +162,7 @@ class PRFListFolders extends Component {
               <Card
                 title="PRF List"
                 ctTableResponsive
-                content={     
+                content={
                     <div>
                         <Col md={12}><Button bsStyle="info" className="block pull-right" onClick={() => this.setState({ open_nf:true })}><i className="pe-7s-plus"/>New Folder</Button></Col>
                         {

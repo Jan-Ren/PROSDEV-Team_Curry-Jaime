@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import {ReactComponent as ReactLogo} from './undraw_travel_booking_6koc.svg';
-import { Switch, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import Select from "react-dropdown-select";
 import users from '../../api/users'
 
@@ -11,7 +10,6 @@ const options = [
     { value: true, label: 'Admin'},
     { value: false, label: 'Employee'}
 ];
-const defaultOption = options[0];
 
 export default class Login extends Component {
     constructor(props) {
