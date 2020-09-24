@@ -57,20 +57,65 @@ class AdminCancelledPRF extends Component {
 
   handleDelete = async (prf) => {
     try {
+      // remove all po's of prf from db and from nf_po
       this.setState({ isLoading: true, open: true, action: 'Delete' })
       
-      // deleting all po's under this prf
-      prf = prf.po.map(async po_id => {
-        try {
-          const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
-          // get po folder
-          const NFPO = await (await api.getNF_POById(NFPO_id)).data.data          
+      const nfpos = []
+      if (prf.po.length) {
+        const PO = await (await api.getPOById(prf.po[0])).data.data
+        const NFPO_id = PO.po_folder
+        const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
+        nfpos.push({
+          key: NFPO_id,
+          NFPO,
+          po_id: [PO._id],
+        })
+      }
 
-          const index = NFPO.po.indexOf(po_id)
-          NFPO.po.splice(index, 1)
+      let temp = prf.po.map(async (po_id, index) => {
+        try {          
+          // get po's folder id
+          if (index !== 0) {
+
+            const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
+            const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
+            if (nfpos.filter(nfpo => nfpo.key === NFPO_id)) {
+              nfpos.map(nfpo => {
+                if (nfpo.key === NFPO_id) {
+                  nfpo.po_id.push(po_id)
+                  nfpo.NFPO = NFPO
+                }
+              })
+            } else {
+              nfpos.push({
+                key: NFPO_id,
+                NFPO,
+                po_id: [po_id],
+              })
+              
+            }
+          }
   
           await api.deletePOById(po_id)
-          await api.updateNF_POById(NFPO_id, NFPO)
+          // await api.updateNF_POById(NFPO_id, NFPO)
+        } catch (error) {
+          console.log(`hehell ${error}`)
+          alert(error)
+        }
+      })
+      
+      temp = await Promise.all(temp)
+      
+      temp = nfpos.map(async object => {
+        try {
+          const { NFPO, po_id, key } = object
+
+          po_id.map( id => {
+            const index = NFPO.po.indexOf(id)
+            NFPO.po.splice(index, 1)
+          })
+
+          await api.updateNF_POById(key, NFPO)
           
         } catch (error) {
           console.log(`hehe ${error}`)
@@ -78,21 +123,24 @@ class AdminCancelledPRF extends Component {
         }
       })
       
-      prf = await Promise.all(prf)
+      temp = await Promise.all(temp)
+      // alert(`should be deleted ${new_NFPO.po.length}`)
+      // await api.updateNF_POById(new_NFPO._id, new_NFPO)
 
-      // removing from folder and deleting actual PRF
-      const NFPRF_id = prf.prf_folder
-      const NF_PRF = await (await api.getNF_PRFById(NFPRF_id)).data.data
-      const index = NF_PRF.prf.indexOf(prf._id)
-      NF_PRF.prf.splice(index, 1)
+      // alert(prf._id)
 
-      await api.updateNF_PRFById(NFPRF_id, NF_PRF)
+      const new_NFPRF = await (await api.getNF_PRFById(prf.prf_folder)).data.data      
+      const index = new_NFPRF.prf.indexOf(prf._id)
+      new_NFPRF.prf.splice(index, 1)
+
+      await api.updateNF_PRFById(new_NFPRF._id, new_NFPRF)
       await api.deletePRFById(prf._id)
 
       setTimeout(() => {
         this.setState({ isLoading: false, success: true })
-      }, 1500)
+      }, 1000)
     } catch (error) {
+      console.log(error)
       alert(error)
     }
   }
@@ -107,7 +155,7 @@ class AdminCancelledPRF extends Component {
 
       setTimeout(() => {
         this.setState({ isLoading: false, success: true })
-      }, 1500)
+      }, 1000)
     } catch (error) {
       alert(error)
     }

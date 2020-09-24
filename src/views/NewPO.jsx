@@ -223,7 +223,7 @@ class NewPO extends Component {
         // alert("edit done")
         setTimeout(() => {
           this.setState({ isLoading: false, success: true })
-        }, 1500)
+        }, 1000)
 
       } catch (error) {
         console.log(error.message)
@@ -265,7 +265,7 @@ class NewPO extends Component {
         // alert("saving done")
         setTimeout(() => {
           this.setState({ isLoading: false, success: true })
-        }, 1500)
+        }, 1000)
 
       } catch (error) {
         console.log(error.message)

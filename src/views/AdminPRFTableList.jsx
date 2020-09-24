@@ -150,8 +150,6 @@ class PRFTableList extends Component {
 
             const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
             const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
-            alert(NFPO)
-            alert(nfpos.length)
             if (nfpos.filter(nfpo => nfpo.key === NFPO_id)) {
               nfpos.map(nfpo => {
                 if (nfpo.key === NFPO_id) {
@@ -167,7 +165,6 @@ class PRFTableList extends Component {
               })
               
             }
-            alert(nfpos.length)
           }
   
           await api.deletePOById(po_id)
@@ -212,7 +209,7 @@ class PRFTableList extends Component {
 
       setTimeout(() => {
         this.setState({ isLoading: false, success: true })
-      }, 1500)
+      }, 1000)
     } catch (error) {
       console.log(error)
       alert(error)
