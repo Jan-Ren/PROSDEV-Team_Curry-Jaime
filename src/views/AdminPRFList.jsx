@@ -58,7 +58,7 @@ class PRFListFolders extends Component {
   }
 
   deleteWorkingDirectory = async (working_directory) => {
-    this.setState({ isLoading: true})
+    this.setState({ loading: true, open: true, action: "Delete" })
     try{
         let temp = working_directory.prf.map(async prf_id => {
           try {
@@ -86,12 +86,14 @@ class PRFListFolders extends Component {
         await api.deleteNF_PRFById(working_directory._id)
         temp = await Promise.all(temp)
 
-        this.setState({ isLoading: false, success: true })
-        window.location.reload()
+        setTimeout(() => {
+          this.setState({ loading: false, success: true })
+        }, 1000)
       }catch (error) {
         alert(error)
-        this.setState({ isLoading: false, success: false })
-        window.location.reload()
+        setTimeout(() => {
+          this.setState({ loading: false, success: false })
+        }, 1000)
       }
 
   }
@@ -138,18 +140,23 @@ class PRFListFolders extends Component {
 
   handleAddNF = async () => {
     try {
-      this.setState({ isLoading: true, open: true, action: "Add", open_nf: false })
+      this.setState({ loading: true, open: true, action: "Add", open_nf: false })
       const { nf_prf_number } = this.state
-      
-      if (nf_prf_number/100 > 0 && nf_prf_number/100 <= 9) {
+      if (nf_prf_number/100 >= 1 && nf_prf_number/100 <= 9) {
         await api.insertNF_PRF({nf_prf_number})
-        this.setState({ isLoading: false, success: true })
+        setTimeout(() => {          
+          this.setState({ loading: false, success: true })
+        }, 1000)
       }
       else {
-        this.setState({ isLoading: false, success: false })
+        setTimeout(() => {
+          this.setState({ loading: false, success: false })
+        }, 1000)
       }
     } catch (error) {
-      this.setState({ isLoading: false, success: false })
+      setTimeout(() => {
+        this.setState({ loading: false, success: false })
+      }, 1000)
     }
   }
 
@@ -206,7 +213,7 @@ class PRFListFolders extends Component {
                           open={this.state.open}
                           handleClose={this.handleClose}
                           success={this.state.success}
-                          isLoading={this.state.isLoading}
+                          isLoading={this.state.loading}
                           action={this.state.action}
                           />
                         <FormDialog

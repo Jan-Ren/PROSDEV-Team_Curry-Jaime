@@ -60,7 +60,7 @@ class POListFolders extends Component {
     }
   }
   deleteWorkingDirectory = async (working_directory) => {
-    this.setState({ isLoading: true})
+    this.setState({ loading: true, open: true, action: "Delete" })
     try{
         let temp = working_directory.po.map(async po_id => {
           try {          
@@ -86,12 +86,14 @@ class POListFolders extends Component {
         await api.deleteNF_POById(working_directory._id)
         temp = await Promise.all(temp)
 
-        this.setState({ isLoading: false, success: true })
-        window.location.reload()
+        setTimeout(() => {
+          this.setState({ loading: false, success: true })
+        }, 1000)
       }catch (error) {
         alert(error)
-        this.setState({ isLoading: false, success: false })
-        window.location.reload()
+        setTimeout(() => {
+          this.setState({ loading: false, success: false })
+        }, 1000)
       }
 
   }
@@ -137,18 +139,24 @@ class POListFolders extends Component {
 
   handleAddNF = async () => {
     try {
-      this.setState({ isLoading: true, open: true, action: "Add", open_nf: false })
+      this.setState({ loading: true, open: true, action: "Add", open_nf: false })
       const { nf_po_number } = this.state
       
-      if (nf_po_number/100 > 0 && nf_po_number/100 <= 9) {
+      if (nf_po_number/100 >= 1 && nf_po_number/100 <= 9) {
         await api.insertNF_PO({nf_po_number})
-        this.setState({ isLoading: false, success: true })
+        setTimeout(() => {          
+          this.setState({ loading: false, success: true })
+        }, 1000)
       }
       else {
-        this.setState({ isLoading: false, success: false })
+        setTimeout(() => {
+          this.setState({ loading: false, success: false })
+        }, 1000)
       }
     } catch (error) {
-      this.setState({ isLoading: false, success: false })
+      setTimeout(() => {
+        this.setState({ loading: false, success: false })
+      }, 1000)
     }
   }
 
@@ -208,7 +216,7 @@ class POListFolders extends Component {
                             open={this.state.open}
                             handleClose={this.handleClose}
                             success={this.state.success}
-                            isLoading={this.state.isLoading}
+                            isLoading={this.state.loading}
                             action={this.state.action}
                             />
                           <FormDialog
