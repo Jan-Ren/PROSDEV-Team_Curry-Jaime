@@ -23,6 +23,7 @@ import Button from "components/CustomButton/CustomButton.jsx";
 import api from '../api'
 import users from "api/users";
 import SuccessDialog from '../components/SuccessDialog/SuccessDialog'
+import FormDialog from "components/FormDialog/FormDialog";
 
 class NewPRF extends Component {
 
@@ -46,7 +47,9 @@ class NewPRF extends Component {
       isLoading: false,
       open: false,
       action: 'Save',
-      is_cancelled: false
+      is_cancelled: false,
+      open_admin: false,
+      admin_pass: '',
     }    
     this.handleChange = this.handleChange.bind(this)
   }
@@ -173,51 +176,46 @@ class NewPRF extends Component {
     this.setState({pax: this.state.pax})
 
   }
+
+  handleChangeAdmin = (e) => {
+    this.setState({ admin_pass: e.target.value })
+  }
+
+  handleFormClose = () => {
+    this.setState({ open_admin:false });
+  }
+
+  handleAdminPassword = async () => {
+    try {
+      this.setState({ isLoading: true, open: true, action: "Save", open_admin: false })
+      const { admin_pass } = this.state
+      await users.login({ isAdmin: true, password: admin_pass })
+      this.handleConfirmSave()
+      this.setState({ open_admin: false })
+    } catch (error) {
+      this.setState({ isLoading: false, success: false })
+    }
+  }
+
   handleSave = async (e) => {
-    e.preventDefault()
-    this.setState({ isLoading: true, open: true })
-    const payload = {...this.state}
-    payload.prf_folder = this.state.prf_folder._id
-    // alert('here')
+    e.preventDefault()        
     
     // edit PRF
     if (this.props.location.state) {
-      const { _id, date_created } = this.props.location.state.PRF
-      payload.date_created = date_created
-
-      try {
-        // alert('editing please wait')
-        await api.updatePRFById(_id, payload)
-
-        this.setState({
-          prf_number: '',
-          pax: [''],
-          recipient: '',
-          particulars: '',
-          conversion_rate: 0,
-          php: 0,
-          usd: 0,
-          total: 0,
-          prepared_by: '',
-          approved_by: '',
-          received_by: ''
-        })
-        // alert("edit done")
-        setTimeout(() => {
-          this.setState({ isLoading: false, success: true })
-        }, 1000)
-
-      } catch (error) {
-        console.log(error.message)
-        alert(`Editing failed: ${error.message}`)
-      }
-      
+      const isAdmin = await (await users.getUser({token: localStorage.getItem('token')})).data.data.isAdmin
+      if (isAdmin)
+        this.handleConfirmSave()
+      else
+        this.setState({ open_admin: true })
     } 
     
     // new PRF
     else {
-      console.log(this.state)
-      // alert("saving please wait")      
+
+      this.setState({ isLoading: true, open: true })
+      const payload = {...this.state}
+      payload.prf_folder = this.state.prf_folder._id
+
       try {
         const prf_id = await (await api.insertPRF(payload)).data.id
         const { prf_folder } = this.state
@@ -247,10 +245,51 @@ class NewPRF extends Component {
         
       } catch (error) {
         console.log(error.message)
-        alert(error.message)
+        setTimeout(() => {
+          this.setState({ isLoading: false, success: false })
+        }, 1000)
       }
     }
   }
+
+  handleConfirmSave = async () => {
+    this.setState({ isLoading: true, open: true })
+    const { _id, date_created, prf_folder } = this.props.location.state.PRF
+    const payload = {...this.state}
+    payload.date_created = date_created
+    payload.prf_folder = prf_folder
+    console.log(payload.prf_folder)
+
+    try {
+      // alert('editing please wait')
+      await api.updatePRFById(_id, payload)
+
+      this.setState({
+        prf_number: '',
+        pax: [''],
+        recipient: '',
+        particulars: '',
+        conversion_rate: 0,
+        php: 0,
+        usd: 0,
+        total: 0,
+        prepared_by: '',
+        approved_by: '',
+        received_by: ''
+      })
+      // alert("edit done")
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: true })
+      }, 1000)
+
+    } catch (error) {
+      console.log(error)
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: false })
+      }, 1000)
+    }
+  }
+  
   render() {    
     return (
       <div className="content">
@@ -440,6 +479,15 @@ class NewPRF extends Component {
                 success={this.state.success}
                 isLoading={this.state.isLoading}
                 action={this.state.action}
+                />
+              <FormDialog
+                open={this.state.open_admin}
+                type={"password"}
+                value={this.state.admin_pass}
+                handleChange={this.handleChangeAdmin}
+                handleEvent={this.handleAdminPassword}
+                handleClose={this.handleFormClose}
+                message={"admin password"}
                 />
             </Col>
           </Row>

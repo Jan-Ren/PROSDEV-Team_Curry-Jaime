@@ -43,7 +43,9 @@ class PRFTableList extends Component {
         open: false,
         success: false,
         open_paiddate: false,
+        open_admin: false,
         paid_date: '',
+        admin_pass: '',
         prf_edit: '',
         from: '',
         to: ''
@@ -68,12 +70,17 @@ class PRFTableList extends Component {
 
       prf = await Promise.all(prf)
 
+      prf = prf.filter(p => {
+        if (!p.is_cancelled)
+          return p
+      })
+
       this.setState({ PRF: prf, NF_PRF: folder, backup_prf: prf })
 
       console.log(this.state.PRF)
       this.setState({ loading: false })
     } catch (error) {
-      
+      this.setState({ loading: false })      
     }
 
   }
@@ -93,14 +100,14 @@ class PRFTableList extends Component {
       console.log(filteredPRF)
       this.setState({ PRF: filteredPRF })
     }else{
-      console.log("ds")
       this.setState({ PRF: backup_prfList })
     }
   }
 
-  handleCancel = async (prf) => {
-    this.setState({ isLoading: true, open: true, action: 'Cancel' })
+  handleCancel = async () => {
+    this.setState({ isLoading: true, open_admin: true, action: 'Cancel' })
     
+    const { currentPRF: prf } = this.state
     prf.is_cancelled = true
     try {
       await api.updatePRFById(prf._id, prf)
@@ -127,8 +134,12 @@ class PRFTableList extends Component {
     window.location.reload()
   }
 
+  handleFormClose = () => {
+    this.setState({ open_admin:false, open_paiddate: false });
+  }
+
   handleChange = (e) => {
-    this.setState({ paid_date: e.target.value })
+    this.setState({ paid_date: e.target.value, admin_pass: e.target.value })
   }
 
   handlePaidDate = async () => {
@@ -143,6 +154,18 @@ class PRFTableList extends Component {
     }
   }
 
+  handleAdminPassword = async () => {
+    try {
+      this.setState({ isLoading: true, open: true, action: "Cancel", open_admin: false })
+      const { admin_pass } = this.state
+      await users.login({ isAdmin: true, password: admin_pass })
+      this.handleCancel()
+      this.setState({ isLoading: false, success: true, open_admin: false })
+    } catch (error) {
+      this.setState({ isLoading: false, success: false })
+    }
+  }
+
   handleDateFilter = async () => {
     this.setState({ loading: true })
     try {
@@ -152,6 +175,8 @@ class PRFTableList extends Component {
       to = moment(to).endOf('day').toDate()
       const prf = await (await api.getPRFDateRange({ from, to })).data.data
       const PRF = prf.filter(p => {
+        console.log(p.prf_folder)
+        console.log(this.state.NF_PRF._id)
         if (!p.is_cancelled && p.prf_folder === this.state.NF_PRF._id)
           return p
       })
@@ -232,11 +257,11 @@ class PRFTableList extends Component {
                                 <td key={`${prop._id} ${key+4}`}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                 <td key={`${prop._id} ${key+5}`}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                 <td>
-                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                                    <Link to={{pathname: '/create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button></Link>
                                     <></>
                                     <Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"}} } style={{ color: "inherit"}} ><Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-look" />New PO</Button>{' '}</Link>
                                     <></>
-                                    <Link to={{pathname: '/create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button></Link>
+                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.setState({ open_admin: true, currentPRF: prop })}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                 </td>
                               </tr>
                             );
@@ -258,8 +283,17 @@ class PRFTableList extends Component {
                     value={this.state.paid_date}
                     handleChange={this.handleChange}
                     handleEvent={this.handlePaidDate}
-                    handleClose={this.handleClose}
+                    handleClose={this.handleFormClose}
                     message={"Input Paid Date"}
+                    />
+                  <FormDialog
+                    open={this.state.open_admin}
+                    type={"password"}
+                    value={this.state.admin_pass}
+                    handleChange={this.handleChange}
+                    handleEvent={this.handleAdminPassword}
+                    handleClose={this.handleFormClose}
+                    message={"admin password"}
                     />
                   </div>
                 

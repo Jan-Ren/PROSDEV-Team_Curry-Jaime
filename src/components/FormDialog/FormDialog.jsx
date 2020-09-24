@@ -27,13 +27,13 @@ export default function FormDialog(props) {
         <DialogTitle id="form-dialog-title">Message</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {props.message}
+            {`Input ${props.message}`}
           </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
             id="name"
-            label="Paid Date"
+            label={props.message}
             type={props.type}
             value={props.value}
             onChange={(e) => props.handleChange(e)}

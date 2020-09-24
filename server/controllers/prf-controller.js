@@ -45,7 +45,6 @@ updatePRF = async (req, res) => {
 
     PRF.findOne({ _id: req.params.id }, (err, prf) => {
         if (err) {
-            console.log(`PANO MO HINDI NAKITA ${err}`)
             return res.status(404).json({
                 err,
                 message: 'PRF not found!',
