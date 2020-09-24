@@ -143,7 +143,7 @@ class PRFTableList extends Component {
         })
       }
 
-      prf = prf.po.map(async (po_id, index) => {
+      let temp = prf.po.map(async (po_id, index) => {
         try {          
           // get po's folder id
           if (index !== 0) {
@@ -178,9 +178,9 @@ class PRFTableList extends Component {
         }
       })
       
-      prf = await Promise.all(prf)
+      temp = await Promise.all(temp)
       
-      prf = nfpos.map(async object => {
+      temp = nfpos.map(async object => {
         try {
           const { NFPO, po_id, key } = object
 
@@ -197,7 +197,7 @@ class PRFTableList extends Component {
         }
       })
       
-      prf = await Promise.all(prf)
+      temp = await Promise.all(temp)
       // alert(`should be deleted ${new_NFPO.po.length}`)
       // await api.updateNF_POById(new_NFPO._id, new_NFPO)
 

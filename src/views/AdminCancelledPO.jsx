@@ -62,7 +62,7 @@ class AdminPOTableList extends Component {
       this.setState({ loading: false })
     }
   }
-
+  
   handleDelete = async (po) => {
     try {
       this.setState({ isLoading: true, open: true, action: 'Delete' })            
@@ -88,7 +88,7 @@ class AdminPOTableList extends Component {
       alert(error)
     }
   }
-
+  
   handleUncancel = async (po) => {
     this.setState({ isLoading: true, open: true, action: 'Uncancel' })
     
@@ -96,7 +96,7 @@ class AdminPOTableList extends Component {
     po.last_modified = Date.now()
     try {
       await api.updatePOById(po._id, po)
-
+      
       setTimeout(() => {
         this.setState({ isLoading: false, success: true })
       }, 1500)
@@ -104,12 +104,12 @@ class AdminPOTableList extends Component {
       alert(error)
     }
   }
-
+  
   handleClose = () => {
     this.setState({ open:false });
     window.location.reload()
   }
-
+  
   handleDateFilter = async () => {
     this.setState({ loading: true })
     try {
@@ -122,13 +122,24 @@ class AdminPOTableList extends Component {
         if (p.is_cancelled)
           return p
       })
+
+      let prf = PO.map(async po => {
+        if ( po.prf) {
+          const prf = await (await api.getPRFById(po.prf)).data.data
+          return prf
+        }
+      })
+      
+      prf = await Promise.all(prf)
+      prf.map((p, index) => { PO[index].prf = p })
+
       this.setState({ PO })
     } catch (error)  {
       this.setState({ PO: [] })
     }
     this.setState({ loading: false })
   }
-
+  
   render() {
     return (
       <div className="content">
