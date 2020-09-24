@@ -71,16 +71,18 @@ class PRFListFolders extends Component {
               const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
 
               const index = NFPO.po.indexOf(po_id)
-             NFPO.po.splice(index, 1)
+              NFPO.po.splice(index, 1)
 
-             await api.deletePOById(po_id)
+              await api.deletePOById(po_id)
               await api.updateNF_POById(NFPO_id, NFPO)
             })
             await api.deletePRFById(prf_id)
             temp1 = await Promise.all(temp)
           } catch (error) {
             console.log(`hehe ${error}`)
-            alert(error)
+            setTimeout(() => {
+              this.setState({ loading: false, success: false })
+            }, 1000)
           }
         })
         await api.deleteNF_PRFById(working_directory._id)
@@ -89,44 +91,40 @@ class PRFListFolders extends Component {
         setTimeout(() => {
           this.setState({ loading: false, success: true })
         }, 1000)
-      }catch (error) {
-        alert(error)
+
+      } catch (error) {    
+        console.log(error)
         setTimeout(() => {
           this.setState({ loading: false, success: false })
         }, 1000)
       }
-
+      console.log(this.state.success)
   }
 
   setWorkingDirectory = async (curr_working_directory) => {
+    this.setState({ loading: true, open: true, action: "Set" })
     //FOR EMPLOYEE
     const payload = {
       isAdmin : false,
       prf_folder: curr_working_directory
     }
     
-    console.log(payload)
     try {
-      await users.updatePRF_Folder(payload).then(res => {   
-        alert("saving done")
-      })
+      await users.updatePRF_Folder(payload)
+      
+      //FOR ADMIN
+      payload.isAdmin = true
+      await users.updatePRF_Folder(payload)
+      setTimeout(() => {
+        this.setState({ loading: false, success: true })
+      }, 1000)
     } catch (error) {
       console.log(error.message)
-      alert(error.message)
+      setTimeout(() => {
+        this.setState({ loading: false, success: false })
+      }, 1000)
     }
-    
-    //FOR ADMIN
-    payload.isAdmin = true
-    
-    console.log(payload)
-    try {
-      await users.updatePRF_Folder(payload).then(res => {   
-        alert("saving done")
-      })
-    } catch (error) {
-      console.log(error.message)
-      alert(error.message)
-    }
+
   }
 
   handleClose = () => {

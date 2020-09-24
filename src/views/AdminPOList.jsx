@@ -98,34 +98,29 @@ class POListFolders extends Component {
 
   }
   setWorkingDirectory = async (curr_working_directory) => {
+    this.setState({ loading: true, open: true, action: "Set" })
     //FOR EMPLOYEE
     const payload = {
       isAdmin : false,
       po_folder: curr_working_directory
     }
     
-    console.log(payload)
     try {
-      await users.updatePO_Folder(payload).then(res => {   
-        alert("saving done")
-      })
+      await users.updatePO_Folder(payload)
+
+      //FOR ADMIN
+      payload.isAdmin = true
+      await users.updatePO_Folder(payload)
+      setTimeout(() => {
+        this.setState({ loading: false, success: true })
+      }, 1000)
     } catch (error) {
       console.log(error.message)
-      alert(error.message)
+      setTimeout(() => {
+        this.setState({ loading: false, success: false })
+      }, 1000)
     }
 
-    //FOR ADMIN
-    payload.isAdmin = true
-    
-    console.log(payload)
-    try {
-      await users.updatePO_Folder(payload).then(res => {   
-        alert("saving done")
-      })
-    } catch (error) {
-      console.log(error.message)
-      alert(error.message)
-    }
   }
 
   handleClose = () => {
