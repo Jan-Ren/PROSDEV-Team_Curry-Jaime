@@ -93,7 +93,7 @@ class POTableList extends Component {
 
       this.setState({ PO: po, NF_PO: folder, loading: false, backup_po: po })
     } catch (error) {
-      
+      this.setState({ loading: false })    
     }
 
   }
@@ -113,7 +113,6 @@ class POTableList extends Component {
       console.log(filteredPO)
       this.setState({ PO: filteredPO })
     }else{
-      console.log("ds")
       this.setState({ PO: backup_poList })
     }
   }
