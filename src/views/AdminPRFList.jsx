@@ -166,24 +166,26 @@ class PRFListFolders extends Component {
                         <Col md={12}><Button bsStyle="info" className="block pull-right" onClick={() => this.setState({ open_nf:true })}><i className="pe-7s-plus"/>New Folder</Button></Col>
                         {
                           this.state.isLoading ?
-                          <div style={{padding: "100px 0", textAlign: "center"}}>
+                          <Row style={{padding: "100px 0", textAlign: "center"}}>
                             <CircularProgress />
-                          </div> : 
+                          </Row> : 
 
                           <Table striped hover>
                               <tbody>
                               {
                                 !this.state.prfFolder.length ?
 
-                                <Row><Col md={12}>
-                                  This list is empty.
-                                </Col></Row> :
+                                <tr>
+                                  <td>
+                                    This list is empty.
+                                  </td>
+                                </tr> :
 
                                 this.state.prfFolder.map((prop, key) => {
                                     return (
-                                    <tr key={key}>
+                                    <tr key={`${prop._id} ${key}`}>
 
-                                        <td key={key}>{prop.nf_prf_number}</td>
+                                        <td key={`${prop._id} ${key+1}`}>{prop.nf_prf_number}</td>
 
                                         <td>
                                         <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.deleteWorkingDirectory(prop)} className="pull-right" ><i className="pe-7s-close-circle"/>Delete</Button>

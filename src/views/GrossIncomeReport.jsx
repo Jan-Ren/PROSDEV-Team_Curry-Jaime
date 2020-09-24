@@ -16,11 +16,10 @@
 
 */
 import React, { Component } from "react";
-import { FormControl,  Form, FormGroup, ControlLabel, Grid, Row, Col, Table} from "react-bootstrap";
+import { FormControl,  Form, FormGroup, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { grossHArray, grossDArray } from "variables/Variables.jsx";
-import FormInputs from "components/FormInputs/FormInputs";
+import { grossHArray } from "variables/Variables.jsx";
 import api from "api";
 import moment from 'moment'
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -93,7 +92,7 @@ class AdminPOTableList extends Component {
         })
         
         let po
-        let temp = prf.map( async (p, index) => {
+        prf = prf.map( async (p, index) => {
   
           po = p.po.map(async po_reference => {
             try {
@@ -130,7 +129,7 @@ class AdminPOTableList extends Component {
   
           return p
         })
-        temp = await Promise.all(temp)
+        prf = await Promise.all(prf)
         this.setState({ PRF: prf })
         this.handleTotal()        
       } catch (error) {
@@ -184,9 +183,9 @@ class AdminPOTableList extends Component {
                   </Col>
                   {
                     this.state.isLoading ?
-                    <div style={{padding: "100px 0", textAlign: "center"}}>
+                    <Row style={{padding: "100px 0", textAlign: "center"}}>
                       <CircularProgress />
-                    </div> :
+                    </Row> : 
 
                     <Table striped hover>
                     <thead>
@@ -201,20 +200,20 @@ class AdminPOTableList extends Component {
                       {
                         !this.state.PRF.length ?
 
-                        <Row><Col md={12}>
+                        <tr><td>
                           This list is empty.
-                        </Col></Row> :
+                        </td></tr> :
 
-                        this.state.PRF.map((prop, key) => {
+                        this.state.PRF.map((prop, key) => {                          
                           return (
                             <tr>
 
-                              <td key={key}>{prop.prf_number}</td>
-                              <td key={key}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                              <td key={key}>{moment(prop.paid_date).format('MM-DD-YYYY')}</td>
-                              <td key={key}>{prop.total}</td>
-                              <td key={key}>{prop.po_amount}</td>
-                              <td key={key}>{prop.gross}</td>
+                              <td key={`${prop._id} ${key+1}`}>{prop.prf_number}</td>
+                              <td key={`${prop._id} ${key+2}`}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                              <td key={`${prop._id} ${key+3}`}>{prop.paid_date ? moment(prop.paid_date).format('MM-DD-YYYY'): `N/A`}</td>
+                              <td key={`${prop._id} ${key+4}`}>{prop.total}</td>
+                              <td key={`${prop._id} ${key+5}`}>{prop.po_amount}</td>
+                              <td key={`${prop._id} ${key+6}`}>{prop.gross}</td>
                             </tr>
                           )
                         })

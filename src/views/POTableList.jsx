@@ -20,7 +20,7 @@ import { Link, Redirect } from 'react-router-dom'
 import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { poHArray, poDArray } from "variables/Variables.jsx";
+import { poHArray } from "variables/Variables.jsx";
 import api from '../api'
 import moment from 'moment'
 import users from "api/users";

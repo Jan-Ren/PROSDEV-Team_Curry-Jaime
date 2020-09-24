@@ -16,13 +16,13 @@
 
 */
 import React, { Component } from "react";
-import { Link, Redirect } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { prfHArray, prfDArray } from "variables/Variables.jsx";
+import { prfHArray } from "variables/Variables.jsx";
 
-import DateInput from "components/DatePicker/DatePicker.jsx"
+// import DateInput from "components/DatePicker/DatePicker.jsx"
 import api from "../api";
 import moment from 'moment'
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -60,7 +60,7 @@ class AdminCancelledPRF extends Component {
       this.setState({ isLoading: true, open: true, action: 'Delete' })
       
       // deleting all po's under this prf
-      let temp = prf.po.map(async po_id => {
+      prf = prf.po.map(async po_id => {
         try {
           const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
           // get po folder
@@ -78,7 +78,7 @@ class AdminCancelledPRF extends Component {
         }
       })
       
-      temp = await Promise.all(temp)
+      prf = await Promise.all(prf)
 
       // removing from folder and deleting actual PRF
       const NFPRF_id = prf.prf_folder
@@ -174,9 +174,9 @@ class AdminCancelledPRF extends Component {
                   <div>
                   {
                     this.state.loading ?
-                    <div style={{padding: "100px 0", textAlign: "center"}}>
-                        <CircularProgress />
-                    </div> : 
+                    <Row style={{padding: "100px 0", textAlign: "center"}}>
+                      <CircularProgress />
+                    </Row> : 
                     <Table striped hover>
                       <thead>
                         <tr>
@@ -188,17 +188,18 @@ class AdminCancelledPRF extends Component {
                       <tbody>
                         {
                           !this.state.PRF.length ?
-                          <p>This list is empty.</p>
-                          :
+                          <Row><Col md={12}>
+                            This list is empty.
+                          </Col></Row> :
                           this.state.PRF.map((prop, key) => {
                             return (
-                              <tr key={key}>
+                              <tr key={`${prop._id} ${key}`}>
                                   
-                                  <td key={key+1}>{prop.prf_number}</td>
-                                  <td key={key+2}>{prop.recipient}</td>
-                                  <td key={key+4}>{prop.paid_date ? moment(prop.paid_date).format('MM-DD-YYYY') : ''}</td>
-                                  <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                                  <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                  <td key={`${prop._id} ${key+1}`}>{prop.prf_number}</td>
+                                  <td key={`${prop._id} ${key+2}`}>{prop.recipient}</td>
+                                  <td key={`${prop._id} ${key+3}`}>{prop.paid_date ? moment(prop.paid_date).format('MM-DD-YYYY') : ''}</td>
+                                  <td key={`${prop._id} ${key+4}`}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                  <td key={`${prop._id} ${key+5}`}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                   <td>
                                 <Link to={{pathname: '/create/New-PRF', state: {PRF: prop, is_cancelled: true}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
                                 <Button variant="outline-primary" bsStyle="success" onClick={() => this.handleUncancel(prop)}><i className="pe-7s-back-2"/> Uncancel</Button>{' '}

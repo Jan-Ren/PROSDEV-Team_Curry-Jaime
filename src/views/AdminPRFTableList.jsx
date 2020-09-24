@@ -20,12 +20,10 @@ import { Link, Redirect } from 'react-router-dom'
 import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { prfHArray, prfDArray } from "variables/Variables.jsx"; 
+import { prfHArray } from "variables/Variables.jsx"; 
 
-import DateInput from "components/DatePicker/DatePicker.jsx"
 import api from '../api'
 import moment from 'moment'
-import users from "api/users";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ConfirmationDialog from 'components/ConfirmationDialog/ConfirmationDialog.jsx'
 import FormDialog from "components/FormDialog/FormDialog";
@@ -115,10 +113,10 @@ class PRFTableList extends Component {
     prf.is_cancelled = true
     prf.last_modified = Date.now()
     try {
-      const res = await api.updatePRFById(prf._id, prf)
+      await api.updatePRFById(prf._id, prf)
       
       prf.po.map(async po_id => {
-        const po = await (await api.cancelPOById(po_id)).data.data        
+        await (await api.cancelPOById(po_id)).data.data        
       })
       
       this.setState({ isLoading: false, success: true })
@@ -129,26 +127,69 @@ class PRFTableList extends Component {
   }
 
   handleDelete = async (prf) => {
-    try {      
-      // alert(prf.po.length)
-      
-      // const new_NFPO = {...this.state.NF_PO}
-      // alert(`not yet deleted ${new_NFPO.po.length}`)
+    try {
       // remove all po's of prf from db and from nf_po
       this.setState({ isLoading: true, open: true, action: 'Delete' })
-      let temp = prf.po.map(async po_id => {
-        try {          
-          // alert(po_id)
-          // get po's folder id
-          const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
-          // get po folder
-          const NFPO = await (await api.getNF_POById(NFPO_id)).data.data          
+      
+      const nfpos = []
+      if (prf.po.length) {
+        const PO = await (await api.getPOById(prf.po[0])).data.data
+        const NFPO_id = PO.po_folder
+        const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
+        nfpos.push({
+          key: NFPO_id,
+          NFPO,
+          po_id: [PO._id],
+        })
+      }
 
-          const index = NFPO.po.indexOf(po_id)
-          NFPO.po.splice(index, 1)
+      let temp = prf.po.map(async (po_id, index) => {
+        try {          
+          // get po's folder id
+          if (index !== 0) {
+
+            const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
+            const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
+            alert(NFPO)
+            alert(nfpos.length)
+            if (nfpos.filter(nfpo => nfpo.key === NFPO_id)) {
+              nfpos.map(nfpo => {
+                if (nfpo.key === NFPO_id) {
+                  nfpo.po_id.push(po_id)
+                  nfpo.NFPO = NFPO
+                }
+              })
+            } else {
+              nfpos.push({
+                key: NFPO_id,
+                NFPO,
+                po_id: [po_id],
+              })
+              
+            }
+            alert(nfpos.length)
+          }
   
           await api.deletePOById(po_id)
-          await api.updateNF_POById(NFPO_id, NFPO)
+          // await api.updateNF_POById(NFPO_id, NFPO)
+        } catch (error) {
+          console.log(`hehell ${error}`)
+          alert(error)
+        }
+      })
+      
+      temp = await Promise.all(temp)
+      
+      temp = nfpos.map(async object => {
+        try {
+          const { NFPO, po_id, key } = object
+
+          po_id.map( id => {
+            const index = NFPO.po.indexOf(id)
+            NFPO.po.splice(index, 1)
+          })
+
+          await api.updateNF_POById(key, NFPO)
           
         } catch (error) {
           console.log(`hehe ${error}`)
@@ -173,6 +214,7 @@ class PRFTableList extends Component {
         this.setState({ isLoading: false, success: true })
       }, 1500)
     } catch (error) {
+      console.log(error)
       alert(error)
     }
   }
@@ -257,9 +299,9 @@ class PRFTableList extends Component {
                   <div>
                   {
                     this.state.loading ?
-                    <div style={{padding: "100px 0", textAlign: "center"}}>
-                        <CircularProgress />
-                    </div> : 
+                    <Row style={{padding: "100px 0", textAlign: "center"}}>
+                      <CircularProgress />
+                    </Row> : 
 
                     <Table striped hover>
                       <thead>
@@ -280,18 +322,18 @@ class PRFTableList extends Component {
                             return (
                               !prop.is_cancelled ?
 
-                              (<tr key={key}>
+                              (<tr key={`${prop._id} ${key}`}>
                                 
-                                <td key={key+1}>{prop.prf_number}</td>
-                                <td key={key+2}>{prop.recipient}</td>
-                                <td key={key+4}>
+                                <td key={`${prop._id} ${key+1}`}>{prop.prf_number}</td>
+                                <td key={`${prop._id} ${key+2}`}>{prop.recipient}</td>
+                                <td key={`${prop._id} ${key+3}`}>
                                   {!prop.paid_date ? 
                                     <Button  onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>Add Paid Date</Button>
                                      : 
                                      <Button bsStyle="success" onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
                                   }</td>
-                                <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                                <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                <td key={`${prop._id} ${key+4}`}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                <td key={`${prop._id} ${key+5}`}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                 <td>
                                     <Link to={{pathname: '/create/New-PRF', state: {PRF: prop}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
                                     <></>

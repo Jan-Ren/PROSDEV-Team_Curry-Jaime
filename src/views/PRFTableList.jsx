@@ -20,9 +20,8 @@ import { Link, Redirect } from 'react-router-dom'
 import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { prfHArray, prfDArray } from "variables/Variables.jsx"; 
+import { prfHArray } from "variables/Variables.jsx"; 
 
-import DateInput from "components/DatePicker/DatePicker.jsx"
 import api from '../api'
 import moment from 'moment'
 import users from "api/users";
@@ -101,18 +100,15 @@ class PRFTableList extends Component {
 
   handleCancel = async (prf) => {
     this.setState({ isLoading: true, open: true, action: 'Cancel' })
-    console.log(prf)
-    // alert(prf._id)
+    
     prf.is_cancelled = true
     try {
-      const res = await api.updatePRFById(prf._id, prf)
-      // alert(prf.po.length)
+      await api.updatePRFById(prf._id, prf)
+      
       prf.po.map(async po_id => {
-        const po = await (await api.cancelPOById(po_id)).data.data
-        // alert(po.is_cancelled)
+        await (await api.cancelPOById(po_id)).data.data
       })
-      console.log(res.data)
-      // alert("Cancelled")
+      
       setTimeout(() => {
         this.setState({ isLoading: false, success: true })
       }, 1500)
@@ -223,18 +219,18 @@ class PRFTableList extends Component {
 
                           this.state.PRF.map((prop, key) => {
                             return (
-                              <tr key={key}>
+                              <tr key={`${prop._id} ${key}`}>
                                 
-                                <td key={key+1}>{prop.prf_number}</td>
-                                <td key={key+2}>{prop.recipient}</td>
-                                <td key={key+4}>
+                                <td key={`${prop._id} ${key+1}`}>{prop.prf_number}</td>
+                                <td key={`${prop._id} ${key+2}`}>{prop.recipient}</td>
+                                <td key={`${prop._id} ${key+3}`}>
                                   {!prop.paid_date ? 
                                     <Button  onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>Add Paid Date</Button>
                                      : 
                                      <Button bsStyle="success" onClick={() => { this.setState({ open_paiddate:true, prf_edit:prop }) }}>{moment(prop.paid_date).format('MM-DD-YYYY')}</Button>
                                   }</td>
-                                <td key={key+4}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
-                                <td key={key+5}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                <td key={`${prop._id} ${key+4}`}>{moment(prop.date_created).format('MM-DD-YYYY hh:mm:ss A')}</td>
+                                <td key={`${prop._id} ${key+5}`}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                 <td>
                                     <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                     <></>
