@@ -101,9 +101,14 @@ deletePO = async (req, res) => {
 
         // updating NF PO
         const nf_po = await NF_PO.findById({ _id: po.po_folder })
+        console.log(nf_po.po.length)
         index = nf_po.po.indexOf(po._id)
-        nf_po.po.splice(index, 1)      
-        await NF_PO.findByIdAndUpdate(nf_po._id, nf_po)
+        console.log(`index ${index}`)
+        nf_po.po.splice(index, 1)
+        console.log(nf_po.po.length)
+        let nfpo = await NF_PO.findByIdAndUpdate(nf_po._id, nf_po)
+        console.log(`after update length ${nfpo.po.length}`)
+        console.log("ok")
 
         return res.status(200).json({ success: true, data: po })
     } catch (error) {

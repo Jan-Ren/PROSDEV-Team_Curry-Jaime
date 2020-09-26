@@ -1,3 +1,6 @@
+const NF_PO = require('../models/NF_PO')
+const NF_PRF = require('../models/NF_PRF')
+const PO = require('../models/PO')
 const PRF = require('../models/PRF')
 
 createPRF = (req, res) => {
@@ -86,19 +89,25 @@ updatePRF = async (req, res) => {
 }
 
 deletePRF = async (req, res) => {
-    await PRF.findOneAndDelete({ _id: req.params.id }, (err, prf) => {
-        if (err) {
-            return res.status(400).json({ success: false, error: err })
-        }
-
-        if (!prf) {
-            return res
-                .status(404)
-                .json({ success: false, error: `prf not found` })
-        }
-
+    try {
+        const prf = await PRF.findOneAndDelete({ _id: req.params.id })
+        if (!prf) 
+            return res.status(404).json({ success: false, error: `prf not found` })
+        
+        // removing from nf prf
+        const nf_prf = await NF_PRF.findById(prf.prf_folder)
+        let index = nf_prf.prf.indexOf(prf._id)
+        nf_prf.prf.splice(index, 1)
+        await NF_PRF.findByIdAndUpdate(nf_prf._id, nf_prf)
+        
+        // removing po
+        await PO.deleteMany({ _id: { $in: prf.po } })
+        
         return res.status(200).json({ success: true, data: prf })
-    }).catch(err => console.log(err))
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, error })
+    }    
 }
 
 getPRFById = async (req, res) => {
