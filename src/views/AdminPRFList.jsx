@@ -60,24 +60,105 @@ class PRFListFolders extends Component {
   deleteWorkingDirectory = async (working_directory) => {
     this.setState({ loading: true, open: true, action: "Delete" })
     try{
-        let temp = working_directory.prf.map(async prf_id => {
+        let temp1 = working_directory.prf.map(async prf_id => {
           try {
-            // get po's id
-            const po_id = await (await api.getPRFById(prf_id)).data.data.po
-            let temp1 = po_id.map(async poid => {
-               // get po's folder id
-              const NFPO_id = await (await api.getPOById(poid)).data.data.po_folder
-              // get po folder
+            let prf =await (await api.getPRFById(prf_id)).data.data
+            const nfpos = []
+            if (prf.po.length) {
+              const PO = await (await api.getPOById(prf.po[0])).data.data
+              const NFPO_id = PO.po_folder
               const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
-
-              const index = NFPO.po.indexOf(po_id)
-              NFPO.po.splice(index, 1)
-
-              await api.deletePOById(po_id)
-              await api.updateNF_POById(NFPO_id, NFPO)
+              nfpos.push({
+                key: NFPO_id,
+                NFPO,
+                po_id: [PO._id],
+              })
+            }
+      
+            let temp = prf.po.map(async (po_id, index) => {
+              try {          
+                // get po's folder id
+                if (index !== 0) {
+      
+                  const NFPO_id = await (await api.getPOById(po_id)).data.data.po_folder
+                  const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
+                  if (nfpos.filter(nfpo => nfpo.key === NFPO_id)) {
+                    nfpos.map(nfpo => {
+                      if (nfpo.key === NFPO_id) {
+                        nfpo.po_id.push(po_id)
+                        nfpo.NFPO = NFPO
+                      }
+                    })
+                  } else {
+                    nfpos.push({
+                      key: NFPO_id,
+                      NFPO,
+                      po_id: [po_id],
+                    })
+                    
+                  }
+                }
+        
+                await api.deletePOById(po_id)
+                // await api.updateNF_POById(NFPO_id, NFPO)
+              } catch (error) {
+                console.log(`hehell ${error}`)
+                alert(error)
+              }
+            })
+            
+            temp = await Promise.all(temp)
+            
+            temp = nfpos.map(async object => {
+              try {
+                const { NFPO, po_id, key } = object
+      
+                po_id.map( id => {
+                  const index = NFPO.po.indexOf(id)
+                  NFPO.po.splice(index, 1)
+                })
+      
+                await api.updateNF_POById(key, NFPO)
+                
+              } catch (error) {
+                console.log(`hehe ${error}`)
+                alert(error)
+              }
             })
             await api.deletePRFById(prf_id)
-            temp1 = await Promise.all(temp)
+            temp = await Promise.all(temp)
+            // alert(`should be deleted ${new_NFPO.po.length}`)
+            // await api.updateNF_POById(new_NFPO._id, new_NFPO)
+      
+            // alert(prf._id)
+      
+            // const new_NFPRF = {...this.state.NF_PRF}
+            // const index = new_NFPRF.prf.indexOf(prf._id)
+            // new_NFPRF.prf.splice(index, 1)
+            
+            // await api.updateNF_PRFById(new_NFPRF._id, new_NFPRF)
+            //await api.deletePRFById(prf_id)
+      
+            setTimeout(() => {
+              this.setState({ isLoading: false, success: true })
+            }, 1000)
+            // // get po's id
+            // const po_id = await (await api.getPRFById(prf_id)).data.data.po
+            // let temp1 = po_id.map(async poid => {
+            //    // get po's folder id
+            //   const NFPO_id = await (await api.getPOById(poid)).data.data.po_folder
+            //   // get po folder
+            //   const NFPO = await (await api.getNF_POById(NFPO_id)).data.data
+
+            //   const index = NFPO.po.indexOf(po_id)
+            //   NFPO.po.splice(index, 1)
+
+            //   await api.deletePOById(po_id)
+            //   await api.updateNF_POById(NFPO_id, NFPO)
+            // })
+            // await api.deletePRFById(prf_id)
+            // temp1 = await Promise.all(temp)
+            
           } catch (error) {
             console.log(`hehe ${error}`)
             setTimeout(() => {
@@ -86,7 +167,7 @@ class PRFListFolders extends Component {
           }
         })
         await api.deleteNF_PRFById(working_directory._id)
-        temp = await Promise.all(temp)
+        temp1 = await Promise.all(temp1)
 
         setTimeout(() => {
           this.setState({ loading: false, success: true })
