@@ -136,7 +136,8 @@ class NewPO extends Component {
 
     } catch (error) {
       console.log(error)
-      alert(error)
+      alert("No PO working directory yet")
+      this.props.history.goBack()
     }
   }
 
@@ -323,7 +324,7 @@ class NewPO extends Component {
           <Row>
             <Col md={8}>
               <Card
-                title={this.props.location.state.action==="edit" ? `View PO` : `New PO`}
+                title={this.props.location.state ? this.props.location.state.action==="edit" ? `View PO` : `New PO` : "New PO"}
                 content={
                   <form onSubmit={this.handleSave.bind(this)}>
                     

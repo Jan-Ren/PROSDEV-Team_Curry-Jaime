@@ -125,12 +125,13 @@ class PRFTableList extends Component {
       alert(error)
     }
   }
-
+  
   handleDelete = async (prf) => {
     try {
       // remove all po's of prf from db and from nf_po
       this.setState({ isLoading: true, open: true, action: 'Delete' })
       
+      await api.deletePRFById(prf._id)
       const nfpos = []
       if (prf.po.length) {
         const PO = await (await api.getPOById(prf.po[0])).data.data
@@ -205,14 +206,15 @@ class PRFTableList extends Component {
       new_NFPRF.prf.splice(index, 1)
 
       await api.updateNF_PRFById(new_NFPRF._id, new_NFPRF)
-      await api.deletePRFById(prf._id)
 
       setTimeout(() => {
         this.setState({ isLoading: false, success: true })
       }, 1000)
     } catch (error) {
       console.log(error)
-      alert(error)
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: false })
+      }, 1000)
     }
   }
 

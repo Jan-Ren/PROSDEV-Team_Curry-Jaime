@@ -1,3 +1,4 @@
+const PRF = require('./PRF')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
@@ -33,6 +34,21 @@ const PO = new Schema({
     is_cancelled: {
         type: Boolean,
         default: false
+    }
+})
+
+// middlewares
+PO.post('remove', async doc => {
+    try {
+        console.log('PLEASE')
+        const prf = await PRF.findById(doc.prf)
+        console.log(prf)
+        const index = prf.po.indexOf(doc._id)
+        prf.po.splice(index, 1)
+        await PRF.findByIdAndUpdate(prf._id, prf)
+    } catch (error) {
+        console.log(error)
+        throw error
     }
 })
 

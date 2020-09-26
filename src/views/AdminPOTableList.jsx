@@ -147,16 +147,7 @@ class POTableList extends Component {
   handleDelete = async (po) => {
     try {
       this.setState({ isLoading: true, open: true, action: 'Delete' })
-      const new_NFPO = {...this.state.NF_PO}
-      let index = new_NFPO.po.indexOf(po._id)
-      new_NFPO.po.splice(index, 1)      
-      await api.updateNF_POById(new_NFPO._id, new_NFPO)
-
-      const prf = po.prf
-      index = prf.po.indexOf(po._id)
-      prf.po.splice(index, 1)
       
-      await api.updatePRFById(prf._id, prf)            
       await api.deletePOById(po._id)
       
       setTimeout(() => {

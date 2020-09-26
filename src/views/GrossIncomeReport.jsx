@@ -196,6 +196,7 @@ class AdminPOTableList extends Component {
       prf = await Promise.all(prf)
 
       this.setState({ PRF: prf })
+      this.handleTotal()
     } catch (error)  {
       this.setState({ PRF: [] })
     }
