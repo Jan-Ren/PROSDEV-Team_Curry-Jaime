@@ -17,7 +17,7 @@
 */
 import React, { Component } from "react";
 import { Link } from 'react-router-dom'
-import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
+import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button, Modal } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 import { poHArray } from "variables/Variables.jsx";
@@ -140,8 +140,9 @@ class AdminPOTableList extends Component {
     }
   }
   
-  handleUncancel = async (po) => {
+  handleUncancel = async () => {
     this.setState({ isLoading: true, open: true, action: 'Uncancel' })
+    const po = this.state.currentPO
     
     po.is_cancelled = false
     po.last_modified = Date.now()
@@ -265,7 +266,7 @@ class AdminPOTableList extends Component {
                                   <td key={`${prop._id} ${key+6}`}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                   <td>
                                 <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit", is_cancelled: true}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
-                                <Button variant="outline-primary" bsStyle="success" onClick={() => this.handleUncancel(prop)}><i className="pe-7s-back-2"/> Uncancel</Button>{' '}
+                                <Button variant="outline-primary" bsStyle="success" onClick={() => this.setState({ open_modal: true, currentPO: prop, action: "uncancel" })}><i className="pe-7s-back-2"/> Uncancel</Button>{' '}
                                 <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-close-circle"/>Delete</Button>{' '}
                                 </td>
                               </tr>
@@ -282,6 +283,23 @@ class AdminPOTableList extends Component {
                     isLoading={this.state.isLoading}
                     action={this.state.action}
                     />
+                    <Modal show={this.state.open_modal} onHide={() => this.setState({open_modal: false})}>
+                      <Modal.Header closeButton>
+                        <Modal.Title>Warning</Modal.Title>
+                      </Modal.Header>
+
+                      <Modal.Body>
+                        <p>{`Are you sure you want to ${this.state.action}?`}</p>
+                      </Modal.Body>
+
+                      <Modal.Footer>
+                        <Button bsStyle="secondary" autoFocus onClick={() => this.setState({open_modal: false})}>Cancel</Button>
+                        <Button bsStyle={this.state.action === "uncancel" ? "success": "danger"} 
+                          onClick={() => { this.state.action==="uncancel" ? this.handleUncancel() : this.handleDelete(); this.setState({open_modal:false})}}>
+                          Confirm
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
                   </div>
                 }
               />

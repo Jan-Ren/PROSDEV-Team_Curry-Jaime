@@ -34,10 +34,7 @@ class PRFListFolders extends Component {
         prfFolder: [],
         columns: [],
         isLoading: false,
-        open: false,
-        open_nf: false,
         nf_prf_number: '',
-        open_modal: false,
     }    
   }
 
@@ -303,7 +300,7 @@ class PRFListFolders extends Component {
                           value={this.state.nf_prf_number}
                           handleChange={this.handleChange}
                           handleEvent={this.handleAddNF}
-                          handleClose={this.handleClose}
+                          handleClose={() => this.setState({ open_nf: false })}
                           message={"PRF Initials"}
                           />
                         <Modal show={this.state.open_modal} onHide={() => this.setState({open_modal: false})}>
@@ -317,7 +314,7 @@ class PRFListFolders extends Component {
                           </Modal.Body>
 
                           <Modal.Footer>
-                            <Button bsStyle="secondary" onClick={() => this.setState({open_modal: false})}>Cancel</Button>
+                            <Button bsStyle="secondary" autoFocus onClick={() => this.setState({open_modal: false})}>Cancel</Button>
                             <Button bsStyle="danger" onClick={() => { this.deleteWorkingDirectory(); this.setState({open_modal:false})}}>Delete</Button>
                           </Modal.Footer>
                         </Modal>

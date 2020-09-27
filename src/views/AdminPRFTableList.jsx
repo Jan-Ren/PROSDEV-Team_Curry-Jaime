@@ -375,7 +375,7 @@ class PRFTableList extends Component {
                     value={this.state.paid_date}
                     handleChange={this.handleChange}
                     handleEvent={this.handlePaidDate}
-                    handleClose={this.handleClose}
+                    handleClose={() => this.setState({ open_paiddate: false })}
                     message={"Paid Date"}
                     />
                   <Modal show={this.state.open_modal} onHide={() => this.setState({open_modal: false})}>
@@ -385,10 +385,11 @@ class PRFTableList extends Component {
 
                     <Modal.Body>
                       <p>{`Are you sure you want to ${this.state.action}?`}</p>
+                      <p>All PO documents from this PRF will apply the same effect.</p>
                     </Modal.Body>
 
                     <Modal.Footer>
-                      <Button bsStyle="secondary" onClick={() => this.setState({open_modal: false})}>Cancel</Button>
+                      <Button bsStyle="secondary" autoFocus onClick={() => this.setState({open_modal: false})}>Cancel</Button>
                       <Button bsStyle={this.state.action === "cancel" ? "warning": "danger"} 
                         onClick={() => { this.state.action==="cancel" ? this.handleCancel() : this.handleDelete(); this.setState({open_modal:false})}}>
                         Confirm

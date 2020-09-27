@@ -35,10 +35,7 @@ class POListFolders extends Component {
         poFolder: [],
         columns: [],
         isLoading: false,
-        open: false,
-        open_nf: false,
         nf_po_number: '',
-        open_modal: false
     }    
   }
 
@@ -293,7 +290,7 @@ class POListFolders extends Component {
                             value={this.state.nf_po_number}
                             handleChange={this.handleChange}
                             handleEvent={this.handleAddNF}
-                            handleClose={this.handleClose}
+                            handleClose={() => this.setState({ open_nf: false })}
                             message={"PO Initials"}
                             />
                           <Modal show={this.state.open_modal} onHide={() => this.setState({open_modal: false})}>
@@ -307,7 +304,7 @@ class POListFolders extends Component {
                             </Modal.Body>
 
                             <Modal.Footer>
-                              <Button bsStyle="secondary" onClick={() => this.setState({open_modal: false})}>Cancel</Button>
+                              <Button bsStyle="secondary" autoFocus onClick={() => this.setState({open_modal: false})}>Cancel</Button>
                               <Button bsStyle="danger" onClick={this.deleteWorkingDirectory}>Delete</Button>
                             </Modal.Footer>
                           </Modal>
