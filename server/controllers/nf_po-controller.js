@@ -46,7 +46,6 @@ updateNF_PO = async (req, res) => {
 
     NF_PO.findOne({ _id: req.params.id }, (err, nf_po) => {
         if (err) {
-            console.log(`di nahanap boiii`)
             return res.status(404).json({
                 err,
                 message: 'NF_PO not found!',
@@ -59,7 +58,6 @@ updateNF_PO = async (req, res) => {
         nf_po
             .save()
             .then(() => {
-                console.log(`ayun success`)
                 return res.status(200).json({
                     success: true,
                     id: nf_po._id,
@@ -67,7 +65,6 @@ updateNF_PO = async (req, res) => {
                 })
             })
             .catch(error => {
-                console.log(`wala mehn di naupdate`)
                 return res.status(404).json({
                     error,
                     message: 'NF_PO not updated!',

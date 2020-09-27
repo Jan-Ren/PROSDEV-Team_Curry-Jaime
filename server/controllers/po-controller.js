@@ -1,4 +1,6 @@
+const NF_PO = require('../models/NF_PO')
 const PO = require('../models/PO')
+const PRF = require('../models/PRF')
 
 createPO = (req, res) => {
     const body = req.body
@@ -86,19 +88,34 @@ updatePO = async (req, res) => {
 }
 
 deletePO = async (req, res) => {
-    await PO.findOneAndDelete({ _id: req.params.id }, (err, po) => {
-        if (err) {
-            return res.status(400).json({ success: false, error: err })
-        }
+    try {
+        const po = await PO.findOneAndDelete({ _id: req.params.id })
+        if (!po)
+            return res.status(404).json({ success: false, error: `po not found` })
+        
+        // removing from prf 
+        const prf = await PRF.findById({ _id: po.prf })
+        let index = prf.po.indexOf(po._id)
+        prf.po.splice(index, 1)
+        await PRF.findByIdAndUpdate(prf._id, prf)
 
-        if (!po) {
-            return res
-                .status(404)
-                .json({ success: false, error: `po not found` })
-        }
+        // updating NF PO
+        const nf_po = await NF_PO.findById({ _id: po.po_folder })
+        console.log(nf_po.po.length)
+        index = nf_po.po.indexOf(po._id)
+        console.log(`index ${index}`)
+        nf_po.po.splice(index, 1)
+        console.log(nf_po.po.length)
+        let nfpo = await NF_PO.findByIdAndUpdate(nf_po._id, nf_po)
+        console.log(`after update length ${nfpo.po.length}`)
+        console.log("ok")
 
         return res.status(200).json({ success: true, data: po })
-    }).catch(err => console.log(err))
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, error })
+    }
+    
 }
 
 getPOById = async (req, res) => {

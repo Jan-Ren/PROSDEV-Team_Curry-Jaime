@@ -32,6 +32,8 @@ class AdminPOTableList extends Component {
     super(props)
     this.state = {
       PO: [],
+      backup_po: [],
+      backup_prf: [],
       isLoading: false,
       open: false,
       success: false,
@@ -54,15 +56,64 @@ class AdminPOTableList extends Component {
       })
       
       prf = await Promise.all(prf)
-      prf.map((p, index) => { PO[index].prf = p })
+      prf.map((p, index) => { 
+        PO[index].prf = p
+        let backup_prf_temp = []
+        backup_prf_temp.push(p) 
+        this.setState({backup_prf: backup_prf_temp})
+      })
 
-      this.setState({ PO, loading: false})
+      this.setState({ PO, loading: false, backup_po : PO})
     } catch (error) {
       console.log(error)
       this.setState({ loading: false })
     }
   }
-  
+
+  handleSearchPO = (e) => {
+    let searchQuery =  e.target.value
+    let backup_poList = [...this.state.backup_po]
+    if(searchQuery !== ""){
+      console.log(searchQuery)
+      let poList = [...this.state.backup_po]
+      console.log(poList)
+      let filteredPO = poList.filter(p => {
+        console.log(p.po_number)
+        if((p.po_number + '').includes(searchQuery))
+          return p
+      })
+      console.log(filteredPO)
+      this.setState({ PO: filteredPO })
+    }else{
+      console.log("ds")
+      this.setState({ PO: backup_poList })
+    }
+  }
+
+  handleSearchPRF = (e) => {
+    let searchQuery =  e.target.value
+    let backup_poList = [...this.state.backup_po]
+    if(searchQuery !== ""){
+      console.log(searchQuery)
+      let prfList = [...this.state.backup_prf]
+      let filteredPRF = prfList.filter(p => {
+        if((p.prf_number + '').includes(searchQuery))
+          return p
+      })
+      let PO = []
+      let filteredPO = backup_poList.filter(p => {
+        console.log(p.po_number)
+        if((p.prf.prf_number + '').includes(searchQuery))
+          return p
+      })
+      console.log(PO)
+      //console.log(backup_poList)
+      this.setState({ PO: filteredPO })
+    }else{
+      console.log("ds")
+      this.setState({ PO: backup_poList })
+    }
+  }
   handleDelete = async (po) => {
     try {
       this.setState({ isLoading: true, open: true, action: 'Delete' })            
@@ -166,7 +217,7 @@ class AdminPOTableList extends Component {
 
                         <FormGroup className="pull-right">
                         <InputGroup>
-                          <FormControl type="number" placeholder="Search PO#" />
+                          <FormControl type="number" placeholder="Search PO#" onChange={this.handleSearchPO}/>
                           <InputGroup.Addon>
                             <Glyphicon glyph="search" />
                           </InputGroup.Addon>
@@ -174,7 +225,7 @@ class AdminPOTableList extends Component {
                       </FormGroup>
                       <FormGroup className="pull-right">
                         <InputGroup>
-                          <FormControl type="number" placeholder="Search PRF#" />
+                          <FormControl type="number" placeholder="Search PRF#" onChange={this.handleSearchPRF}/>
                           <InputGroup.Addon>
                             <Glyphicon glyph="search" />
                           </InputGroup.Addon>

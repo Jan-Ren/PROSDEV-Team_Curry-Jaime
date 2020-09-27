@@ -125,12 +125,21 @@ class PRFTableList extends Component {
       alert(error)
     }
   }
-
+  
   handleDelete = async (prf) => {
     try {
       // remove all po's of prf from db and from nf_po
       this.setState({ isLoading: true, open: true, action: 'Delete' })
       
+      // await Promise.all(prf.po.map(async po_id => {
+      //   try {
+      //     const po = await api.deletePOById(po_id)
+      //     console.log(po)
+      //     return po;
+      //   } catch (error) {
+      //     alert(error)
+      //   }
+      // }))
       const nfpos = []
       if (prf.po.length) {
         const PO = await (await api.getPOById(prf.po[0])).data.data
@@ -142,7 +151,7 @@ class PRFTableList extends Component {
           po_id: [PO._id],
         })
       }
-
+      
       let temp = prf.po.map(async (po_id, index) => {
         try {          
           // get po's folder id
@@ -176,16 +185,17 @@ class PRFTableList extends Component {
       })
       
       temp = await Promise.all(temp)
+      console.log(nfpos)
       
       temp = nfpos.map(async object => {
         try {
           const { NFPO, po_id, key } = object
-
+          
           po_id.map( id => {
             const index = NFPO.po.indexOf(id)
             NFPO.po.splice(index, 1)
           })
-
+          
           await api.updateNF_POById(key, NFPO)
           
         } catch (error) {
@@ -197,22 +207,24 @@ class PRFTableList extends Component {
       temp = await Promise.all(temp)
       // alert(`should be deleted ${new_NFPO.po.length}`)
       // await api.updateNF_POById(new_NFPO._id, new_NFPO)
-
+      
       // alert(prf._id)
-
+      
       const new_NFPRF = {...this.state.NF_PRF}
       const index = new_NFPRF.prf.indexOf(prf._id)
       new_NFPRF.prf.splice(index, 1)
-
-      await api.updateNF_PRFById(new_NFPRF._id, new_NFPRF)
+      
       await api.deletePRFById(prf._id)
-
+      await api.updateNF_PRFById(new_NFPRF._id, new_NFPRF)
+      
       setTimeout(() => {
         this.setState({ isLoading: false, success: true })
       }, 1000)
     } catch (error) {
       console.log(error)
-      alert(error)
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: false })
+      }, 1000)
     }
   }
 

@@ -62,33 +62,104 @@ class POListFolders extends Component {
   deleteWorkingDirectory = async (working_directory) => {
     this.setState({ loading: true, open: true, action: "Delete" })
     try{
-        let temp = working_directory.po.map(async po_id => {
-          try {          
-            // alert(prf_id)
-            // get prf's id
+        await api.deleteNF_POById(working_directory._id)
+        const object = []
+        if (working_directory.po.length) {
+          const po = await (await api.getPOById(working_directory.po[0])).data.data
+          object.push({
+            key: po.prf,
+            values: [po._id]
+          })
+        }
+
+        let temp = await Promise.all(working_directory.po.map(async (po_id, index) => {
+          if (index !== 0) {
             const prf_id = await (await api.getPOById(po_id)).data.data.prf
 
-            // get prf
-            const prf = await (await api.getPRFById(prf_id)).data.data
-            
+            if (object.filter(obj => obj.key === prf_id)) {
+              object.map(obj => {
+                if (obj.key === prf_id) {
+                  obj.values.push(po_id)
+                }
+              })
+            } else {
+              object.push({
+                key: prf_id,
+                values: [po_id]
+              })
+            }
+            // let prf = await (await api.getPRFById(prf_id)).data.data
+  
+            // let index = prf.po.indexOf(po_id)
+            // console.log(prf.po)
+            // console.log(index)
+            // prf.po.splice(index, 1)
+            // console.log(prf.po)
+            // await api.updatePRFById(prf_id, prf)
+            // console.log(prf._id)
+            await api.deletePOById(po_id)
+          }
+        }))
 
+        temp = await Promise.all(object.map(async obj => {
+          const { key, values } = obj
+          const prf = await (await api.getPRFById(key)).data.data
+
+          values.map(po_id => {
             const index = prf.po.indexOf(po_id)
             prf.po.splice(index, 1)
+          })
 
-            await api.updatePRFById(prf_id, prf)
-          
-            await api.deletePOById(po_id)
-          } catch (error) {
-            console.log(`hehe ${error}`)
-            alert(error)
-          }
-        })
-        await api.deleteNF_POById(working_directory._id)
-        temp = await Promise.all(temp)
+          await api.updatePRFById(key, prf)
+        }))
 
         setTimeout(() => {
           this.setState({ loading: false, success: true })
         }, 1000)
+         
+         // temp = await Promise.all(temp)
+        
+        // setTimeout(() => {
+        //   this.setState({ loading: false, success: true })
+        // }, 1000)
+        // let temp = working_directory.po.map(async po_id => {
+        //   try {
+        //   //   let po =await (await api.getPOById(po_id)).data.data
+
+        //   //   const prf_id = await (await api.getPOById(po_id)).data.data.prf
+        //   //   const prf = await (await api.getPRFById(prf_id)).data.data
+        //   //   console.log(po_id)
+        //   //   let index = prf.po.indexOf(po_id)
+        //   //   prf.po.splice(index, 1)
+      
+        //   //  await api.updatePRFById(prf_id, prf)            
+        //   //   await api.deletePOById(po_id)          
+        //     // // alert(prf_id)
+        //     // // get prf's id
+        //     console.log(po_id)
+        //     const prf_id = await (await api.getPOById(po_id)).data.data.prf
+
+        //     // get prf
+        //     const prf = await (await api.getPRFById(prf_id)).data.data
+            
+
+        //     let index = prf.po.indexOf(po_id)
+        //     prf.po.splice(index, 1)
+
+        //     await api.updatePRFById(prf_id, prf)
+          
+        //     await api.deletePOById(po_id)
+        //   } catch (error) {
+        //     console.log(`hehe ${error}`)
+        //     alert(error)
+        //   }
+        // })
+        // await api.deleteNF_POById(working_directory._id)
+        // temp = await Promise.all(temp)
+
+        // setTimeout(() => {
+        //   this.setState({ loading: false, success: true })
+        // }, 1000)
       }catch (error) {
         alert(error)
         setTimeout(() => {
