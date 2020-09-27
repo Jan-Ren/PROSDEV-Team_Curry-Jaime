@@ -127,11 +127,11 @@ class PRFTableList extends Component {
     }
   }
   
-  handleDelete = async (prf) => {
+  handleDelete = async () => {
     try {
       // remove all po's of prf from db and from nf_po
       this.setState({ isLoading: true, open: true, action: 'Delete' })
-      
+      const prf = this.state.currentPRF
       // await Promise.all(prf.po.map(async po_id => {
       //   try {
       //     const po = await api.deletePOById(po_id)
@@ -349,9 +349,9 @@ class PRFTableList extends Component {
                                     <></>
                                     <Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"} }} style={{ color: "inherit"}} ><Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-look" />New PO</Button>{' '}</Link>
                                     <></>
-                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.setState({ open_modal: true, currentPRF: prop }) }><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.setState({ open_modal: true, currentPRF: prop, action: "cancel" }) }><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                     <></>
-                                    <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
+                                    <Button variant="outline-primary" bsStyle="danger" onClick={() => this.setState({ open_modal: true, currentPRF: prop, action: "delete" })}><i className="pe-7s-junk"/>Delete</Button>{' '}
                                 </td>
                               </tr>)
                               :
@@ -384,13 +384,15 @@ class PRFTableList extends Component {
                     </Modal.Header>
 
                     <Modal.Body>
-                      <p>Are you sure you want to cancel?</p>
-                      <p>All PO documents from this PRF will also be cancelled.</p>
+                      <p>{`Are you sure you want to ${this.state.action}?`}</p>
                     </Modal.Body>
 
                     <Modal.Footer>
                       <Button bsStyle="secondary" onClick={() => this.setState({open_modal: false})}>Cancel</Button>
-                      <Button bsStyle="warning" onClick={() => { this.handleCancel(); this.setState({open_modal:false})}}>Confirm</Button>
+                      <Button bsStyle={this.state.action === "cancel" ? "warning": "danger"} 
+                        onClick={() => { this.state.action==="cancel" ? this.handleCancel() : this.handleDelete(); this.setState({open_modal:false})}}>
+                        Confirm
+                      </Button>
                     </Modal.Footer>
                   </Modal>
                   </div>
