@@ -16,7 +16,7 @@
 
 */
 import React, { Component } from "react";
-import { Grid, Row, Col, Table, Button } from "react-bootstrap";
+import { Grid, Row, Col, Table, Button, Modal } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 //import { poFolder } from "variables/Variables.jsx";
@@ -37,7 +37,8 @@ class POListFolders extends Component {
         isLoading: false,
         open: false,
         open_nf: false,
-        nf_po_number: ''
+        nf_po_number: '',
+        open_modal: false
     }    
   }
 
@@ -59,9 +60,10 @@ class POListFolders extends Component {
       console.log(error)
     }
   }
-  deleteWorkingDirectory = async (working_directory) => {
-    this.setState({ loading: true, open: true, action: "Delete" })
+  deleteWorkingDirectory = async () => {
+    this.setState({ loading: true, open: true, action: "Delete", open_modal: false })
     try{
+        const working_directory = this.state.currentNF
         await api.deleteNF_POById(working_directory._id)
         const object = []
         if (working_directory.po.length) {
@@ -265,7 +267,7 @@ class POListFolders extends Component {
                                           <td key={`${prop._id} ${key+1}`}>{prop.nf_po_number}</td>
 
                                           <td>
-                                          <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.deleteWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-close-circle"/>Delete</Button>
+                                          <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.setState({ open_modal:true, currentNF: prop })} className="pull-right"><i className="pe-7s-close-circle"/>Delete</Button>
                                           <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
                                           <Link to={{pathname: '/admin/PO-List', state: {NF_PO_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
                                           </td>
@@ -294,6 +296,21 @@ class POListFolders extends Component {
                             handleClose={this.handleClose}
                             message={"PO Initials"}
                             />
+                          <Modal show={this.state.open_modal} onHide={() => this.setState({open_modal: false})}>
+                            <Modal.Header closeButton>
+                              <Modal.Title>Message</Modal.Title>
+                            </Modal.Header>
+
+                            <Modal.Body>
+                              <p>Are you sure you want to delete?</p>
+                              <p>Documents will also be deleted including the POs from each PRF</p>
+                            </Modal.Body>
+
+                            <Modal.Footer>
+                              <Button bsStyle="secondary" onClick={() => this.setState({open_modal: false})}>Close</Button>
+                              <Button bsStyle="danger" onClick={this.deleteWorkingDirectory}>Delete</Button>
+                            </Modal.Footer>
+                          </Modal>
                     </div>    
                 }
               />
