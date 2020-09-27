@@ -59,7 +59,7 @@ class PRFListFolders extends Component {
   }
 
   deleteWorkingDirectory = async () => {
-    this.setState({ loading: true, open: true, action: "Delete", open_modal: false })
+    this.setState({ loading: true, open: true, action: "Delete" })
     try{
         const working_directory = this.state.currentNF
         let temp1 = working_directory.prf.map(async prf_id => {
@@ -308,17 +308,17 @@ class PRFListFolders extends Component {
                           />
                         <Modal show={this.state.open_modal} onHide={() => this.setState({open_modal: false})}>
                           <Modal.Header closeButton>
-                            <Modal.Title>Message</Modal.Title>
+                            <Modal.Title>Warning</Modal.Title>
                           </Modal.Header>
 
                           <Modal.Body>
                             <p>Are you sure you want to delete?</p>
-                            <p>Documents will also be deleted including the POs from each PRF</p>
+                            <p>All PRF Documents inside this folder will be deleted including the PO documents from each PRF</p>
                           </Modal.Body>
 
                           <Modal.Footer>
-                            <Button bsStyle="secondary" onClick={() => this.setState({open_modal: false})}>Close</Button>
-                            <Button bsStyle="danger" onClick={this.deleteWorkingDirectory}>Delete</Button>
+                            <Button bsStyle="secondary" onClick={() => this.setState({open_modal: false})}>Cancel</Button>
+                            <Button bsStyle="danger" onClick={() => { this.deleteWorkingDirectory(); this.setState({open_modal:false})}}>Delete</Button>
                           </Modal.Footer>
                         </Modal>
                     </div>    

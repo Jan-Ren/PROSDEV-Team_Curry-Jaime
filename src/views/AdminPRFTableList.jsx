@@ -17,7 +17,7 @@
 */
 import React, { Component } from "react";
 import { Link, Redirect } from 'react-router-dom'
-import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon } from "react-bootstrap";
+import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon, Modal } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 import { prfHArray } from "variables/Variables.jsx"; 
@@ -107,12 +107,13 @@ class PRFTableList extends Component {
     }
   }
 
-  handleCancel = async (prf) => {
+  handleCancel = async () => {
     this.setState({ isLoading: true, open: true, action: 'Cancel' })    
     
+    const prf = this.state.currentPRF
     prf.is_cancelled = true
     prf.last_modified = Date.now()
-    try {
+    try {      
       await api.updatePRFById(prf._id, prf)
       
       prf.po.map(async po_id => {
@@ -348,7 +349,7 @@ class PRFTableList extends Component {
                                     <></>
                                     <Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"} }} style={{ color: "inherit"}} ><Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-look" />New PO</Button>{' '}</Link>
                                     <></>
-                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.setState({ open_modal: true, currentPRF: prop }) }><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                     <></>
                                     <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
                                 </td>
@@ -377,6 +378,21 @@ class PRFTableList extends Component {
                     handleClose={this.handleClose}
                     message={"Paid Date"}
                     />
+                  <Modal show={this.state.open_modal} onHide={() => this.setState({open_modal: false})}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Warning</Modal.Title>
+                    </Modal.Header>
+
+                    <Modal.Body>
+                      <p>Are you sure you want to cancel?</p>
+                      <p>All PO documents from this PRF will also be cancelled.</p>
+                    </Modal.Body>
+
+                    <Modal.Footer>
+                      <Button bsStyle="secondary" onClick={() => this.setState({open_modal: false})}>Cancel</Button>
+                      <Button bsStyle="warning" onClick={() => { this.handleCancel(); this.setState({open_modal:false})}}>Confirm</Button>
+                    </Modal.Footer>
+                  </Modal>
                   </div>
                 
                   </React.Fragment>
