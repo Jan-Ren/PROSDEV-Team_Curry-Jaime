@@ -16,7 +16,7 @@
 
 */
 import React, { Component } from "react";
-import { Grid, Row, Col, Table, Button } from "react-bootstrap";
+import { Grid, Row, Col, Table, Button, Modal } from "react-bootstrap";
 import { Link } from 'react-router-dom'
 import Card from "components/Card/Card.jsx";
 
@@ -34,9 +34,7 @@ class PRFListFolders extends Component {
         prfFolder: [],
         columns: [],
         isLoading: false,
-        open: false,
-        open_nf: false,
-        nf_prf_number: ''
+        nf_prf_number: '',
     }    
   }
 
@@ -57,9 +55,10 @@ class PRFListFolders extends Component {
     }
   }
 
-  deleteWorkingDirectory = async (working_directory) => {
+  deleteWorkingDirectory = async () => {
     this.setState({ loading: true, open: true, action: "Delete" })
     try{
+        const working_directory = this.state.currentNF
         let temp1 = working_directory.prf.map(async prf_id => {
           try {
             let prf =await (await api.getPRFById(prf_id)).data.data
@@ -275,7 +274,7 @@ class PRFListFolders extends Component {
                                         <td key={`${prop._id} ${key+1}`}>{prop.nf_prf_number}</td>
 
                                         <td>
-                                        <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=>this.deleteWorkingDirectory(prop)} className="pull-right" ><i className="pe-7s-close-circle"/>Delete</Button>
+                                        <Button variant="outline-secondary" bsStyle="danger" onClick={(e)=> { this.setState({ open_modal:true, currentNF: prop }) }} className="pull-right" ><i className="pe-7s-close-circle"/>Delete</Button>
                                         <Button variant="outline-secondary" bsStyle="primary" onClick={(e)=>this.setWorkingDirectory(prop)} className="pull-right"><i className="pe-7s-folder"/>Set as Working Directory</Button>
                                         <Link to={{pathname: '/admin/PRF-List', state: {NF_PRF_id: prop._id} }} ><Button className="pull-right"><i className="pe-7s-look"/>View</Button></Link>
                                         </td>
@@ -301,9 +300,24 @@ class PRFListFolders extends Component {
                           value={this.state.nf_prf_number}
                           handleChange={this.handleChange}
                           handleEvent={this.handleAddNF}
-                          handleClose={this.handleClose}
+                          handleClose={() => this.setState({ open_nf: false })}
                           message={"PRF Initials"}
                           />
+                        <Modal show={this.state.open_modal} onHide={() => this.setState({open_modal: false})}>
+                          <Modal.Header closeButton>
+                            <Modal.Title>Warning</Modal.Title>
+                          </Modal.Header>
+
+                          <Modal.Body>
+                            <p>Are you sure you want to delete?</p>
+                            <p>All PRF Documents inside this folder will be deleted including the PO documents from each PRF</p>
+                          </Modal.Body>
+
+                          <Modal.Footer>
+                            <Button bsStyle="secondary" autoFocus onClick={() => this.setState({open_modal: false})}>Cancel</Button>
+                            <Button bsStyle="danger" onClick={() => { this.deleteWorkingDirectory(); this.setState({open_modal:false})}}>Delete</Button>
+                          </Modal.Footer>
+                        </Modal>
                     </div>    
                 }
               />

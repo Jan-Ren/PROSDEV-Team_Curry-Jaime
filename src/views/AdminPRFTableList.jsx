@@ -17,7 +17,7 @@
 */
 import React, { Component } from "react";
 import { Link, Redirect } from 'react-router-dom'
-import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon } from "react-bootstrap";
+import { Form, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Table, Button, InputGroup, Glyphicon, Modal } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 import { prfHArray } from "variables/Variables.jsx"; 
@@ -40,9 +40,6 @@ class PRFTableList extends Component {
         NF_PO: {},
         columns: [],
         isLoading: false,
-        open: false,
-        success: false,
-        open_paiddate: false,
         paid_date: '',
         prf_edit: '',
         from: '',
@@ -107,12 +104,13 @@ class PRFTableList extends Component {
     }
   }
 
-  handleCancel = async (prf) => {
+  handleCancel = async () => {
     this.setState({ isLoading: true, open: true, action: 'Cancel' })    
     
+    const prf = this.state.currentPRF
     prf.is_cancelled = true
     prf.last_modified = Date.now()
-    try {
+    try {      
       await api.updatePRFById(prf._id, prf)
       
       prf.po.map(async po_id => {
@@ -126,11 +124,11 @@ class PRFTableList extends Component {
     }
   }
   
-  handleDelete = async (prf) => {
+  handleDelete = async () => {
     try {
       // remove all po's of prf from db and from nf_po
       this.setState({ isLoading: true, open: true, action: 'Delete' })
-      
+      const prf = this.state.currentPRF
       // await Promise.all(prf.po.map(async po_id => {
       //   try {
       //     const po = await api.deletePOById(po_id)
@@ -348,9 +346,9 @@ class PRFTableList extends Component {
                                     <></>
                                     <Link to={{pathname: '/create/New-PO', state: {PRF: prop, action: "new"} }} style={{ color: "inherit"}} ><Button variant="outline-primary" bsStyle="primary"><i className="pe-7s-look" />New PO</Button>{' '}</Link>
                                     <></>
-                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.setState({ open_modal: true, currentPRF: prop, action: "cancel" }) }><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                     <></>
-                                    <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
+                                    <Button variant="outline-primary" bsStyle="danger" onClick={() => this.setState({ open_modal: true, currentPRF: prop, action: "delete" })}><i className="pe-7s-junk"/>Delete</Button>{' '}
                                 </td>
                               </tr>)
                               :
@@ -374,9 +372,27 @@ class PRFTableList extends Component {
                     value={this.state.paid_date}
                     handleChange={this.handleChange}
                     handleEvent={this.handlePaidDate}
-                    handleClose={this.handleClose}
+                    handleClose={() => this.setState({ open_paiddate: false })}
                     message={"Paid Date"}
                     />
+                  <Modal show={this.state.open_modal} onHide={() => this.setState({open_modal: false})}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Warning</Modal.Title>
+                    </Modal.Header>
+
+                    <Modal.Body>
+                      <p>{`Are you sure you want to ${this.state.action}?`}</p>
+                      <p>All PO documents from this PRF will apply the same effect.</p>
+                    </Modal.Body>
+
+                    <Modal.Footer>
+                      <Button bsStyle="secondary" autoFocus onClick={() => this.setState({open_modal: false})}>Cancel</Button>
+                      <Button bsStyle={this.state.action === "cancel" ? "warning": "danger"} 
+                        onClick={() => { this.state.action==="cancel" ? this.handleCancel() : this.handleDelete(); this.setState({open_modal:false})}}>
+                        Confirm
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
                   </div>
                 
                   </React.Fragment>
