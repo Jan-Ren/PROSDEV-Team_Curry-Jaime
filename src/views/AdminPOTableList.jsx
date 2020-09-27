@@ -144,8 +144,9 @@ class POTableList extends Component {
     }
   }
 
-  handleDelete = async (po) => {
+  handleDelete = async () => {
     try {
+      const po = this.state.currentPO
       this.setState({ isLoading: true, open: true, action: 'Delete' })
       
       await api.deletePOById(po._id)
@@ -283,8 +284,8 @@ class POTableList extends Component {
                                   <td key={`${prop._id} ${key+6}`}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                   <td>
                                     <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
-                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.setState({ open_modal: true, currentPO: prop })}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
-                                    <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
+                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.setState({ open_modal: true, currentPO: prop, action: "cancel" })}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                                    <Button variant="outline-primary" bsStyle="danger" onClick={() => this.setState({ open_modal: true, currentPO: prop, action: "delete" })}><i className="pe-7s-junk"/>Delete</Button>{' '}
                                   </td>
                                 </tr>)
                                 :
@@ -318,12 +319,15 @@ class POTableList extends Component {
                       </Modal.Header>
 
                       <Modal.Body>
-                        <p>Are you sure you want to cancel?</p>
+                        <p>{`Are you sure you want to ${this.state.action}?`}</p>
                       </Modal.Body>
 
                       <Modal.Footer>
                         <Button bsStyle="secondary" onClick={() => this.setState({open_modal: false})}>Cancel</Button>
-                        <Button bsStyle="warning" onClick={() => { this.handleCancel(); this.setState({open_modal:false})}}>Confirm</Button>
+                        <Button bsStyle={this.state.action === "cancel" ? "warning": "danger"} 
+                          onClick={() => { this.state.action==="cancel" ? this.handleCancel() : this.handleDelete(); this.setState({open_modal:false})}}>
+                          Confirm
+                        </Button>
                       </Modal.Footer>
                     </Modal>
                   </div>
