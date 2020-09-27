@@ -40,7 +40,7 @@ class NewPO extends Component {
 
     this.state = {          
         po_number: '',
-        prf: {prf_number: 'nandaya ka ng url tsk'},
+        prf: {prf_number: ''},
         pax:[''],
         recipient: '',
         particulars: '',
@@ -136,7 +136,7 @@ class NewPO extends Component {
 
     } catch (error) {
       console.log(error)
-      alert("No PO working directory yet")
+      // alert("No PO working directory yet")
       this.props.history.goBack()
     }
   }

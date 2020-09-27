@@ -76,12 +76,13 @@ class PRFTableList extends Component {
         
       } catch (error) {
         console.log(error.message)
-        alert(error)
+        // alert(error)
       }
 
     } else {
       this.setState({ redirect: true })
     }
+    this.setState({ loading: false })
   }
 
   handleSearch = (e) => {
@@ -120,7 +121,7 @@ class PRFTableList extends Component {
       this.setState({ isLoading: false, success: true })
       
     } catch (error) {
-      alert(error)
+      this.setState({ isLoading: false, success: false })
     }
   }
   
@@ -178,7 +179,7 @@ class PRFTableList extends Component {
           // await api.updateNF_POById(NFPO_id, NFPO)
         } catch (error) {
           console.log(`hehell ${error}`)
-          alert(error)
+          // alert(error)
         }
       })
       
@@ -198,7 +199,7 @@ class PRFTableList extends Component {
           
         } catch (error) {
           console.log(`hehe ${error}`)
-          alert(error)
+          // alert(error)
         }
       })
       

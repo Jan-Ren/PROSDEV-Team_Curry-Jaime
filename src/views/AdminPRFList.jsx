@@ -102,7 +102,7 @@ class PRFListFolders extends Component {
                 // await api.updateNF_POById(NFPO_id, NFPO)
               } catch (error) {
                 console.log(`hehell ${error}`)
-                alert(error)
+                // alert(error)
               }
             })
             
@@ -121,7 +121,7 @@ class PRFListFolders extends Component {
                 
               } catch (error) {
                 console.log(`hehe ${error}`)
-                alert(error)
+                // alert(error)
               }
             })
             await api.deletePRFById(prf_id)

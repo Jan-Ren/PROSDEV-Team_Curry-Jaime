@@ -134,7 +134,9 @@ class AdminPOTableList extends Component {
         this.setState({ isLoading: false, success: true })
       }, 1000)
     } catch (error) {
-      alert(error)
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: false })
+      }, 1000)
     }
   }
   
@@ -151,7 +153,9 @@ class AdminPOTableList extends Component {
         this.setState({ isLoading: false, success: true })
       }, 1000)
     } catch (error) {
-      alert(error)
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: false })
+      }, 1000)
     }
   }
   

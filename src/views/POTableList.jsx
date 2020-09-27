@@ -135,9 +135,11 @@ class POTableList extends Component {
       // alert("Cancelled")
       setTimeout(() => {
         this.setState({ isLoading: false, success: true })
-      }, 1500)
+      }, 1000)
     } catch (error) {
-      alert(error)
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: false })
+      }, 1000)
     }
 
   }

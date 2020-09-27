@@ -120,7 +120,9 @@ class AdminCancelledPRF extends Component {
           // await api.updateNF_POById(NFPO_id, NFPO)
         } catch (error) {
           console.log(`hehell ${error}`)
-          alert(error)
+          setTimeout(() => {
+            this.setState({ isLoading: false, success: false })
+          }, 1000)
         }
       })
       
@@ -139,7 +141,9 @@ class AdminCancelledPRF extends Component {
           
         } catch (error) {
           console.log(`hehe ${error}`)
-          alert(error)
+          setTimeout(() => {
+            this.setState({ isLoading: false, success: false })
+          }, 1000)
         }
       })
       
@@ -161,7 +165,9 @@ class AdminCancelledPRF extends Component {
       }, 1000)
     } catch (error) {
       console.log(error)
-      alert(error)
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: false })
+      }, 1000)
     }
   }
 
@@ -178,7 +184,9 @@ class AdminCancelledPRF extends Component {
         this.setState({ isLoading: false, success: true })
       }, 1000)
     } catch (error) {
-      alert(error)
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: false })
+      }, 1000)
     }
   }
 

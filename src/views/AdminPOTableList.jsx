@@ -63,7 +63,7 @@ class POTableList extends Component {
             return po            
           } catch (error) {
             console.log(error.message)
-            alert(error)
+            // alert(error)
           }
           
         })
@@ -92,13 +92,13 @@ class POTableList extends Component {
         
       } catch (error) {
         console.log(error.message)
-        alert(error)
+        // alert(error)
       }
       
     } else {
       this.setState({ redirect: true })
     }
-
+    this.setState({ loading: false })
   }
 
   handleSearch = (e) => {
@@ -137,7 +137,7 @@ class POTableList extends Component {
       this.setState({ isLoading: false, success: true })
       
     } catch (error) {
-      alert(error)
+      this.setState({ isLoading: false, success: false })
     }
   }
 
@@ -152,7 +152,9 @@ class POTableList extends Component {
         this.setState({ isLoading: false, success: true })
       }, 1000)
     } catch (error) {
-      alert(error)
+      setTimeout(() => {
+        this.setState({ isLoading: false, success: false })
+      }, 1000)
     }
   }
 

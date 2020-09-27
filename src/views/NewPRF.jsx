@@ -117,7 +117,7 @@ class NewPRF extends Component {
 
     } catch (error) {
       console.log(error)
-      alert("No working directory")
+      // alert("No working directory")
       window.history.go(-1)
     }
   }

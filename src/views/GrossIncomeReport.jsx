@@ -47,7 +47,7 @@ class AdminPOTableList extends Component {
       const NF_PRF = await (await api.getAllNF_PRF()).data.data
       this.setState({ NF_PRF })
     } catch (error) {
-      alert("No folders to be seen")
+      console.log("No folders to be seen")
     }
   }
 
@@ -83,7 +83,7 @@ class AdminPOTableList extends Component {
             return await (await api.getPRFById(prf_reference)).data.data
           } catch (error) {
             console.log(error)
-            alert(error)
+            // alert(error)
           }
         })
   
@@ -136,7 +136,7 @@ class AdminPOTableList extends Component {
         this.handleTotal()
       } catch (error) {
         console.log(`getting prf ${error}`)
-        alert(error)
+        // alert(error)
       }
       this.setState({ isLoading: false })
     }

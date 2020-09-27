@@ -160,7 +160,7 @@ class POListFolders extends Component {
         //   this.setState({ loading: false, success: true })
         // }, 1000)
       }catch (error) {
-        alert(error)
+        console.log(error)
         setTimeout(() => {
           this.setState({ loading: false, success: false })
         }, 1000)
