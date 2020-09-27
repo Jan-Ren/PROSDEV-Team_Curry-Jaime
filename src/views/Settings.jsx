@@ -26,6 +26,7 @@ import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import users from "api/users";
+import SuccessDialog from "components/SuccessDialog/SuccessDialog";
 
 class NewPO extends Component {
 
@@ -48,19 +49,16 @@ class NewPO extends Component {
 
   handleSaveAdminPassword = async (e) => {
     e.preventDefault()
-    this.setState({ isLoading: true, open: true })
+    this.setState({ isLoading: true, open: true, action: "Change" })
     const payload = {
       isAdmin : true,
       password: this.state.admin_curr_password,
       new_password: this.state.admin_new_password
     }
-      console.log(this.state)
-      // alert("saving please wait")  
+      
       if(this.state.admin_new_password === this.state.admin_retype_password){
         try {
-          await users.updatePassword(payload).then(res => {   
-            alert("saving done")
-          })
+          await users.updatePassword(payload)
           this.setState({
             admin_new_password:'',
             admin_curr_password:'',
@@ -69,14 +67,16 @@ class NewPO extends Component {
             employee_curr_password:'',
             employee_retype_password:''
           })
-          // alert("saving done")
+          
           setTimeout(() => {
             this.setState({ isLoading: false, success: true })    
-          }, 1500)
+          }, 1000)
           
         } catch (error) {
           console.log(error.message)
-          alert(error.message)
+          setTimeout(() => {
+            this.setState({ isLoading: false, success: false })    
+          }, 1000)
         }
       }else{
         alert("New password does not match retype password")
@@ -101,19 +101,16 @@ class NewPO extends Component {
 
   handleSaveEmployeePassword = async (e) => {
     e.preventDefault()
-    this.setState({ isLoading: true, open: true })
+    this.setState({ isLoading: true, open: true, action: "Change" })
     const payload = {
       isAdmin : false,
       password: this.state.employee_curr_password,
       new_password: this.state.employee_new_password
     }
-      console.log(this.state)
-      // alert("saving please wait")     
+      
     if(this.state.employee_new_password === this.state.employee_retype_password){
       try {
-        await users.updatePassword(payload).then(res => {   
-          alert("saving done")
-        })
+        await users.updatePassword(payload)
         this.setState({
           admin_new_password:'',
           admin_curr_password:'',
@@ -122,14 +119,16 @@ class NewPO extends Component {
           employee_curr_password:'',
           employee_retype_password:''
         })
-        // alert("saving done")
+        
         setTimeout(() => {
           this.setState({ isLoading: false, success: true })    
-        }, 1500)
+        }, 1000)
         
       } catch (error) {
         console.log(error.message)
-        alert(error.message)
+        setTimeout(() => {
+          this.setState({ isLoading: false, success: false })    
+        }, 1000)
       }
     }else{
       alert("New password does not match retype password")
@@ -260,7 +259,13 @@ class NewPO extends Component {
             </Col>
         </Row>
         </Grid>
-       
+        <SuccessDialog
+          open={this.state.open}
+          handleClose={() => this.setState({ open: false })}
+          success={this.state.success}
+          isLoading={this.state.isLoading}
+          action={this.state.action}
+        />
     </div>
     );
 }

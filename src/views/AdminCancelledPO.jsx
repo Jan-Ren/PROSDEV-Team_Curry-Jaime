@@ -35,8 +35,6 @@ class AdminPOTableList extends Component {
       backup_po: [],
       backup_prf: [],
       isLoading: false,
-      open: false,
-      success: false,
       from: '',
       to: '',
     }

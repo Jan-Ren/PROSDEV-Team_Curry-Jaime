@@ -37,8 +37,6 @@ class AdminCancelledPRF extends Component {
       PRF: [],
       backup_prf:[],
       isLoading: false,
-      open: false,
-      success: false,
       from: '',
       to: '',
     }
