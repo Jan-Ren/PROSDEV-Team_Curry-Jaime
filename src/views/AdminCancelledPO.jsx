@@ -114,10 +114,10 @@ class AdminPOTableList extends Component {
       this.setState({ PO: backup_poList })
     }
   }
-  handleDelete = async (po) => {
+  handleDelete = async () => {
     try {
       this.setState({ isLoading: true, open: true, action: 'Delete' })            
-      
+      const po = this.state.currentPO
       // removing from folder and deleting actual PRF
       const NFPO_id = po.po_folder
       const NF_PO = await (await api.getNF_POById(NFPO_id)).data.data
@@ -267,7 +267,7 @@ class AdminPOTableList extends Component {
                                   <td>
                                 <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit", is_cancelled: true}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
                                 <Button variant="outline-primary" bsStyle="success" onClick={() => this.setState({ open_modal: true, currentPO: prop, action: "uncancel" })}><i className="pe-7s-back-2"/> Uncancel</Button>{' '}
-                                <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-close-circle"/>Delete</Button>{' '}
+                                <Button variant="outline-primary" bsStyle="danger" onClick={() => this.setState({ open_modal: true, currentPO: prop, action: "delete" })}><i className="pe-7s-close-circle"/>Delete</Button>{' '}
                                 </td>
                               </tr>
                             );
