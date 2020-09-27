@@ -17,7 +17,7 @@
 */
 import React, { Component } from "react";
 import { Link, Redirect } from 'react-router-dom'
-import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button } from "react-bootstrap";
+import { FormControl, Form, FormGroup, InputGroup, Glyphicon, ControlLabel, Grid, Row, Col, Table, Button, Modal } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
 import { poHArray } from "variables/Variables.jsx";
@@ -129,9 +129,9 @@ class POTableList extends Component {
       return <Redirect to="/admin/PO-List-Folders" />      
   }
   
-  handleCancel = async (po) => {
+  handleCancel = async () => {
     this.setState({ isLoading: true, open: true, action: 'Cancel' })
-    
+    const po = this.state.currentPO
     po.is_cancelled = true
     po.last_modified = Date.now()
     try {
@@ -283,7 +283,7 @@ class POTableList extends Component {
                                   <td key={`${prop._id} ${key+6}`}>{moment(prop.last_modified).format('MM-DD-YYYY hh:mm:ss A')}</td>
                                   <td>
                                     <Link to={{pathname: '/create/New-PO', state: {PO: prop, action: "edit"}}} style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
-                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.handleCancel(prop)}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
+                                    <Button variant="outline-primary" bsStyle="warning" onClick={() => this.setState({ open_modal: true, currentPO: prop })}><i className="pe-7s-close-circle"/>Cancel</Button>{' '}
                                     <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-junk"/>Delete</Button>{' '}
                                   </td>
                                 </tr>)
@@ -312,6 +312,20 @@ class POTableList extends Component {
                     handleClose={this.handleClose}
                     message={"Paid Date"}
                     />
+                    <Modal show={this.state.open_modal} onHide={() => this.setState({open_modal: false})}>
+                      <Modal.Header closeButton>
+                        <Modal.Title>Warning</Modal.Title>
+                      </Modal.Header>
+
+                      <Modal.Body>
+                        <p>Are you sure you want to cancel?</p>
+                      </Modal.Body>
+
+                      <Modal.Footer>
+                        <Button bsStyle="secondary" onClick={() => this.setState({open_modal: false})}>Cancel</Button>
+                        <Button bsStyle="warning" onClick={() => { this.handleCancel(); this.setState({open_modal:false})}}>Confirm</Button>
+                      </Modal.Footer>
+                    </Modal>
                   </div>
                 }
               />
