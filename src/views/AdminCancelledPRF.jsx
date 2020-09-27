@@ -76,11 +76,12 @@ class AdminCancelledPRF extends Component {
     }
   }
 
-  handleDelete = async (prf) => {
+  handleDelete = async () => {
     try {
       // remove all po's of prf from db and from nf_po
       this.setState({ isLoading: true, open: true, action: 'Delete' })
-      
+      const prf = this.state.currentPRF
+
       const nfpos = []
       if (prf.po.length) {
         const PO = await (await api.getPOById(prf.po[0])).data.data
@@ -273,7 +274,7 @@ class AdminCancelledPRF extends Component {
                                   <td>
                                 <Link to={{pathname: '/create/New-PRF', state: {PRF: prop, is_cancelled: true}}  } style={{ color: "inherit"}} ><Button variant="outline-secondary"><i className="pe-7s-look" />View</Button>{' '}</Link>
                                 <Button variant="outline-primary" bsStyle="success" onClick={() => this.setState({ open_modal: true, currentPRF: prop, action: "uncancel" })}><i className="pe-7s-back-2"/> Uncancel</Button>{' '}
-                                <Button variant="outline-primary" bsStyle="danger" onClick={() => this.handleDelete(prop)}><i className="pe-7s-close-circle"/>Delete</Button>{' '}
+                                <Button variant="outline-primary" bsStyle="danger" onClick={() => this.setState({ open_modal: true, currentPRF: prop, action: "delete" })}><i className="pe-7s-close-circle"/>Delete</Button>{' '}
                                 </td>
                               </tr>
                             );
@@ -296,6 +297,7 @@ class AdminCancelledPRF extends Component {
 
                     <Modal.Body>
                       <p>{`Are you sure you want to ${this.state.action}?`}</p>
+                      <p>{this.state.action==="delete" ? `All PO documents from this PRF will apply the same effect.`: ""}</p>
                     </Modal.Body>
 
                     <Modal.Footer>
